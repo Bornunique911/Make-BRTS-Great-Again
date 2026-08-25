@@ -1,0 +1,73 @@
+{
+  "2285": {
+    "id": "2285",
+    "name": "AAI MATA CHOWK BRTS",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "2412": {
+    "id": "2412",
+    "name": "AAI MATA ROAD",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "2038": {
+    "id": "2038",
+    "name": "AAKASH AVENUE",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "1939": {
+    "id": "1939",
+    "name": "AASHIRWAD DOCTOR HOUSE",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "1290": {
+    "id": "1290",
+    "name": "AASPAS DADA TEMPLE BRTS",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "5956": {
+    "id": "5956",
+    "name": "ABG SHIPYARD",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "4918": {
+    "id": "4918",
+    "name": "ABHISHEK TOWNSHIP",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "2721": {
+    "id": "2721",
+    "name": "ABHVA GAAM",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "2161": {
+    "id": "2161",
+    "name": "ABRAMA GAAM",
+    "lat": null,
+    "lng": null,
+    "source": null
+  },
+  "8182": {
+    "id": "8182",
+    "name": "ADAJAN GAM",
+    "lat": 21.1901059,
+    "lng": 72.7890318,
+    "display_name": "Adajan Gam, LP Savani Road, Surat, Gujarat, 359009, India",
+    "source": "OpenStreetMap Nominatim"
+  }
+}

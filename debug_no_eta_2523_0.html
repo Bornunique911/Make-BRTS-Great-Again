@@ -1,0 +1,2559 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    
+    
+
+
+    <title>Surat Municipal Corporation (SMC) Public Transport</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="bootstrap/img/favicon.ico" />
+    <link href="Dropdown/chosen.css" rel="stylesheet" />
+
+    <!-- Bootstrap CSS  -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css" media="screen">
+
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="bootstrap/css/font-awesome.min.css" type="text/css" media="screen">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:600" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet">
+    <link href="/Content/font-awesome-4.2.0/css/_font-awesomemn.css" rel="stylesheet" />
+
+    <!-- Slicknav -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/slicknav.css" media="screen">
+    <link rel="stylesheet" href="bootstrap/css/lightbox.min.css">
+
+    <!-- SMC CSS Styles  -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/style.css" media="screen">
+
+    <!-- Responsive CSS Styles  -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/responsive.css" media="screen">
+
+    <!-- Css3 Transitions Styles  -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/animate.css" media="screen">
+
+    <!-- Color CSS Styles  -->
+        
+    <link rel="stylesheet" href="bootstrap/css/planTrip.css">
+    
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/jquery.datetimepicker.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+
+    
+
+    <script src="smc_js/jquery-1.7.1.min.js"></script>
+
+    <script src="bootstrap/js/jquery.js"></script>
+    <script src="bootstrap/slider/js-image-slider.js" type="text/javascript"></script>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        function getPageName() {
+            var index = window.location.href.lastIndexOf("/") + 1;
+            var filenameWithExtension = window.location.href.substr(index);
+            var filename = filenameWithExtension.split(".")[0];
+            return filename;
+        }
+
+        $(document).ready(function () {
+
+            if (getPageName() == 'TimeTable') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#timeTable").addClass("current");
+            } else if (getPageName() == 'LiveBusInfo') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#livebusinfo").addClass("current");
+            } else if (getPageName() == 'PlanYourTrip') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#planyourtrip").addClass("current");
+            } else if (getPageName() == 'Feedback') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#feedback").addClass("current");
+            } else if (getPageName() == 'complaint') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#complaint").addClass("current");
+            }
+            else if (getPageName() == 'Contacts') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#contacts").addClass("current");
+            } else if (getPageName() == 'News') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#News").addClass("current");
+            } else if (getPageName() == 'GetFare') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#GetFares").addClass("current");
+            } else if (getPageName() == 'gallery') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#gallery").addClass("current");
+            } else if (getPageName() == 'gallery_full') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#gallery").addClass("current");
+            } else if (getPageName() == 'download_sitilink_mobile_app') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#mobile").addClass("current");
+            } else if (getPageName() == 'Gallery') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#gallery").addClass("current");
+            } else if (getPageName() == 'realtimeoperations') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#realtimeoperations").addClass("current");
+            }
+            else if (getPageName() == 'AboutUs') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#about_us").addClass("current");
+            }
+            else if (getPageName() == 'downloads') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#about_us").addClass("current");
+            }
+            else if (getPageName() == 'career') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#about_us").addClass("current");
+            }
+            else if (getPageName() == 'Tenders') {
+                $('#menu .navbar-left').removeClass("current");
+                $("#Tenders").addClass("current");
+            }
+
+        });
+
+       
+
+    </script>
+
+    <script type="text/javascript">
+
+        function ResetTimeOut() {
+            var pageToCall = "KeepSessionAlive.aspx";
+
+            if (window.XMLHttpRequest) {
+                request = new XMLHttpRequest();
+            }
+            else {
+                request = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            request.open("POST", pageToCall, true);
+            request.send("");
+        }
+        window.setInterval("ResetTimeOut();", 600000);
+    </script>
+    <script>
+        // function to set the height on fly
+        function autoHeight() {
+            $('#load').css('min-height', 0);
+            $('#load').css('min-height', ($(document).height() - $('#Stickyfooter').height() - $('#navv').height()) - $('#navv2').height() - $('#example3_4').height() - 35);
+        }
+        // onDocumentReady function bind
+        $(document).ready(function () {
+            autoHeight();
+        });
+        // onResize bind of the function
+        $(window).resize(function () {
+            autoHeight();
+        });
+    </script>
+    <style type="text/css">
+        /*#load { margin-top:-108px; padding-top:108px;
+		  }*/
+        .visitor-count div {
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            padding: 3px 10px;
+            display: inline-block;
+            background: #1763c0;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #newheader {
+            /*
+                max-height: 100px;
+            z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            height: 65px;
+            padding-top: 3px;
+            border-bottom: 1px solid #ccc;
+                */
+        }
+
+        #newtop {
+            position: fixed;
+            top: 0;
+            z-index: 999999999999;
+            width: 100%;
+        }
+
+            #newtop span {
+                width: 20%;
+                float: left;
+                height: 3px;
+            }
+
+        .bg-blue {
+            background-color: #0073b7 !important;
+        }
+
+        .bg-lightblue {
+            background: #008dd2;
+        }
+
+        .bg-green {
+            background-color: #00a65a !important;
+        }
+
+        .bg-yellow {
+            background-color: #f39c12 !important;
+        }
+
+        .bg-red {
+            background-color: #f56954 !important;
+        }
+
+        #menu {
+           background: #3e474f;
+             /*background: #772866;*/
+        }
+    </style>
+    
+    
+
+    <script type="text/javascript">
+        function ViewPakage() {
+			 
+            window.location = '/LiveBusInfo.aspx'
+        }
+    </script>
+
+    
+
+    
+    <style>
+        #myCarousel.carousel-indicators, #myCarousel .carousel-control {
+            position: fixed!important;
+            margin-top: 26px;
+            right: 20px;
+        }
+
+            #myCarousel.carousel-control.right {
+                right: 10px;
+            }
+
+        #myCarousel .carousel-indicators {
+            bottom: 36px;
+            position: fixed!important;
+        }
+    </style>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
+    <script src="smc_js/time_table.js"></script>
+    <link href="bootstrap/css/tablestyle.css" rel="stylesheet" />
+
+    
+  
+
+
+
+</head>
+
+<body data-spy="scroll" data-target=".navbar" data-offset="25">
+
+    <div class="preload">
+        
+    </div>
+
+    
+    <form method="post" action="./LiveBusInfo.aspx" id="form2">
+<div class="aspNetHidden">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form2'];
+if (!theForm) {
+    theForm = document.form2;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/WebResource.axd?d=pynGkmcFUV13He1Qd6_TZEVP05I_AownqMhcG_I-bHUgGC8dJBtixao12sBeuzLRc6DFdV-qO1MsMzncGmkzbw2&amp;t=638286263964787378" type="text/javascript"></script>
+
+
+<script src="/ScriptResource.axd?d=x6wALODbMJK5e0eRC_p1LRpLIBzTbGwjszpvOIcCYr7YHud2chSdbyQvoxmyftOGr_lfQtNCyqZpC6YdOVC6NzxZBmBwxUd112XgEilYCwrC_88WFIxiVmVVWWWaVsb80&amp;t=ffffffffda74082d" type="text/javascript"></script>
+<script src="/ScriptResource.axd?d=P5lTttoqSeZXoYRLQMIScHI7Zd50diZymgccIO_o3x6dTE0jV0zK3ktLyOYHJ1NnV5u8ewkTD_X0kFIMj-PfIQHhf7tLOOpCCvYce_1e8hjqYdKcsWS-X_4wDgxgYN6Q0&amp;t=ffffffffda74082d" type="text/javascript"></script>
+<script src="Route_Service.asmx/js" type="text/javascript"></script>
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="D68526AB" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="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" />
+</div>
+
+
+        
+        <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager', 'form2', ['tctl00$ContentPlaceHolder1$UpdatePanel5','ContentPlaceHolder1_UpdatePanel5'], [], [], 90, 'ctl00');
+//]]>
+</script>
+
+
+        <!-- Start Header Section -->
+        
+
+
+
+        <div class="" id="newtop">
+
+            <span class="bg-blue">&nbsp;</span>
+            <span class="bg-lightblue">&nbsp;</span>
+            <span class="bg-green">&nbsp;</span>
+            <span class="bg-yellow">&nbsp;</span>
+
+            <span class="bg-red">&nbsp;</span>
+            <header class="header mainheader" id="newheader">
+            </header>
+        </div>
+
+
+        <header class="clearfix" id="navv">
+
+            <!-- Start Top Bar -->
+            <div class="top-bar">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <!-- Start Contact Info -->
+                            
+                            <!-- End Contact Info -->
+                        </div>
+                        <!-- .col-md-6 -->
+                        <div class="col-md-5">
+
+                            
+                            <!-- Start Social Links -->
+                            <!--
+							  <ul class="social-list">
+								<li>
+									<a class="facebook itl-tooltip" data-placement="bottom" title="Facebook" href="#"><i class="fa fa-facebook"></i></a>
+								</li>
+								<li>
+									<a class="twitter itl-tooltip" data-placement="bottom" title="Twitter" href="#"><i class="fa fa-twitter"></i></a>
+								</li>
+								<li>
+									<a class="google itl-tooltip" data-placement="bottom" title="Google Plus" href="#"><i class="fa fa-google-plus"></i></a> </li>
+							 <li>  <a class="dribbble itl-tooltip" data-placement="bottom" title="Dribble" href="#"><i class="fa fa-dribbble"></i></a> </li>
+				<li>
+				  <a class="linkdin itl-tooltip" data-placement="bottom" title="Linkedin" href="#"><i class="fa fa-linkedin"></i></a>
+				</li>
+				<li>
+				  <a class="flickr itl-tooltip" data-placement="bottom" title="Flickr" href="#"><i class="fa fa-flickr"></i></a>
+				</li>
+				<li>
+				  <a class="tumblr itl-tooltip" data-placement="bottom" title="Tumblr" href="#"><i class="fa fa-tumblr"></i></a>
+				</li>
+				<li>
+				  <a class="instgram itl-tooltip" data-placement="bottom" title="Instagram" href="#"><i class="fa fa-instagram"></i></a>
+				</li>
+				<li>
+				  <a class="vimeo itl-tooltip" data-placement="bottom" title="vimeo" href="#"><i class="fa fa-vimeo-square"></i></a>
+				</li>
+				<li>
+				  <a class="skype itl-tooltip" data-placement="bottom" title="Skype" href="#"><i class="fa fa-skype"></i></a>
+				</li>
+							</ul>   
+								-->
+
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Start  Logo & Naviagtion  -->
+            <div class="navbar navbar-default navbar-top">
+                <div class="container">
+                    <div class="row mobile-menu">
+                        <h1 class="" id="logo">
+
+                            <a class="logoSMC" href="Planyourtrip.aspx">
+                                <img src="bootstrap/img/Sitilink-logo.png" alt="Surat Muncipal Corporation" /></a>
+                            <h1 class="smc-long">Surat Municipal Corporation</h1>
+                            <h1 class="smc-short">SMC</h1>
+                            <h1 class="toll-free-head">Toll Free Number: <a href="tel:18002330233" class="toll-free">1800-233-0233</a></h1>
+                            <!-- Stat Toggle Nav Link For Mobiles -->
+                            <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <i class="fa fa-bars"></i>
+                            </a>
+                            <!-- End Toggle Nav Link For Mobiles -->
+                    </div>
+
+                    <!-- Stat Search -->
+                    <!--    <div class="search-side">
+			  <a class="show-search"><i class="fa fa-search"></i></a>
+			  <div class="search-form">
+				<form autocomplete="off" role="search" method="get" class="searchform" action="#">
+				  <input type="text" value="" name="s" id="s" placeholder="Search the site...">
+				</form>
+			  </div>
+			</div>-->
+                    <!-- End Search -->
+                    <!-- Start Navigation List -->
+
+                </div>
+                <div class="clearfix"></div>
+                <div id="menu">
+                    <div class="container">
+                        <div class="row">
+                            <div class="navbar-collapse collapse">
+                                <ul class="nav navbar-nav navbar-left">
+
+                                    <li id="planyourtrip" class="navbar-left">
+                                        <a href="PlanYourTrip.aspx" class="color1">
+                                            <span id="lbPlanTrip">Home</span></a>
+                                    </li>
+                                    <li id="livebusinfo" class="navbar-left">
+                                        <a onclick="ViewPakage()" href="#" class="color2">
+                                            <span id="lbBusInfo">Live Bus Info</span></a>
+                                    </li>
+                                    <li id="timeTable" class="navbar-left">
+                                        <a href="TimeTable.aspx" class="color3">
+                                            <span id="lbTimeTable">Time Table</span></a>
+                                    </li>
+                                    <li id="GetFares" class="navbar-left">
+                                        <a href="GetFare.aspx" class="color4">
+                                            <span id="lbGetFare">Fares</span></a>
+                                    </li>
+
+                                    
+
+                                    <li id="gallery" class="navbar-left">
+                                        <a href="gallery.aspx" class="color8"><span>&nbsp;Gallery</span></a>
+                                    </li>
+
+                                    <li id="mobile" class="navbar-left">
+                                        <a href="download_sitilink_mobile_app.aspx" class="color6"><span>&nbsp;Mobile App</span></a>
+                                    </li>
+                                    <li id="feedback" class="navbar-left">
+                                        <a href="Feedback.aspx" class="color9"><span>&nbsp;Feedback</span></a>
+                                    </li>
+                                    <li id="complaint" class="navbar-left">
+                                        <a href="complaint.aspx" class="color9"><span>&nbsp;Complaint</span></a>
+                                    </li>
+                                    <li id="News" class="navbar-left">
+                                        
+                                        <a href="News.aspx" class="color7"><span>&nbsp;News</span></a>
+                                    </li>
+                                    <li id="Tenders" class="navbar-left">
+                                        <a href="Tenders.aspx" class="color7"><span>&nbsp;Tenders</span></a>
+                                    </li>
+                                    <li id="contacts" class="navbar-left">
+                                        <a href="Contacts.aspx" class="color10"><span>&nbsp;Contact Us</span></a>
+                                    </li>
+
+                                    <li id="about_us" class="navbar-left">
+                                        <a href="AboutUs.aspx" class="color5"><span>&nbsp;About Us </span></a>
+                                    </li>
+
+                                    <li id="downloads" class="navbar-left">
+                                        <a href="Filedownload.aspx" class="color5"><span>&nbsp;Downloads </span></a>
+                                    </li>
+                                    <li id="career" class="navbar-left">
+                                        <a href="Careers.aspx" class="color5"><span>&nbsp;Career </span></a>
+                                    </li>
+
+
+                                    
+                                </ul>
+                            </div>
+                            <!-- End Navigation List -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+            <!-- Mobile Menu Start -->
+            <ul class="wpb-mobile-menu">
+
+                <li id="Home1">
+                    <a href="PlanYourTrip.aspx">
+                        <span id="Label0">Home</span></a>
+                </li>
+
+                <li id="livebusinfo1">
+                    <a onclick="ViewPakage()" href="LiveBusInfo.aspx">
+                        <span id="Label2">Live Bus Info</span></a>
+                </li>
+                <li id="timeTable1">
+                    <a href="TimeTable.aspx">
+                        <span id="Label3">Time Table</span></a>
+                </li>
+                <li id="GetFare1">
+                    <a href="GetFare.aspx">&nbsp;Fares</a>
+                </li>
+
+                
+                <li id="News1">
+                    
+                    <a href="News.aspx">&nbsp;News</a>
+                </li>
+                <li id="Tenders1">
+                    <a href="Tenders.aspx">&nbsp;Tenders</a>
+                </li>
+                <li id="gallery1">
+                    <a href="gallery.aspx">&nbsp;Gallery</a>
+                </li>
+                <li id="mobile1">
+                    <a href="download_sitilink_mobile_app.aspx">&nbsp;Mobile App</a>
+                </li>
+                <li id="feedback1">
+                    <a href="Feedback.aspx">&nbsp;Feedback</a>
+                </li>
+                <li id="complaint1">
+                    <a href="complaint.aspx">&nbsp;Complaint</a>
+                </li>
+                <li id="contacts1">
+                    <a href="Contacts.aspx">&nbsp;Contacts</a>
+                </li>
+                <li id="about_us1">
+                    <a href="AboutUs.aspx">&nbsp;About Us</a>
+                </li>
+                <li id="downloads1">
+                    <a href="Filedownload.aspx">&nbsp;Downloads</a>
+                </li>
+                <li id="career1">
+                    <a href="Careers.aspx">&nbsp;Career</a>
+                </li>
+
+            </ul>
+            <!-- Mobile Menu End -->
+            <div class="clearfix"></div>
+            </div>
+            <!-- End Header Logo & Naviagtion -->
+
+        </header>
+        <!-- End Header Section -->
+
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="navv2">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display 
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>                   
+				</div>-->
+
+                &nbsp;&nbsp;
+				&nbsp;&nbsp;
+				
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+        </nav>
+        <div id="load">
+            <!--main Content-->
+            
+
+            <input type="hidden" name="ctl00$hdnTrip" id="hdnTrip" value="0" />
+            <input type="hidden" name="ctl00$hdnSch" id="hdnSch" value="0" />
+            <input type="hidden" name="ctl00$hdnOnroad" id="hdnOnroad" value="0" />
+            <input type="hidden" name="ctl00$hdnAlloc" id="hdnAlloc" value="0" />
+
+            <input type="hidden" name="ctl00$hdnRidershipLMonth" id="hdnRidershipLMonth" value="0" />
+            <input type="hidden" name="ctl00$hdnRidershipLWeek" id="hdnRidershipLWeek" value="0" />
+            <input type="hidden" name="ctl00$hdnRidershipYesterday" id="hdnRidershipYesterday" value="0" />
+            <input type="hidden" name="ctl00$hdnRidershipToday" id="hdnRidershipToday" value="0" />
+            
+  
+
+
+    <input type="hidden" name="ctl00$ContentPlaceHolder1$hfCount" id="hfCount" />
+
+
+    
+    <div class="container space top">
+        <div class="row">
+            <div class="shadoww1">
+                <h4 class="ETA-heading h5Style "><span>Get Your Bus Arrival Time</span></h4>
+                <div class="col-lg-6 col-md-6  col-sm-6 col-xs-6  ">
+
+                    <div class=" oneLine col-lg-11 row ">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon primary">1</span>
+                                
+                               
+                                 <select name="ctl00$ContentPlaceHolder1$ddlstops" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$ContentPlaceHolder1$ddlstops\&#39;,\&#39;\&#39;)&#39;, 0)" id="ContentPlaceHolder1_ddlstops" tabindex="1" class="form-control boxOriginLive1">
+	<option value="0">Please Select Stop</option>
+	<option value="2285">AAI MATA CHOWK BRTS</option>
+	<option value="2412">AAI MATA ROAD</option>
+	<option value="2038">AAKASH AVENUE</option>
+	<option value="1939">AASHIRWAD DOCTOR HOUSE</option>
+	<option value="1290">AASPAS DADA TEMPLE BRTS</option>
+	<option value="5956">ABG SHIPYARD</option>
+	<option value="4918">ABHISHEK TOWNSHIP</option>
+	<option value="2721">ABHVA GAAM</option>
+	<option value="2161">ABRAMA GAAM</option>
+	<option value="8182">ADAJAN GAM</option>
+	<option value="56">ADAJAN GAM BRTS</option>
+	<option value="2384">ADAJAN GSRTC</option>
+	<option value="4719">ADARSH SOCIETY</option>
+	<option value="5973">ADARSHNAGAR SOCIETY KANAKPUR</option>
+	<option value="4720">AGAM SHOPPING VESU ABHVA ROAD</option>
+	<option value="2227">AGARWAL VIDHYA VIHAR </option>
+	<option value="5917">AGASHI MATA NU MANDIR</option>
+	<option value="6979">AJRAMAR CHOWK</option>
+	<option value="2416">AKHAND ANAND COLLEGE</option>
+	<option value="2417">AKHAND ANAND PARK SOCIETY</option>
+	<option value="1218">AKSHARDHAM APARTMENT</option>
+	<option value="8158">AL AMIN</option>
+	<option value="4871">ALFA WAY BRIDGE CHOKDI</option>
+	<option value="8156">ALFESANI SCHOOL</option>
+	<option value="2418">ALKAPURI CIRCLE</option>
+	<option value="46">ALTHAN BHARTHANA BRTS</option>
+	<option value="44">ALTHAN CANAL BRTS</option>
+	<option value="1992">ALTHAN COMMUNITY HALL</option>
+	<option value="2208">ALTHAN DEPOT/TERMINAL</option>
+	<option value="43">ALTHAN KHADI BRTS</option>
+	<option value="4721">ALTHAN TENAMENT</option>
+	<option value="4722">ALTHAN WATER WORKS JUNCTION</option>
+	<option value="2419">AMAZIA AMUSEMENT PARK BRTS</option>
+	<option value="1216">AMBA TALAVDI</option>
+	<option value="2399">AMBEDKAR NAGAR</option>
+	<option value="6977">AMBEDKAR TRUST</option>
+	<option value="8166">AMBIKA NAGAR SOCIETY</option>
+	<option value="6978">AMIDHARA WADI</option>
+	<option value="4868">AMROLI CHAR RASTA</option>
+	<option value="4869">AMROLI CROSS ROAD</option>
+	<option value="2132">AMROLI GAAM</option>
+	<option value="2037">ANAND DHARA SOCIETY MOTA VARACHHA</option>
+	<option value="57">ANAND MAHAL ROAD BRTS</option>
+	<option value="8164">ANAND NAGAR SOCIETY</option>
+	<option value="2142">ANAND VATIKA</option>
+	<option value="8091">ANAND VILLA</option>
+	<option value="1138">ANJADA NAGAR</option>
+	<option value="2422">ANJANA HEALTH CENTRE</option>
+	<option value="1058">ANJANI BOOT BHAVANI ROAD BRTS</option>
+	<option value="2192">ANJANI CHOWK MOTA VARACHHA</option>
+	<option value="1967">ANKUR PARK SOCIETY</option>
+	<option value="8102">ANMOL PARK SOCIETY</option>
+	<option value="5940">ANTROLI</option>
+	<option value="2423">ANUPAM BUSINESS HUB</option>
+	<option value="4253">ANUPAM CITY</option>
+	<option value="88">ANUVRAT DWAR JUNCTION (EAST) BRTS</option>
+	<option value="49">ANUVRAT DWAR JUNCTION (WEST) BRTS</option>
+	<option value="2205">APEX HOSPITAL</option>
+	<option value="2284">APMC SARDAR MARKET BRTS</option>
+	<option value="2168">APPAREL PARK FAATA</option>
+	<option value="4256">APPAREL PARK GATE SACHIN GIDC</option>
+	<option value="4724">APPLE HEIGHTS</option>
+	<option value="2424">ARCHANA CHAR RASTA</option>
+	<option value="4725">ARIHANT PARK</option>
+	<option value="2425">AROGYA KENDRA</option>
+	<option value="2426">ARVIND NAGAR</option>
+	<option value="8160">ARYA SAMAJ MARG</option>
+	<option value="2039">ASHANAGAR MASJID UDHANA</option>
+	<option value="4836">ASHANAGAR SOIETY</option>
+	<option value="2427">ASHAPURA MATA MANDIR</option>
+	<option value="8094">ASHARAM BAPU ASHRAM</option>
+	<option value="1150">ASHIRVAD COMPLEX / UMABHAVAN</option>
+	<option value="4726">ASHIRWAD ENCLAVE ALTHAN CANAL ROAD</option>
+	<option value="5928">ASHWANIKUMAR SMASHAN GRUH</option>
+	<option value="1980">ATHWA PUMPING STATION</option>
+	<option value="2428">ATHWAGATE</option>
+	<option value="4727">ATOP NAGAR BHATAR ROAD</option>
+	<option value="2040">AVSHAR BUNGALOW</option>
+	<option value="2172">AWADH CAROLINA</option>
+	<option value="2173">AWADH COPPERSTONE</option>
+	<option value="4728">AYODHYA NAGARI SOCIETY</option>
+	<option value="2429">AZAD CHOWK</option>
+	<option value="4252">AZADNAGAR</option>
+	<option value="2041">B J PATEL CRICKET GROUND</option>
+	<option value="1966">B R PARK</option>
+	<option value="1927">BADRINATH MANDIR</option>
+	<option value="2430">BAHUMALI</option>
+	<option value="2431">BAL ASHRAM</option>
+	<option value="1996">BALAJI FARM VIP ROAD</option>
+	<option value="2432">BALAJI MANDIR</option>
+	<option value="4842">BALAJI RESIDENCY</option>
+	<option value="2434">BAMROLI</option>
+	<option value="2435">BAMROLI KHADI</option>
+	<option value="72">BAPA SITARAM CHOWK BRTS</option>
+	<option value="2108">BAPA SITARAM CHOWK YOGI NAGAR</option>
+	<option value="2043">BAPA SITARAM PETROL PUMP</option>
+	<option value="4867">BAPS HOSPITAL ADAJAN</option>
+	<option value="4263">BAPS Swaminarayan Mandir Kanad</option>
+	<option value="4862">BAPS SWAMINARAYAN SANSTHA</option>
+	<option value="5972">BAPS TEMPLE KANAKPUR</option>
+	<option value="2437">BAPUJI NI WADI</option>
+	<option value="2263">BARODA PRISTAGE BRTS</option>
+	<option value="4888">BCA COLLEGE MASMA</option>
+	<option value="4241">BHADA GAM APPROACH</option>
+	<option value="1094">BHAGAL</option>
+	<option value="2439">BHAGAL CHAR RASTA</option>
+	<option value="2440">BHAGAT SINGH GARDEN</option>
+	<option value="2382">BHAGATALAV</option>
+	<option value="4844">BHAGIRATH APARTMENT</option>
+	<option value="4729">BHAGWAN MAHAVIR COLLEGE</option>
+	<option value="1942">BHAGWAN NAGAR SARTHANA</option>
+	<option value="4863">BHAGWAN PARK</option>
+	<option value="2442">BHAGWATI SOCIETY</option>
+	<option value="32">BHAGWATINAGAR INDUSTRIAL ESTATE BRTS</option>
+	<option value="8126">BHAGYALAXMI PRINTS</option>
+	<option value="8147">BHAGYALAXMI SOCIETY</option>
+	<option value="4731">BHAGYODAYA SOCIETY</option>
+	<option value="103">BHAIYA NAGAR BRTS</option>
+	<option value="2443">BHAJIWALI POL</option>
+	<option value="2287">BHAKTI DHAM BRTS</option>
+	<option value="4243">BHAKTI INTERNATIONAL SCHOOL</option>
+	<option value="4250">BHARAT ROAD POLICE CHOWKI</option>
+	<option value="2103">BHARI TEMPLE</option>
+	<option value="47">BHARTHANA BRTS</option>
+	<option value="2159">BHARTHANA FAATA</option>
+	<option value="7069">BHARTHANA GAAM</option>
+	<option value="4732">BHARTI MAIYA SCHOOL</option>
+	<option value="4733">BHATAR FLYOVER UDHANA MAGDALLA ROAD</option>
+	<option value="5934">BHATHA GAAM</option>
+	<option value="2444">BHATHENA CANAL JUNCTION</option>
+	<option value="1944">BHAVANI CIRCLE</option>
+	<option value="1938">BHESAN GAAM</option>
+	<option value="1937">BHESAN GAAM LAKE</option>
+	<option value="5945">BHESTAN</option>
+	<option value="8131">BHESTAN CITY BUS DEPOT</option>
+	<option value="2445">BHESTAN EWS HOUSING</option>
+	<option value="2446">BHESTAN GARDEN</option>
+	<option value="31">BHESTAN NAHER BRTS</option>
+	<option value="2448">BHIMPORE</option>
+	<option value="2449">BHIMPORE FAATA</option>
+	<option value="2045">BHIMRAD GAAM APPROACH</option>
+	<option value="2186">BHINDI BAZAAR</option>
+	<option value="2387">BHULKA BHAVAN</option>
+	<option value="4894">BILAL MASJID OLPAD</option>
+	<option value="2450">BOMBAY MARKET</option>
+	<option value="4734">BRIEADLINER CIRCLE UDHANA MAGDALLA ROAD</option>
+	<option value="4735">BSNL OFFICE</option>
+	<option value="4736">BSNL OFFICE MAMTA PARK</option>
+	<option value="1960">BUDIYA GAAM</option>
+	<option value="2189">BUDIYA GAAM CHOKDI</option>
+	<option value="1963">BUDIYA LAKE</option>
+	<option value="1962">BUDIYA RWSS</option>
+	<option value="5958">C.K.PITHAWALA ENG.COLLEGE</option>
+	<option value="1995">CANAL JUNCTION VIP ROAD</option>
+	<option value="2289">CANCER HOSPITAL BRTS</option>
+	<option value="1196">CENTER POINT</option>
+	<option value="2261">CENTRAL WARE HOUSE BRTS</option>
+	<option value="50">CENTRE FOR SOCIAL STUDIES BRTS</option>
+	<option value="4737">CHAAPRA BHAATHA</option>
+	<option value="2160">CHAMUNDA NAGAR SOCIETY</option>
+	<option value="5976">CHANDRA SHEKHAR AZAD BRIDGE APPROACH KATARGAM</option>
+	<option value="4738">CHANDRAMANI SOCIETY UDHANA MAGDALLA ROAD</option>
+	<option value="2046">CHEHAR MATA TEMPLE</option>
+	<option value="8170">CHHANNU COLONY CHHAPRABHATHA</option>
+	<option value="1204">CHHATRAPATI SHIVAJI CIRCLE</option>
+	<option value="39">CHIKUWADI BRTS</option>
+	<option value="8078">CHILDREN PARK ADAJAN</option>
+	<option value="48">CHINAGATE BRTS</option>
+	<option value="1991">CHINAGATE ROAD ALTHAN CANAL ROAD</option>
+	<option value="2455">CHOWK BAZAR</option>
+	<option value="2451">CHOWK TERMINAL</option>
+	<option value="2457">CITY CENTRE COMPLEX</option>
+	<option value="2047">CITY CENTRE PUNA GAAM</option>
+	<option value="2456">CITY CIVIC CENTRE</option>
+	<option value="8096">CJ PATEL COLLEGE</option>
+	<option value="4872">COLOURTEX</option>
+	<option value="6990">COLOURTEX INDUSTRIES</option>
+	<option value="4739">COMMUNITY HALL UTRAN</option>
+	<option value="4860">CORPORATION SCHOOL</option>
+	<option value="4891">CYANIDE CHEMICALS</option>
+	<option value="1209">D MART KATAR GAAM</option>
+	<option value="2459">D.G.V.C.L URJA SADAN, KAPODARA BRTS</option>
+	<option value="2460">D.I.E.T.</option>
+	<option value="4906">D.R.G.D HIGH SCHOOL SAYAN</option>
+	<option value="4740">DABHOLI CHAR RASTA</option>
+	<option value="2010">DABHOLI GAAM</option>
+	<option value="2049">DABHOLI GAAM APPROACH</option>
+	<option value="69">DABHOLI GAM BRTS</option>
+	<option value="27">DAKSHESHWAR MAHADEV BRTS</option>
+	<option value="4259">DD SPORT CIRCLE</option>
+	<option value="3236">DEEP DARSHAN VIDHYA SANKUL</option>
+	<option value="4902">DELAAD INDUSTRIAL ESTATE</option>
+	<option value="4903">DELAAD PATIYA</option>
+	<option value="4901">DELAAD TALAAV</option>
+	<option value="3237">DELADVA GAM</option>
+	<option value="2376">DELHI GATE</option>
+	<option value="2032">DEVASHISH NAGAR MORA BHAGAL</option>
+	<option value="2209">DEWADH GAAM FAATA</option>
+	<option value="2210">DEWADH KUMBHARIYA AAWAS</option>
+	<option value="1977">DGVCL GEB OFFICE PALANPUR</option>
+	<option value="2277">DGVCL LASKANA BRTS</option>
+	<option value="8077">DGVCL MOTA VARACHHA</option>
+	<option value="2385">DHANMORA / ADAJAN PATIYA BRTS</option>
+	<option value="2051">DHRUV PARK SOCIETY</option>
+	<option value="2278">DIAMOND NAGAR BRTS</option>
+	<option value="2279">DIAMOND VIDHYA SANKUL BRTS</option>
+	<option value="4741">DINDAYAL SOCIETY</option>
+	<option value="3238">DINDOLI FIRE STATION</option>
+	<option value="3234">DINDOLI FLOWER GARDEN</option>
+	<option value="2463">DINDOLI GAM</option>
+	<option value="2299">DINDOLI KHARWASA ROAD BRTS</option>
+	<option value="3235">DINDOLI SWIMMING POOL</option>
+	<option value="2300">DINDOLI VARIGRUH BRTS</option>
+	<option value="2055">DIVA FARM</option>
+	<option value="68">DR. SHYAMAPRASAD MUKHARJI BRIDGE BRTS</option>
+	<option value="2464">DR. SHYAMAPRASAD MUKHARJI LAKE GARDEN BRTS</option>
+	<option value="2465">DUMAS KUVADA</option>
+	<option value="2466">DUMAS LANGAR</option>
+	<option value="2467">DUMBHAL FIRE STATION</option>
+	<option value="2191">DUNDI GAAM APPROACH</option>
+	<option value="2468">DUTCH GARDEN</option>
+	<option value="1993">E.SPACE BHARTHANA VIP ROAD</option>
+	<option value="2187">ECOM WAREHOUSE</option>
+	<option value="2206">EDEN CIRCLE</option>
+	<option value="2396">EKTA NAGAR</option>
+	<option value="2102">FATAKDAWADI</option>
+	<option value="12">FULPADA ROAD BRTS</option>
+	<option value="2469">FURAJA CHOWK</option>
+	<option value="3233">G 9 BUSINESS CENTRE</option>
+	<option value="2220">G D GOENKA SCHOOL</option>
+	<option value="2470">G.N. PANDYA COLLEGE</option>
+	<option value="2188">GABHENI CHOKDI</option>
+	<option value="5977">GABHENI GAAM</option>
+	<option value="2200">GABHENI GAAM APPROACH</option>
+	<option value="6991">GABHENI ROAD</option>
+	<option value="2009">GAIL INDIA LTD VIP ROAD</option>
+	<option value="2190">GAJANAND SANKUL</option>
+	<option value="2471">GAJERA CIRCLE BRTS</option>
+	<option value="4875">GALAXY CIRCLE</option>
+	<option value="4876">GALAXY ENCLAVE</option>
+	<option value="2473">GALEMANDIR CHOWK</option>
+	<option value="2475">GANDHI COLLEGE</option>
+	<option value="2476">GANDHI KUTIR</option>
+	<option value="8109">GANDHIKUTIR JUNCTION UDHANA MAGDALLA ROAD</option>
+	<option value="5959">GANESH NAGAR</option>
+	<option value="8129">GANESH NAGAR PANDESARA</option>
+	<option value="6983">GANESHKRUPA SOCIETY</option>
+	<option value="2477">GANESHNAGAR</option>
+	<option value="2703">GANGA JAMANA SOCIETY</option>
+	<option value="4743">GANGESHWAR MANDIR</option>
+	<option value="5930">GAUSHALA FULPADA</option>
+	<option value="5957">GAVIYAR GAM</option>
+	<option value="2478">GAVIYAR VANTA</option>
+	<option value="4849">GAYATRI MANDIR</option>
+	<option value="1943">GAYATRI MANDIR DABHOLI</option>
+	<option value="8122">GAYATRI SOCIETY</option>
+	<option value="2479">GHANSHYAM NAGAR</option>
+	<option value="4744">GHARDI MATA MANDIR</option>
+	<option value="4239">GHB Gem Jewellery Park  Gate No. 3</option>
+	<option value="1989">GIRIDHARDWAR SOC ALTHAN CANAL ROAD</option>
+	<option value="2480">GIRLS POLYTECHNIC</option>
+	<option value="4870">GLOBAL RESIDENCY</option>
+	<option value="2481">GODADARA GAM</option>
+	<option value="2482">GODADARA SCHOOL</option>
+	<option value="2483">GODADRA CANAL JUNCTION</option>
+	<option value="2066">GODHPUR TOWNSHIP</option>
+	<option value="2151">GOKULDHAM</option>
+	<option value="2484">GOLDEN POINT</option>
+	<option value="4745">GOPAL CHOWK</option>
+	<option value="2485">GOPAL NAGAR</option>
+	<option value="8176">GOPI TALAV</option>
+	<option value="2486">GOPI TALAV MARKET</option>
+	<option value="4746">GOTALAWADI</option>
+	<option value="2068">GOTHAN BRIDGE</option>
+	<option value="4899">GOTHAN VASVAARI FAATA</option>
+	<option value="1158">GOVALAK CROSS ROAD</option>
+	<option value="2487">GOVERDHAN NATHJI HAVELI BRTS</option>
+	<option value="2071">GOVINDAJI SPORT COMPLEX</option>
+	<option value="1180">GREEN AVENUE</option>
+	<option value="2393">GREEN AVENUE</option>
+	<option value="4877">GREEN CITY</option>
+	<option value="1932">GREEN CITY BHATHA</option>
+	<option value="1931">GREEN CITY BHATHA APPROACH</option>
+	<option value="36">GREEN PARK BRTS</option>
+	<option value="4747">GREEN RESIDENCY</option>
+	<option value="4874">G-TEX PRINTS</option>
+	<option value="4748">GUJARATI SCHOOL GHOD DOD ROAD</option>
+	<option value="2171">GURUKRUPA INDUSTRIES SOC</option>
+	<option value="8097">GWSSB VARIAV</option>
+	<option value="1184">GYANDEEP SOCIETY</option>
+	<option value="2488">HALPATI COLONY</option>
+	<option value="8155">HAMZA APARTMENT</option>
+	<option value="1972">HANUMAN TEKARI</option>
+	<option value="5952">HARE KRISHNA CIRCLE / LALITA CHOKADI BRTS</option>
+	<option value="2490">HARI DARSHAN SOCIETY GODADARA</option>
+	<option value="1108">HARI OM DYING</option>
+	<option value="8138">HARI SIDDHI APARTMENT</option>
+	<option value="2144">HARIDARSHAN RESIDENCY</option>
+	<option value="2398">HIDAYAT NAGAR POLICE STATION</option>
+	<option value="2491">HIJDAWAD</option>
+	<option value="15">HIRABAUG BRTS</option>
+	<option value="2492">HODI BUNGALOW</option>
+	<option value="4257">HOJIWALA INDUSTRIAL ESTATE RD NO 5</option>
+	<option value="8081">HONEY PARK CROSS ROAD</option>
+	<option value="4884">HOTEL EXCELLENCY ICCHAPOR</option>
+	<option value="8167">HOUSING BOARD PALANPUR</option>
+	<option value="2493">I.C. GANDHI SCHOOL</option>
+	<option value="4749">I.G DESAI SCHOOL ALTHAN ROAD</option>
+	<option value="2494">I.P. MISSION SCHOOL</option>
+	<option value="2495">ICCHANATH MAHADEV TEMPLE</option>
+	<option value="4881">ICCHAPOR GAAM FAATA</option>
+	<option value="4883">ICCHAPOR LAKE</option>
+	<option value="4885">ICCHAPOR TOWN</option>
+	<option value="2496">INCOME TAX</option>
+	<option value="1990">INDRALOK BUNGLOW ALTHAN CANAL ROAD</option>
+	<option value="2003">IOC COLONY SUBHASH NAGAR</option>
+	<option value="8092">ISCON MANDIR</option>
+	<option value="4890">ISHANPOR</option>
+	<option value="90">ISHWAR FARM JUNCTION BRTS</option>
+	<option value="4750">ISHWAR NAGAR UDHANA MAGDALLA ROAD</option>
+	<option value="2407">ISKCON CIRCLE</option>
+	<option value="1949">J K P NAGAR SOCIETY</option>
+	<option value="2497">J.B. DIAMOND</option>
+	<option value="87">J.H. AMBANI SCHOOL BRTS</option>
+	<option value="2498">J.T. NAGAR</option>
+	<option value="2499">JAANI FARSAAN</option>
+	<option value="2072">JAGANNATHPURI TEMPLE</option>
+	<option value="2500">JAGDAMBA ESTATE</option>
+	<option value="5925">JAGDISHCHANDRA BOSE GARDEN</option>
+	<option value="1178">JAHANGIRABAD GAM</option>
+	<option value="67">JAHANGIRPURA COMMUNITY HALL BRTS</option>
+	<option value="1968">JAHANGIRPURA HOUSING</option>
+	<option value="2501">JAI JOGANI MATA CHOWK BRTS</option>
+	<option value="1077">JAIN BHAVAN</option>
+	<option value="2130">JAIN DERAASAR AMROLI</option>
+	<option value="1182">JALARAM MANDIR</option>
+	<option value="2215">JALARAM SOCIETY</option>
+	<option value="8142">JALSA THEATRE</option>
+	<option value="91">JAMNA NAGAR JUNCTION BRTS</option>
+	<option value="1984">JAMNA NAGAR SOCIETY</option>
+	<option value="1951">JANKI RESIDENCY</option>
+	<option value="2502">JANTA HOSPITAL</option>
+	<option value="2503">JAWAHARLAL NEHRU GARDEN</option>
+	<option value="2078">JAY AMBE SOCIETY</option>
+	<option value="1198">JAY COMPLEX</option>
+	<option value="2504">JAY JALARAM INDUSTRIAL SOCIETY</option>
+	<option value="8121">JHANSI KI RANI GARDEN</option>
+	<option value="2506">JIGNESHNAGAR GODADARA</option>
+	<option value="8154">JILANI COMPLEX</option>
+	<option value="6988">JILANI NAGAR</option>
+	<option value="2507">JITESH PARK SOCIETY</option>
+	<option value="1987">JIVKOR NAGAR BHATAR</option>
+	<option value="2222">JIVRAJ 9 CIRCLE VESU</option>
+	<option value="2157">JJ FARM</option>
+	<option value="4751">JOLLY RESIDENCY</option>
+	<option value="8080">JYOTINDRA DAVE GARDEN</option>
+	<option value="4752">K.P COMMERCE COLLEGE</option>
+	<option value="2508">KAADI FALIYA DUMAS</option>
+	<option value="2174">KAADI FALIYA FAATA</option>
+	<option value="1080">KABIR MANDIR</option>
+	<option value="4779">KABIR MANDIR RAMPURA</option>
+	<option value="2510">KADARSHAH NI NAL</option>
+	<option value="5919">KADODARA</option>
+	<option value="2181">KAILASH DHAM</option>
+	<option value="41">KAILASH NAGAR BRTS</option>
+	<option value="1941">KAILASH NAGAR DABHOLI</option>
+	<option value="2080">KAKRAPAR CANAL ROAD</option>
+	<option value="2163">KAKRAPAR CANAL ROAD JUNCTION</option>
+	<option value="2084">KALYAN KUTIR SOCIETY</option>
+	<option value="2511">KAMELA DARWAJA</option>
+	<option value="29">KAMNATH MAHADEV BRTS</option>
+	<option value="5949">KAMREJ GSRTC BRTS</option>
+	<option value="2282">KAMREJ TERMINAL BRTS</option>
+	<option value="5971">KANAKPUR PRIMARY SCHOOL</option>
+	<option value="4754">KANTARESHWAR MAHADEV</option>
+	<option value="2014">KANTHARIYA HANUMAN CHOWK</option>
+	<option value="2015">KANTHARIYA HANUMAN TEMPLE</option>
+	<option value="2512">KAPADIA HEALTH CLUB</option>
+	<option value="4755">KAPADIA WADI ALTHAN ROAD</option>
+	<option value="8175">KAPODARA</option>
+	<option value="2268">KAPODARA FIRE STATION BRTS</option>
+	<option value="2513">KARADVA GAM</option>
+	<option value="1210">KARAN PARK</option>
+	<option value="9">KARGIL CHOWK BRTS</option>
+	<option value="2515">KARGIL CHOWK PUNA</option>
+	<option value="4856">KARIMABAD SOCIETY GHOD DOD ROAD</option>
+	<option value="4895">KASBA MOHALLA OLPAD</option>
+	<option value="2516">KASKIWAD</option>
+	<option value="5929">KATAR GAM GIDC</option>
+	<option value="5951">KATARGAM</option>
+	<option value="2518">KATARGAM BRT</option>
+	<option value="2519">KATARGAM DARWAJA</option>
+	<option value="5950">KATARGAM DARWAJA BRT</option>
+	<option value="4828">KATARGAM FIRE STATION</option>
+	<option value="4756">KATARGAM POLICE STATION</option>
+	<option value="2085">KATHODARA GAAM</option>
+	<option value="2178">KATHOR GAAM</option>
+	<option value="4757">KAVI KALAPI GARDEN</option>
+	<option value="1935">KAVI SHREE AMRUT GHAYAL SCHOOL VARIAV</option>
+	<option value="2521">KEVAL CIRCLE</option>
+	<option value="2522">KHAADI MOHALLA SHAALA</option>
+	<option value="2088">KHADSAD GAAM</option>
+	<option value="2724">KHAJOD GAM</option>
+	<option selected="selected" value="2523">KHARWARNAGAR BRTS</option>
+	<option value="5954">KHATODARA GIDC</option>
+	<option value="95">KHATODARA GIDC BRTS</option>
+	<option value="8104">KHATODARA POLICE STATION</option>
+	<option value="4843">KHATODARA WADI</option>
+	<option value="8105">KHATODARA WATER WORKS</option>
+	<option value="2524">KHODIYAR RESIDENCY GODADARA</option>
+	<option value="2525">KHODIYARNAGAR</option>
+	<option value="1083">KHWAJA DANA NEW ROAD</option>
+	<option value="2527">KINNARY CINEMA</option>
+	<option value="2528">KIRAN HOSPITAL</option>
+	<option value="2089">KIRAN RESIDENCY</option>
+	<option value="8150">KORIVAD KOSAD</option>
+	<option value="2138">KOSAD BHARTHANA  ROAD</option>
+	<option value="81">KOSAD DEPOT BRTS</option>
+	<option value="79">KOSAD EWS H1 BRTS</option>
+	<option value="80">KOSAD EWS H2 BRTS</option>
+	<option value="77">KOSAD FIRE STATION BRTS</option>
+	<option value="2726">KOSAD GAM</option>
+	<option value="78">KOSAD HOUSING BOARD BRTS</option>
+	<option value="4919">KOSAD TALAAV</option>
+	<option value="2529">KOT SAFIL ROAD</option>
+	<option value="8139">KRISHNA NAGAR SOCIETY</option>
+	<option value="2530">KRISHNA RESIDENCY</option>
+	<option value="2531">KRISHNAKUNJ SOCIETY</option>
+	<option value="5974">KRISHNAKUNJ SOCIETY KANAKPUR</option>
+	<option value="4758">KSHETRAPAL MANDIR</option>
+	<option value="2155">KUBERNAGAR</option>
+	<option value="2213">KUMBHARIYA GAAM</option>
+	<option value="5935">KUMBHARIYA GAAM</option>
+	<option value="2532">KUNJ GALI</option>
+	<option value="8093">KURUKSHETRA/RAMMADHI</option>
+	<option value="2533">KUVAWADI</option>
+	<option value="4845">KV HAGRENAD ROAD</option>
+	<option value="4246">L P SAVANI SCHOOL PALANPORE</option>
+	<option value="1168">L.B. STATION / INCOME TAX</option>
+	<option value="2534">L.N. PARK SOCIETY</option>
+	<option value="8083">L.P SAVANI VIDHYABHAVAN</option>
+	<option value="2535">LAABHESHWAR CHOWK</option>
+	<option value="5941">LADVI GAM</option>
+	<option value="4759">LAJAMANI CHOWK</option>
+	<option value="2167">LAJPORE JAIL</option>
+	<option value="2092">LAKE VIEW RESIDENCY KOSAD</option>
+	<option value="2536">LAKSHIMIKANT ASHRAM</option>
+	<option value="8119">LAL DARWAJA</option>
+	<option value="2381">LALGATE / CHOUTAPUL</option>
+	<option value="1118">LALITA CIRCLE</option>
+	<option value="5918">LALWATALAAV OLPAD</option>
+	<option value="17">LAMBE HANUMAN ROAD BRTS</option>
+	<option value="2538">LAMBE HANUMAN TEMPLE</option>
+	<option value="2539">LANCERS ARMY SCHOOL BRTS</option>
+	<option value="2276">LASKANA GAM BRTS</option>
+	<option value="4261">LAXMI CIRCLE</option>
+	<option value="1132">LAXMI NAGAR SOCIETY (DINDOLI)</option>
+	<option value="1115">LAXMI NARAYAN NAGAR</option>
+	<option value="26">LAXMI NARAYAN TEMPLE BRTS</option>
+	<option value="4834">LAXMINAGAR</option>
+	<option value="2183">LAXMINAGAR 1</option>
+	<option value="4760">LAXMINAGAR CHOWK</option>
+	<option value="2540">LAXMINAGAR SOCIETY</option>
+	<option value="5923">LEPROSY HOSPITAL</option>
+	<option value="2541">LIMBAYAT HEALTH CENTRE</option>
+	<option value="1092">LIMDA CHOWK</option>
+	<option value="2543">LINEAR BUS STOP</option>
+	<option value="1973">LOKMANYA SCHOOL RANDER</option>
+	<option value="1936">LOTUS CRICKET ACADEMY</option>
+	<option value="2225">LUTHRA CIRCLE VESU</option>
+	<option value="1088">MAACHIWARA</option>
+	<option value="8127">MAAKRUPA CHEMICAL INDUSTRIES GANESHNAGAR</option>
+	<option value="2544">MAAN DARWAJA</option>
+	<option value="2545">MACHHIWAD</option>
+	<option value="2218">MADHAV FARM</option>
+	<option value="2095">MADHUVAN PUBLIC SCHOOL APPROACH</option>
+	<option value="1924">MADINA MASJID</option>
+	<option value="8157">MADNI SOCIETY</option>
+	<option value="2">MAGDALLA GAM BRTS</option>
+	<option value="2548">MAGDALLA PORT</option>
+	<option value="4">MAGDALLA T JUNCTION BRTS</option>
+	<option value="2291">MAGOB GAM BRT</option>
+	<option value="2292">MAGOB PARVAT KHADI BRIDGE BRTS</option>
+	<option value="2553">MAHA LAKSHMI TEMPLE</option>
+	<option value="2194">MAHADEV CHOWK MOTA VARACHHA</option>
+	<option value="4251">MAHADEVNAGAR</option>
+	<option value="2390">MAHALAXMI MANDIR</option>
+	<option value="1919">MAHARAJA KRUSHNAKUMAR SCHOOL</option>
+	<option value="2298">MAHARANA PRATAP BRIDGE / SAI BABA TEMPLE, DINDOLI BRTS</option>
+	<option value="2462">MAHARANA PRATAP CHOWK / DEVADH GAM BRTS</option>
+	<option value="2554">MAHARANA PRATAP GARDEN (CHOWPATI) BRTS</option>
+	<option value="85">MAHARANA PRATAP JUNCTION BRTS</option>
+	<option value="2217">MAHARSHI VEDVYAS VIDHYA SANKUL</option>
+	<option value="2555">MAHAVIR CHOWK</option>
+	<option value="4904">MAHAVIR COMPLEX DELAAD PATIYA</option>
+	<option value="8140">MAHAVIR DHAAM SOCIETY</option>
+	<option value="4916">MAHAVIR DHAM 2</option>
+	<option value="4917">MAHAVIR HEIGHTS</option>
+	<option value="2557">MAHAVIR HOSPITAL</option>
+	<option value="2378">MAHIDHARPURA POST OFFICE</option>
+	<option value="4761">MAHILA I.T.I</option>
+	<option value="2559">MAJURA GATE</option>
+	<option value="2005">MAJURA GATE FIRE STATION</option>
+	<option value="4832">MAJURAGATE CIVIL HOSPITAL</option>
+	<option value="2561">MAKBARA MASJID</option>
+	<option value="2562">MAKKAI POOL</option>
+	<option value="8151">MAKKAIPOOL TERMINAL</option>
+	<option value="2201">MALGAMA APPROACH</option>
+	<option value="2030">MAMTA PARK SOCIETY</option>
+	<option value="2563">MAN MANDIR APARTMENT</option>
+	<option value="2564">MAN SAROVAR SOCIETY</option>
+	<option value="2297">MANGAL PANDEY HALL BRTS</option>
+	<option value="2566">MANGAL PANDEY HALL GODADARA</option>
+	<option value="2007">MANIBA PARTY PLOT VIP ROAD</option>
+	<option value="2199">MANOJ SINGH ENGLISH ACADEMY</option>
+	<option value="1278">MARK POINT DINDOLI</option>
+	<option value="8137">MARUTI DHAM SOCIETY</option>
+	<option value="4889">MASMA</option>
+	<option value="4762">MASTANNAGAR</option>
+	<option value="2568">MATAWADI CHOWK</option>
+	<option value="2569">MAULANA AZAD ENGLISH SCHOOL</option>
+	<option value="4763">MEGNUS ALPINE ALTHAN CANAL ROAD</option>
+	<option value="2156">MELDI MATA TEMPLE</option>
+	<option value="2570">MILLENIUM PARK</option>
+	<option value="2262">MINI HIRA BAZAAR / MAANGADH CHOWK BRTS</option>
+	<option value="4764">MINI VIRPUR</option>
+	<option value="8087">MINI VIRPUR TEMPLE</option>
+	<option value="1982">MIRA NAGAR SOCIETY</option>
+	<option value="2571">MITHIKHADI WARD OFFICE</option>
+	<option value="2572">MODEL TOWN DUMBHAL</option>
+	<option value="2573">MODEL TOWN JUNCTION BRTS</option>
+	<option value="66">MORABHAGAL BRTS</option>
+	<option value="4765">MOTA VARACHHA FIRE STATION</option>
+	<option value="4766">MOTA VARACHHA LAKE</option>
+	<option value="4767">MOTA VARACHHA PRATHMIK SCHOOL</option>
+	<option value="4768">MOTA VARACHHA PUMPING STATION</option>
+	<option value="4769">MOTA VARACHHA WARD OFFICE</option>
+	<option value="2574">MOTI BAJAR DUMAS</option>
+	<option value="1096">MOTI TALKIES</option>
+	<option value="2719">MOTI VED</option>
+	<option value="4770">MOTI VED DARGAH</option>
+	<option value="2099">N C THAKKAR SCHOOL</option>
+	<option value="2576">NAGAR PRATHMIK SCHOOL ANJANA</option>
+	<option value="4262">NAGAR PRATHMIK SHALA KANSANAGAR KATARGAM</option>
+	<option value="2577">NAGESHWAR TEMPLE</option>
+	<option value="4771">NALANDA SCHOOL VESU ABHVA ROAD</option>
+	<option value="8101">NANA VARACHHA POLICE STATION BRTS</option>
+	<option value="2269">NANA VARACHHA VARI GRUH BRTS</option>
+	<option value="2578">NANDAALAY HAVELI</option>
+	<option value="2408">NANDANVAN ROW HOUSE</option>
+	<option value="2135">NANDGHAR ANGANVADI OLPAD</option>
+	<option value="2228">NANDINI APARTMENT</option>
+	<option value="2008">NANDINI FLAT VIP ROAD</option>
+	<option value="2140">NANDINI RESIDENCY</option>
+	<option value="2579">NANI BAHUCHARAJI TEMPLE</option>
+	<option value="2580">NANI BAJAR DUMAS</option>
+	<option value="4772">NANI VED</option>
+	<option value="2581">NANPURA POST OFFICE</option>
+	<option value="2582">NARAYAN INDUSTRIES LIMBAYAT</option>
+	<option value="1981">NARMAD CENTRAL LIBRARY</option>
+	<option value="4773">NATVAR NAGAR</option>
+	<option value="8173">NAVAPARA VARIAV</option>
+	<option value="30">NAVIN FLUORINE BRTS</option>
+	<option value="8108">NAVJIVAN CIRCLE UDHANA MAGDALLA ROAD</option>
+	<option value="2583">NAVSARI BAZAR</option>
+	<option value="61">NAVYUG COLLEGE BRTS</option>
+	<option value="1231">NEAR GANESH NAGAR</option>
+	<option value="2383">NEHRU BRIDGE</option>
+	<option value="1135">NEHRU NAGAR</option>
+	<option value="2585">NEMINATH NAGAR DUMBHAL</option>
+	<option value="2586">NEW CIVIL HOSPITAL</option>
+	<option value="6984">NEW ERA SCHOOL</option>
+	<option value="2587">NILGIRI CIRCLE</option>
+	<option value="6981">NILKAMAL SOCIETY</option>
+	<option value="2027">NILKANTH SOCIETY KAPODARA</option>
+	<option value="6987">NOORANI MASJID</option>
+	<option value="6986">NOORANI PARK SOCIETY</option>
+	<option value="1994">OFFIRA SHOPPING VIP ROAD</option>
+	<option value="4896">OLPAD BUS DEPOT</option>
+	<option value="7068">OLPAD COLLEGE</option>
+	<option value="2134">OLPAD COURT</option>
+	<option value="4892">OLPAD GIDC</option>
+	<option value="2588">OM COMPLEX</option>
+	<option value="2022">OM HERITAGE DABHOLI</option>
+	<option value="4774">OMKAR ROW HOUSE</option>
+	<option value="2589">ONGC COLONY BRTS</option>
+	<option value="4886">ONGC ROAD JUNCTION</option>
+	<option value="1921">OPERA CITY</option>
+	<option value="2100">OXFORD SCHOOL</option>
+	<option value="2147">PAL GAAM</option>
+	<option value="4232">PAL HAVELI/BHULKA VIHAR SCHOOL BRTS</option>
+	<option value="5931">PAL PATIYA</option>
+	<option value="54">PAL R.T.O. BRTS</option>
+	<option value="2203">PALANPUR DEPOT</option>
+	<option value="4775">PALANPUR GAM</option>
+	<option value="4776">PALANPUR GAM TALAV</option>
+	<option value="2361">PALANPUR JAKATNAKA</option>
+	<option value="2034">PALANPUR JAKATNAKA CIRCLE</option>
+	<option value="64">PALANPUR PATIYA BRTS</option>
+	<option value="2033">PALANPUR PATIYA CIRCLE</option>
+	<option value="4777">PALANPUR SHALA</option>
+	<option value="5946">PALIWAL BRTS</option>
+	<option value="5963">PALSANA CHOKDI</option>
+	<option value="89">PANAS GAM JUNCTION BRTS</option>
+	<option value="1127">PANCHDEV SOCIETY</option>
+	<option value="42">PANCHMUKHI HANUMAN MANDIR BRTS</option>
+	<option value="2590">PANCHSHEEL NAGAR ANJANA</option>
+	<option value="2153">PANCHTATVA</option>
+	<option value="4882">PANCHVATI GARDEN ICCHAPOR</option>
+	<option value="2591">PANDESARA</option>
+	<option value="2592">PANDESARA INDUSTRIAL ESTATE</option>
+	<option value="5955">PANDESARA INDUSTRIES ESTATE</option>
+	<option value="2170">PANDESARA WATER DISTRIBUTION</option>
+	<option value="22">PANDIT DINDAYAL UPADHYAY BHAVAN, SATYANAGAR BRTS</option>
+	<option value="2593">PANDIT SHYAMJI KRISHNA VERMA BRIDGE BRTS</option>
+	<option value="2594">PANDOL POLICE CHOWKI</option>
+	<option value="4857">PANJARA POL GHOD DOD ROAD</option>
+	<option value="4861">PARAM ROW HOUSE</option>
+	<option value="5965">PARDI KANDE</option>
+	<option value="8145">PARIN GEMS</option>
+	<option value="2595">PARLE POINT</option>
+	<option value="4830">PARLE POINT GHOD DOD ROAD</option>
+	<option value="5916">PARSIWAD</option>
+	<option value="2596">PARVAT GAM</option>
+	<option value="2293">PARVAT GAM BRTS</option>
+	<option value="2597">PARVAT PATIYA JUNCTION BRTS</option>
+	<option value="2101">PASODARA GAAM</option>
+	<option value="2280">PASODARA GAM CHAR RASTA BRTS</option>
+	<option value="5924">PATEL NAGAR</option>
+	<option value="2409">PATEL NAGAR SOCIETY</option>
+	<option value="1219">PATEL PARK</option>
+	<option value="4778">PATEL PRAGATI MANDAL</option>
+	<option value="2599">PATRAKAR COLONY BRTS</option>
+	<option value="6985">PIPARDIWALA SCHOOL</option>
+	<option value="2600">PIPLOD BRTS</option>
+	<option value="8149">PIPLOD MAIN ROAD</option>
+	<option value="2601">PIRCHHADI</option>
+	<option value="2406">PISAD PUMPING STATION</option>
+	<option value="2602">PIYUSH COMPLEX</option>
+	<option value="2006">PODDAR ARCADE VARACHHA</option>
+	<option value="2603">POLICE COMMISSIONER OFFICE</option>
+	<option value="1978">POLICE LINES</option>
+	<option value="2158">PP SAVANI SANKUL</option>
+	<option value="2604">PRAJAPITA BRAHMAKUMARI MARG / CIVIL ROAD, MAJURAT FIRE STATION BRTS</option>
+	<option value="4780">PRAMUKH SWAMY CHOWK</option>
+	<option value="2011">PRAMUKH YOG APARTMENT DABHOLI</option>
+	<option value="4781">PRAMUKHCHHAYA</option>
+	<option value="2044">PRANAM RESIDENCY</option>
+	<option value="2166">PRANAM RESIDENCY 1</option>
+	<option value="3230">PRAYOSHA PRIME</option>
+	<option value="4854">PREM PRAKRUTI CHOWK CITY LIGHT ROAD</option>
+	<option value="2105">PREMANAND GARDEN SMC</option>
+	<option value="4864">PRIME ARCADE</option>
+	<option value="6982">PRIME ARCADE</option>
+	<option value="2605">PRIYANKA GOLD SOCIETY</option>
+	<option value="1246">PRIYANKA GREEN PARK</option>
+	<option value="2606">PRIYANKA GREEN PARK SOCIETY</option>
+	<option value="2056">PRIYANKA METRO CITY</option>
+	<option value="2607">PRIYANKA TOWNSHIP</option>
+	<option value="2608">PUMPING CHAR RASTA</option>
+	<option value="2609">PUNA CANAL BRTS</option>
+	<option value="105">PUNA SAROLI JUNCTION BRTS</option>
+	<option value="2612">PUNA TALAV</option>
+	<option value="104">PUNAGAM JUNCTION BRTS</option>
+	<option value="2613">PUNAGAM SARKARI MANDLI</option>
+	<option value="2271">PURUSHOTTAM NAGAR BRTS</option>
+	<option value="1141">PUSHPAK NAGAR SOCIETY</option>
+	<option value="2131">R V PATEL VIDHYALAY</option>
+	<option value="8132">RACHANA CIRCLE</option>
+	<option value="2614">RACHANA SOCIETY</option>
+	<option value="2615">RADADYA VIDHYALAYA</option>
+	<option value="4782">RADHE PARK</option>
+	<option value="1117">RADHE SHYAM SOCIETY GODADARA</option>
+	<option value="8172">RADHIKA POINT</option>
+	<option value="4783">RAGHUKUL RESIDENCY</option>
+	<option value="2617">RAGHUVIR BUSINESS HUB</option>
+	<option value="2275">RAGHUVIR ROW HOUSE, VALAK PATIYA BRTS</option>
+	<option value="2618">RAILWAY PARCEL OFFICE</option>
+	<option value="2375">RAILWAY STATION TER</option>
+	<option value="2204">RAJ CORNER</option>
+	<option value="2060">RAJ EMPIRE GODADARA</option>
+	<option value="2002">RAJ EMPIRE MULTIPLEX</option>
+	<option value="8090">RAJ HARMONY</option>
+	<option value="1945">RAJ LAXMI HEIGHTS</option>
+	<option value="4245">RAJ WORLD</option>
+	<option value="4244">RAJHANS APPLE</option>
+	<option value="4784">RAJHANS TOWER</option>
+	<option value="8165">RAM NAGAR</option>
+	<option value="2622">RAM NAGAR GODADARA</option>
+	<option value="2063">RAMESHWAR NAGAR</option>
+	<option value="65">RAMNAGAR BRTS</option>
+	<option value="2016">RAMNAGAR SOCIETY</option>
+	<option value="2067">RAMVATIKA SOCIETY</option>
+	<option value="1974">RANDER FIRE STATION</option>
+	<option value="5978">RANDER GAAM</option>
+	<option value="2136">RANDER ISLAM GYMKHANA</option>
+	<option value="8161">RANDER NAHER COLONY</option>
+	<option value="4785">RANGEELA PARK GHOD DOD ROAD</option>
+	<option value="2070">RANGOLI CHOKADI</option>
+	<option value="2028">RASHMI KIRAN APARTMENT</option>
+	<option value="4786">RATNA JYOTI TOWER VESU ABHVA ROAD</option>
+	<option value="1998">RATNA JYOTI TOWER VIP ROAD</option>
+	<option value="2623">RENUKA BHAVAN</option>
+	<option value="2624">RESHMA NAGAR</option>
+	<option value="4258">RIVANTA RIVER VIEW</option>
+	<option value="2141">RK FARM SHEKHPUR</option>
+	<option value="4850">ROAD NO. 3 UDHANA UDHYOG NAGAR CHAR RASTA</option>
+	<option value="8159">ROYAL HERITAGE</option>
+	<option value="8086">ROYAL PLATINUM</option>
+	<option value="1918">ROYAL SQUARE</option>
+	<option value="2219">ROYAL TOWNSHIP</option>
+	<option value="2180">RUKSHMANI PARK SOCIETY</option>
+	<option value="2625">RUNDHNATH MAHADEV MANDIR BRTS</option>
+	<option value="4787">RUPALI CANAL JUNCTION BHATAR ROAD</option>
+	<option value="92">RUPALI JUNCTION BRTS</option>
+	<option value="2626">RUSTAMPURA SWIMMING POOL</option>
+	<option value="2627">RUWAALA TEKRA</option>
+	<option value="2073">S K PARK SOCIETY KATHODARA</option>
+	<option value="4829">S M C HEALTH CLUB</option>
+	<option value="4831">S.D PLANETS SCHOOL</option>
+	<option value="4788">S.D. JAIN SCHOOL BRTS</option>
+	<option value="2402">S.M.C. BOTANICAL GARDEN</option>
+	<option value="1068">S.M.C. CENTRAL ZONE OFFICE</option>
+	<option value="2267">S.M.C. KAPODARA WARD OFFICE BRTS</option>
+	<option value="74">S.M.C. NORTH ZONE (KATARGAM) OFFICE BRTS</option>
+	<option value="2394">S.M.C. PERFORMING ART CENTRE</option>
+	<option value="2628">S.M.C. SANKUL</option>
+	<option value="2389">S.M.C. SPORTS COMPLEX</option>
+	<option value="2260">S.M.C. VARACHHA HEALTH CENTRE, PODAR ARCADE BRTS</option>
+	<option value="2666">S.M.C. WATER DEPARTMENT</option>
+	<option value="62">S.M.C. WEST ZONE OFFICE BRTS</option>
+	<option value="70">S.M.V.S. SWAMINARAYAN TEMPLE / GOVINDAJI HALL, DABHOLI BRTS</option>
+	<option value="1055">S.M.V.S. SWAMINARAYAN TEMPLE BRTS</option>
+	<option value="2629">S.V.N.I.T. BRTS</option>
+	<option value="5939">SABAR GAAM</option>
+	<option value="1188">SABJI MARKET</option>
+	<option value="4254">SACHIN CHAR RASTA</option>
+	<option value="5961">SACHIN GIDC JUNCTION</option>
+	<option value="37">SACHIN GIDC JUNCTION BRTS</option>
+	<option value="1056">SACHIN GIDC NAKA</option>
+	<option value="2197">SACHIN INFRA</option>
+	<option value="4255">SACHIN PALSANA ROAD</option>
+	<option value="5966">SACHIN PRIMARY SCHOOL</option>
+	<option value="1934">SACHIN RAILWAY STATION</option>
+	<option value="2195">SACHIN RD NO 2 APPROACH</option>
+	<option value="2198">SACHIN RD NO 82 APPROACH</option>
+	<option value="2075">SAFAL BUNGALOWS</option>
+	<option value="8143">SAGAR INDUSTRIAL ESTATE</option>
+	<option value="4789">SAGAR SOCIETY</option>
+	<option value="2273">SAGWADI BRTS</option>
+	<option value="2630">SAHAJANAND SOCIETY LIMBAYAT</option>
+	<option value="2631">SAHARA DARWAJA</option>
+	<option value="2019">SAHJANAND ESTATE DABHOLI</option>
+	<option value="8133">SAHJANAND HILLS</option>
+	<option value="1214">SAHYOG SOCIETY</option>
+	<option value="4905">SAHYOG SOCIETY SAYAN</option>
+	<option value="2632">SAI DARSHAN MARKET</option>
+	<option value="2633">SAI DARSHAN SOCIETY GODADARA</option>
+	<option value="2207">SAI MILAAP</option>
+	<option value="5962">SAI PETROLEUM</option>
+	<option value="2079">SAI PUJAN RESIDENCY</option>
+	<option value="2634">SAI SHRUSTI RESIDENCY GODADARA</option>
+	<option value="8082">SAI SQUARE</option>
+	<option value="5975">SAINATH SOCIETY KANAKPUR</option>
+	<option value="1979">SAINATH SOCIETY KAPODARA</option>
+	<option value="4790">SAITIRTH</option>
+	<option value="1103">SAIYADPURA POLICE CHOWKI</option>
+	<option value="2636">SAIYEDPURA VEGETABLE MARKET</option>
+	<option value="5969">SAMARPAN HOSPITAL</option>
+	<option value="4791">SAMATA NAGAR</option>
+	<option value="8076">SAMDRASTI PARK</option>
+	<option value="2637">SAMRAT INDUSTRIES 1 GODADARA</option>
+	<option value="2411">SAMRAT VIDHYALAYA BRTS</option>
+	<option value="4792">SANDYA VADAN SOCIETY</option>
+	<option value="6980">SANGEET SARITA</option>
+	<option value="2212">SANGINI SKIES</option>
+	<option value="2216">SANIYA HEMAD</option>
+	<option value="8100">SANJAY NAGAR CIRCLE</option>
+	<option value="2639">SANJAY NAGAR LIMBAYAT</option>
+	<option value="1971">SANJAY SOCIETY</option>
+	<option value="55">SANJEEV KUMAR AUDITORIUM BRTS</option>
+	<option value="1988">SANJIVANI CIRCLE BHATAR</option>
+	<option value="8103">SANKALP RESIDENCY</option>
+	<option value="4846">SANSKAR BHAVAN</option>
+	<option value="4900">SANSKAR INDUSTRIAL ESTATE</option>
+	<option value="2083">SANSKRUT RESIDENCY</option>
+	<option value="2641">SANT JALARAM SOCIETY</option>
+	<option value="1922">SANTOSA HEIGHTS</option>
+	<option value="2642">SANTOSH NAGAR</option>
+	<option value="6989">SANTRO BAKERY</option>
+	<option value="5970">SARASWATI HINDI VIDYA MANDIR</option>
+	<option value="8148">SARASWATI NAGAR</option>
+	<option value="2018">SARDAR CHOWK</option>
+	<option value="2643">SARDAR COMPLEX</option>
+	<option value="2020">SARDAR PATEL SOCIETY DABHOLI</option>
+	<option value="2017">SARDAR SMRUTI BHAVAN</option>
+	<option value="2645">SARGAM SHOPPING CENTRE</option>
+	<option value="1217">SARITA SOCIETY</option>
+	<option value="2013">SARJAN AVENUE APARTMENT</option>
+	<option value="4914">SAROLI BRTS</option>
+	<option value="2290">SAROLI GAAM</option>
+	<option value="4793">SARSANA GAM</option>
+	<option value="4794">SARTHANA NAKA</option>
+	<option value="2646">SARTHANA NATURE PARK BRTS</option>
+	<option value="2202">SARVODAY VIDHYALAY SEGVACHHAMA</option>
+	<option value="1953">SASHANK PARK SOCIETY</option>
+	<option value="2223">SATVA HOSPITAL</option>
+	<option value="2087">SATYAM RESIDENCY PUNA GAAM</option>
+	<option value="4231">SAURABH POLICE CHOWKI</option>
+	<option value="1933">SAURABH SOCIETY</option>
+	<option value="2091">SAURASHTRA GREEN CITY</option>
+	<option value="4795">SAVALIYA CIRCLE</option>
+	<option value="4841">SAVJIKORAT BRIDGE</option>
+	<option value="4893">SAYAN FAATA</option>
+	<option value="4907">SAYAN RAILWAY STATION</option>
+	<option value="4853">SCIENCE CENTRE CITY LIGHT ROAD</option>
+	<option value="8112">SDJ SCHOOL VESU</option>
+	<option value="2226">SECOND VIP ROAD JUNCTION</option>
+	<option value="8136">SEVEN STAR RESIDENCY</option>
+	<option value="4796">SEVENTH DAY SCHOOL</option>
+	<option value="4797">SEWAGE PUMPING MOTA VARACHHA</option>
+	<option value="2647">SHAARDA VIDHYA MANDIR</option>
+	<option value="4798">SHAHI MASJID ADAJAN GAM</option>
+	<option value="8135">SHAHJANAND APARTMENT</option>
+	<option value="8152">SHAKTI NIKETAN MANDIR</option>
+	<option value="8079">SHALIDHADRA RESIDENCY</option>
+	<option value="2648">SHAMALDHAM ROW HOUSE GODADARA</option>
+	<option value="60">SHANKHESHWAR CHOWK BRTS</option>
+	<option value="2649">SHANTANU RESIDENCY GODADARA</option>
+	<option value="2392">SHANTI KUNJ</option>
+	<option value="2146">SHANTI NAGAR ROW HOUSE</option>
+	<option value="8085">SHANTVAN ROW HOUSE</option>
+	<option value="2650">SHARDA SCHOOL</option>
+	<option value="8116">SHARDA VIDHYA MANDIR</option>
+	<option value="4799">SHAYONA PARK ALTHAN ROAD</option>
+	<option value="2143">SHEKHPUR GAAM</option>
+	<option value="8124">SHIV BHAKTI APARTMENT</option>
+	<option value="2094">SHIV DHARA HEIGHTS</option>
+	<option value="2098">SHIV INDUSTRIES</option>
+	<option value="2096">SHIV PARK RESIDENCY</option>
+	<option value="2651">SHIVAJI NAGAR</option>
+	<option value="2723">SHIVALIK SQUARE</option>
+	<option value="5968">SHIVDARSHAN COMPLEX SACHIN</option>
+	<option value="1970">SHREE DARSHAN SOCIETY</option>
+	<option value="2093">SHREE GYANJYOT VIDHYALAY</option>
+	<option value="4248">SHREE JALARAM INTERNATIONAL SCHOOL</option>
+	<option value="2152">SHREE KARAMSHIRAM BAPA ASHRAM</option>
+	<option value="1997">SHREE KUNJ SOCIETY</option>
+	<option value="2652">SHREE NATHJI SOCIETY GODADARA</option>
+	<option value="71">SHREE SAHJANAND CHOWK / DABHOLI CHAR RASTA BRTS</option>
+	<option value="2654">SHREE SANT KHETESHWAR CIRCLE / PARVAT PATIYA BRTS</option>
+	<option value="4800">SHREE SWAMI DAYANAND SARASWATI BRIDGE</option>
+	<option value="2656">SHREE SWAMINARAYAN MANDIR</option>
+	<option value="1057">SHREE SWAMINARAYAN MANDIR RUSTOM BAUG / ASHWINIKUMAR, FULPADA BRTS</option>
+	<option value="4801">SHREEJI ROW HOUSE CHAAPRA BHAATHA</option>
+	<option value="2657">SHREENATH RESIDENCY</option>
+	<option value="1975">SHREENATHAJI HAVELI RAMNAGAR</option>
+	<option value="1976">SHRI RAVISHANKAR MAHARAJ SCHOOL</option>
+	<option value="1999">SHRI SARJAN PALACE VIP ROAD</option>
+	<option value="4240">SHRI SHAMLA SOCIETY</option>
+	<option value="1194">SHRIJI NAGARI</option>
+	<option value="2264">SHRIMAD VALLABHACHARYA CHOWK / HIRABAUG BRTS</option>
+	<option value="4852">SHRUNGAR SOCIETY CITY LIGHT ROAD</option>
+	<option value="2106">SHUKAN SKY APARTMENT</option>
+	<option value="2086">SHUKAN VALLEY RESIDENCY</option>
+	<option value="2025">SHYAM DHAM CHOWK SIMADA</option>
+	<option value="2658">SHYAM DHAM SOCIETY GODADARA</option>
+	<option value="45">SHYAM MANDIR BRTS</option>
+	<option value="2281">SHYAM NAGAR BRTS</option>
+	<option value="2229">SHYAM PALACE</option>
+	<option value="2164">SHYAM ROW HOUSE</option>
+	<option value="2082">SHYAM SHRUSTI APARTMENT</option>
+	<option value="2026">SHYAM SUNDAR APARTMENT</option>
+	<option value="5948">SHYAMDHAM MANDIR BRTS</option>
+	<option value="2659">SICKON CIRCLE</option>
+	<option value="4855">SIDDHARTH COM. JUNCTION CITY LIGHT ROAD</option>
+	<option value="5967">SIDDHI VINAYAK RESIDENCY SACHIN</option>
+	<option value="2660">SIDDHI VINAYAK TEMPLE</option>
+	<option value="8153">SIDDIQUI SQUARE</option>
+	<option value="1146">SIKON CIRCLE</option>
+	<option value="2661">SILICON FLATS PARVAT</option>
+	<option value="4802">SILVER PALACE</option>
+	<option value="2012">SILVER STONE HOMES DABHOLI</option>
+	<option value="2021">SILVERSTONE RESIDENCY</option>
+	<option value="4804">SIMADA GAM</option>
+	<option value="109">SIMADA JUNCTION BRTS</option>
+	<option value="108">SIMADA NAHER JUNCTION BRTS</option>
+	<option value="4230">SIMADA NAKA</option>
+	<option value="4805">SIMADA VARIGRUH</option>
+	<option value="1112">SINGANPORE CHAR RASTA</option>
+	<option value="1948">SINGANPORE CIRCLE</option>
+	<option value="8117">SINGANPORE S.T.P</option>
+	<option value="1947">SINGANPORE VEGETABLE MARKET</option>
+	<option value="2663">SITA NAGAR</option>
+	<option value="4806">SITA RAM CHOWK</option>
+	<option value="2662">SITANAGAR BRTS</option>
+	<option value="2029">SKY LARK COMPLEX KAPODARA</option>
+	<option value="1920">SLOK RESIDENCY</option>
+	<option value="2081">SMC COMMUNITY HALL KHATODARA</option>
+	<option value="8098">SMC COMMUNITY HALL PANDESARA</option>
+	<option value="8125">SMC COMMUNITY HALL UDHANA</option>
+	<option value="2077">SMC GARDEN GODADARA</option>
+	<option value="1946">SMC HALL SINGANPORE</option>
+	<option value="1969">SMC LIBRARY JAHANGIRPURA</option>
+	<option value="8146">SMC NIGHT FOOD BAZAAR</option>
+	<option value="1930">SMC PARTY PLOT PAL</option>
+	<option value="8120">SMC SOUTH ZONE OFFICE</option>
+	<option value="8089">SMC STAFF QUARTERS</option>
+	<option value="2184">SMC WARD OFFICE</option>
+	<option value="8099">SMC WARD OFFICE LIMBAYAT</option>
+	<option value="4807">SMC WATER WORKS KOSAD</option>
+	<option value="2667">SMIMER HOSPITAL BRT</option>
+	<option value="1983">SNEH NAGAR SOCIETY</option>
+	<option value="4808">SNS SQUARE</option>
+	<option value="4809">SOHAM CIRCLE</option>
+	<option value="53">SOMESHWAR JUNCTION BRTS</option>
+	<option value="8130">SOMESHWAR NAGAR 1</option>
+	<option value="4810">SOMESHWARA ENCLAVE VESU ABHVA ROAD</option>
+	<option value="8107">SOMNATH SOCIETY UDHANA MAGDALLA ROAD</option>
+	<option value="2668">SOSYO CIRCLE</option>
+	<option value="8106">SOSYO CIRCLE UDHANA MAGDALLA ROAD</option>
+	<option value="8073">SOUTH GUJARAT MEDICAL COLLEGE</option>
+	<option value="4811">SPIPA (SURAT)</option>
+	<option value="8141">SREEPAL NAGAR SOCIETY</option>
+	<option value="2388">SRI RAM PETROL PUMP</option>
+	<option value="2076">SRIDHAR SOCIETY</option>
+	<option value="4812">ST.XAVIER&#39;S HIGH SCHOOL GHOD DOD ROAD</option>
+	<option value="1928">STAR BAZAAR</option>
+	<option value="1097">STATION RD APPROACH</option>
+	<option value="4249">STUTI HIGHLAND</option>
+	<option value="2148">STUTI RESIDENCY</option>
+	<option value="2669">SUB JAIL</option>
+	<option value="8162">SUBHASH GARDEN</option>
+	<option value="4236">Suda Sanskruti Residency</option>
+	<option value="4813">SUDAMA CHOWK</option>
+	<option value="2165">SUKH SAGAR</option>
+	<option value="2074">SUKHI NAGAR</option>
+	<option value="2670">SULTANABAD</option>
+	<option value="2671">SULTANABAD AAMBAWADI</option>
+	<option value="8115">SUMAN DARSHAN</option>
+	<option value="8134">SUMAN JYOT EWS</option>
+	<option value="3232">SUMAN KESHAV AWAS</option>
+	<option value="2403">SUMAN NURSERY</option>
+	<option value="2672">SUMUL DAIRY</option>
+	<option value="8163">SUNDARVAN ROW HOUSE</option>
+	<option value="8114">SUNRISE VIDYALAY DINDOLI</option>
+	<option value="8111">SURAJ MANDAL JAIN TEMPLE</option>
+	<option value="2673">SURAT AIRPORT</option>
+	<option value="2230">SURAT DIAMOND BOURSE</option>
+	<option value="2674">SURAT DISTRICT COURT</option>
+	<option value="2069">SURATi iLAB</option>
+	<option value="2104">SURYA DARSHAN SOCIETY</option>
+	<option value="2221">SURYA LANDMARK</option>
+	<option value="4247">SURYAM SQUARE</option>
+	<option value="2675">SUSHRUT HOSPITAL</option>
+	<option value="111">SWAGAT SOCIETY BRTS</option>
+	<option value="4814">SWAMI NARAYAN GURUKUL</option>
+	<option value="4815">SWAMI NARAYAN MANDIR (BAPS)</option>
+	<option value="2274">SWAMI NARAYAN MISSION - VALAK GAM BRTS</option>
+	<option value="2386">SWAMINARAYAN CHOWK BRTS</option>
+	<option value="4242">SWAMINARAYAN NAGAR SOCIETY</option>
+	<option value="2678">SWAPNA SRUSTI RESIDENCY</option>
+	<option value="2023">SWARAJ HEIGHTS DABHOLI</option>
+	<option value="2065">SWAYAM RESIDENCY</option>
+	<option value="2062">SWEET HOME SOCIETY</option>
+	<option value="2679">SYMGA SCHOOL</option>
+	<option value="63">TADWADI BRTS</option>
+	<option value="8171">TADWADI CHHAPRABHATHA</option>
+	<option value="5936">TALAD</option>
+	<option value="4816">TALAWDI SAGRAMPURA</option>
+	<option value="8088">TAPASH NAGAR</option>
+	<option value="2150">TAPI ARCADE</option>
+	<option value="2680">TAPI SOCIETY</option>
+	<option value="2681">TAPOVAN CIRCLE</option>
+	<option value="8169">TEKRAWALA SCHOOL</option>
+	<option value="2682">TEXTILE MARKET</option>
+	<option value="2683">THAKORDWAR SOCIETY</option>
+	<option value="1095">TOWER/BHAGAL</option>
+	<option value="4817">TRIBHUVAN COMPLEX GHOD DOD ROAD</option>
+	<option value="8118">TRILOK SOCIETY</option>
+	<option value="1985">TRIMURTI APARTMENT</option>
+	<option value="1929">TRINITY BUSINESS PARK</option>
+	<option value="38">TULSIDHAM BRTS</option>
+	<option value="25">UDHANA ACADEMY COLLEGE BRTS</option>
+	<option value="2684">UDHANA DARWAJA</option>
+	<option value="2685">UDHANA DARWAJA BRTS</option>
+	<option value="2686">UDHANA GIDC MAHATMA GANDHI ROAD</option>
+	<option value="2687">UDHANA GIDC ROAD NO.3</option>
+	<option value="5944">UDHANA GSRTC BRTS</option>
+	<option value="4851">UDHANA RAILWAY STATION</option>
+	<option value="1201">UDHANA ROAD NO.6 JUNCTION</option>
+	<option value="23">UDHANA TEEN RASTA BRTS</option>
+	<option value="2689">UDHANA UDHYOG NAGAR</option>
+	<option value="1162">UDHNA G.I.D.C.</option>
+	<option value="2401">UGAT S.M.C. WATER TREATMENT PLANT</option>
+	<option value="2059">UJWALESHWAR MAHADEV TEMPLE</option>
+	<option value="4818">UMA BHAVAN BHATAR ROAD</option>
+	<option value="2690">UMABHAVAN</option>
+	<option value="5922">UMIYA CHOWK</option>
+	<option value="2691">UMIYA NAGAR</option>
+	<option value="2692">UMIYA NAGAR INDUSTRIAL ESTATE</option>
+	<option value="8177">UMRA FOOD PARK</option>
+	<option value="8178">UMRA GAAM</option>
+	<option value="8179">UMRA HEALTH CENTRE</option>
+	<option value="2058">UMRA NAKA</option>
+	<option value="2693">UNIQUE HOSPITAL JUNCTION BRTS</option>
+	<option value="2694">UNN</option>
+	<option value="35">UNN CHAR RASTA BRTS</option>
+	<option value="2695">UNN GAM</option>
+	<option value="2696">UNN INDUSTRIAL ESTATE BRTS</option>
+	<option value="2697">UNN NAKA BRTS</option>
+	<option value="4819">UTRAN LAKE GARDEN</option>
+	<option value="4820">UTRAN POWER HOUSE</option>
+	<option value="2266">UTRAN R.O.B. BRIDGE BRTS</option>
+	<option value="7070">UTRAN RAILWAY STATION</option>
+	<option value="2054">V T NAGAR ROAD</option>
+	<option value="2698">V.N GODHANI SCHOOL</option>
+	<option value="52">V.N.S.G. UNIVERSITY BRTS</option>
+	<option value="51">V.N.S.G.U. CONVENTION HALL BRTS</option>
+	<option value="2699">V.T CHOKSI COLLEGE</option>
+	<option value="28">V.T. PODAR COLLEGE CAMPUS, PANDESARA BRTS</option>
+	<option value="2700">VAADINATH CHOWK</option>
+	<option value="4260">VADLA CIRCLE</option>
+	<option value="8128">VADOD GAAM</option>
+	<option value="2701">VADOD GAM</option>
+	<option value="2182">VAGESHWARI TEMPLE</option>
+	<option value="1925">VAIBHAV CHAMBER</option>
+	<option value="1952">VAISHNODEVI HEIGHTS</option>
+	<option value="1965">VAISHNODEVI SKY</option>
+	<option value="1964">VAISHNODEVI TOWNSHIP</option>
+	<option value="14">VALLABHACHARYA ROAD BRTS</option>
+	<option value="2391">VAN BHAVAN</option>
+	<option value="2702">VANITA VISHRAM</option>
+	<option value="5953">VANITA VISHRAM GROUND</option>
+	<option value="106">VANMALI JUNCTION (WEST) BRTS</option>
+	<option value="107">VANMALI JUNCTION BRTS</option>
+	<option value="5942">VARELI GAAM</option>
+	<option value="8072">VARIAV GAAM</option>
+	<option value="8174">VARIAV GAAM APPROACH</option>
+	<option value="2704">VARIYALI BAZAR POLICE CHOWKI</option>
+	<option value="8095">VARIYAV JAKATNAKA</option>
+	<option value="2705">VASANT BIKHA NI WADI</option>
+	<option value="2000">VASTUGRAM VIP ROAD</option>
+	<option value="1950">VASU PUJYA APARTMENT</option>
+	<option value="5938">VASVARI GAAM</option>
+	<option value="5937">VASVARI LAKE</option>
+	<option value="8110">VATSALYA BUNGALOWS</option>
+	<option value="4821">VATSALYA VILLA VARIYAV</option>
+	<option value="1104">VED DARWAJA</option>
+	<option value="5932">VEDCHA PATIA</option>
+	<option value="2211">VEDCHHA FAATA</option>
+	<option value="8123">VEER SAVARKAR CIRCLE</option>
+	<option value="2162">VELANJA ABRAMA ROAD</option>
+	<option value="2053">VELANJA GAAM</option>
+	<option value="2179">VELANJA GAAM FAATA</option>
+	<option value="2139">VELANJA GAAM PANCHAYAT</option>
+	<option value="8144">VENUS ESTATE</option>
+	<option value="2154">VERONA RESIDENCY</option>
+	<option value="8113">VESU GAAM</option>
+	<option value="8168">VICHAR KRANTI CIRCLE</option>
+	<option value="2706">VICTORIA PALM</option>
+	<option value="2707">VIDHATA TOWNSHIP PARVAT</option>
+	<option value="5921">VIDHI BHAVAN</option>
+	<option value="2397">VIDHYAKUNJ</option>
+	<option value="4822">VIJAY VALLABH CHOWK</option>
+	<option value="2052">VINDESHWAR MAHADEV TEMPLE</option>
+	<option value="2169">VIP ROAD DEPOT</option>
+	<option value="1120">VISHAL NAGAR</option>
+	<option value="4824">VISHAL SOCIETY UDHANA MAGDALLA ROAD</option>
+	<option value="2709">VISHNU NAGAR</option>
+	<option value="102">VISHWAKARMA JUNCTION BRTS</option>
+	<option value="2288">VISHWAKARMA MANDIR BRTS</option>
+	<option value="4873">VITRAG CHEMICAL</option>
+	<option value="2410">VIVEKANAND COLLEGE</option>
+	<option value="1986">VIVEKANAND GARDEN</option>
+	<option value="1190">VIVEKANAND TOWNSHIP</option>
+	<option value="4825">VRAJ CHOWK</option>
+	<option value="4826">VRAJVILLA SOCIETY SHYAMNAGAR</option>
+	<option value="2137">VRUDHASHRAM BHATHA</option>
+	<option value="2710">VRUKSHLAXMI SOCIETY</option>
+	<option value="2400">VRUNDAVAN FLATS</option>
+	<option value="2214">VRUNDAVAN RESIDENCY SAROLI</option>
+	<option value="2193">VRUNDAVAN SOCIETY MOTA VARACHHA</option>
+	<option value="4827">VRUNDAVAN SOCIETY PUNA</option>
+	<option value="2711">WADI FALIYA</option>
+	<option value="5933">WEAL PARK INDUSTRIES</option>
+	<option value="8084">WESTERN CITY</option>
+	<option value="2145">WESTERN CITY APARTMENTS</option>
+	<option value="2712">&#39;Y&#39; JUNCTION DUMAS ROAD BRTS</option>
+	<option value="84">&#39;Y&#39; JUNCTION UDHANA MAGDALLA ROAD BRTS</option>
+	<option value="2050">YODI DARSHAN SOCIETY</option>
+	<option value="5964">YOGESHWAR PARK SACHIN</option>
+	<option value="2713">YOGI CHOWK</option>
+	<option value="110">YOGI NAGAR BRTS</option>
+	<option value="2048">YOGI NAGAR SOCIETY</option>
+
+</select>
+                                
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon primary">2</span>
+                                
+                                
+
+                                
+                                <select name="ctl00$ContentPlaceHolder1$ddlservicetype" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$ContentPlaceHolder1$ddlservicetype\&#39;,\&#39;\&#39;)&#39;, 0)" id="ContentPlaceHolder1_ddlservicetype" tabindex="2" class="form-control boxOriginLive1">
+	<option value="0">Please Select Service Type</option>
+	<option selected="selected" value="1">BRT</option>
+	<option value="2">City</option>
+
+</select>
+                                
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon primary">3</span>
+                                
+                                
+                               
+                                    <select name="ctl00$ContentPlaceHolder1$ddlroute" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$ContentPlaceHolder1$ddlroute\&#39;,\&#39;\&#39;)&#39;, 0)" id="ContentPlaceHolder1_ddlroute" tabindex="3" class="form-control boxOriginLive1">
+	<option selected="selected" value="0">Please Select Route</option>
+	<option value="3">(11) UDHANA-SACHIN G.I.D.C</option>
+	<option value="1005">(12) ONGC-SARTHANA NATURE PARK</option>
+	<option value="2150">(12B) BHAGWATI INDUSTRIAL ESTATE - KHARWAR NAGAR</option>
+	<option value="2146">(15AA) ALTHAN DEPOT TO ALTHAN DEPOT ( ALTICLOCKWISE </option>
+	<option value="2147">(15CC) ALTHAN DEPOT TO ALTHAN DEPOT ( CLOCK WISE )</option>
+	<option value="2048">(20) KHARWAR NAGAR-KOSAD</option>
+	<option value="2159">(23) KAMREJ TERMINAL - SACHIN RAILWAY STATION</option>
+
+</select>
+                                
+                            </div>
+                        </div>
+
+                        
+
+
+                        
+
+                        
+                    </div>
+                </div>
+
+                <div id="ContentPlaceHolder1_dvStepsInfo" class="col-lg-6 col-md-6  col-sm-6 col-xs-6  ">
+                    <h3 class="txt-f1">Follow the below steps to get the Estimated Time of Arrival for a Desired Stop:</h3>
+                    <ul class="contentblock">
+                        <li>Select the Stop</li>
+                        <li>Select the Service Type </li>
+                        <li>Select the  Route </li>
+                    </ul>
+
+
+                    
+
+                    <br />
+                    <div>
+                        <h4 class="ETA-heading  ">
+
+                          
+                             <span id="ContentPlaceHolder1_lblErrMsg" class="ETA-heading Errh5Style">! No data available.</span>
+
+                        </h4>
+                    </div>
+
+
+
+                </div>
+
+                
+
+                
+
+                
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="clearfix spacer"></div>
+        </div>
+        <div class="container-fluid  bdr1">
+            <div class="col-lg-6 col-md-6   col-xs-6 col-sm-6 access">
+                <div class="access-inner">
+                    <h4>How to access real-time Bus Information on your Mobile?</h4>
+                    <p>
+                        You can use your mobile phone or PDA to access the real-time information in a mobile-friendly format while you're on the go.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6   col-xs-6 col-sm-6 call-1">
+                <div class="call-1-inner">
+                    <h4>Toll Free Number: 1800-233-0233 </h4>
+                    <p>This is the phone number to call if you would like to hear arrival information spoken to you. The easiest way to use this system is to look up your stop number</p>
+                </div>
+            </div>
+            
+        </div>
+        <div class="clearfix spacer"></div>
+    </div>
+    <div class="container">
+
+        
+    </div>
+
+
+
+    <!-- Hide & Show Container -->
+    <div id="ContentPlaceHolder1_UpdatePanel5">
+	
+            <div id="ContentPlaceHolder1_dvNews">
+
+                <!-- Start Home Page Slider -->
+                <section id="home">
+                    <!-- Carousel -->
+
+                    <!-- /carousel -->
+                </section>
+                <!-- End Home Page Slider -->
+
+                <div id="ContentPlaceHolder1_Dv2"></div>
+                <div id="ContentPlaceHolder1_Dv1"></div>
+
+                <div class="clearfix"></div>
+
+            </div>
+        
+</div>
+
+    <!-- Go To Top Link -->
+    <div id="slidebar">
+        <div id="slidebar-form" style='display: none;' class=" panel panel-default">
+            <ul class="slide-icon">
+                
+                <li><a id="ContentPlaceHolder1_btnDownload" class="routeinfo" href="DownloadRouteInfo.aspx">Download Route Info</a></li>
+                <li class=""><a href="GetFare.aspx">Fares</a></li>
+                <li class=""><a href="#" data-toggle="modal" data-target="#bs-example-modal-lg-map">BRTS Routes</a></li>
+                <li class=""><a href="#" data-toggle="modal" data-target="#bs-example-modal-lg">Website Tour</a></li>
+                <li class=""><a href="Feedback.aspx">Feedback</a></li>
+                <li class=""><a href="complaint.aspx">Complaint</a></li>
+            </ul>
+        </div>
+        <a id="slidebar-tab" onclick="return(false);">Quick Links</a>
+    </div>
+    
+    <div class="backtotop-wrapper" style="display: none;">
+
+        <a href="#" class="back-to-top"><i class="fa fa-angle-up"></i></a>
+    </div>
+
+    
+    <div class="modal fade" id="bs-example-modal-lg" role="dialog" style="z-index: 9999999999999999999999">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class=" ">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel"><span class="glyphicon glyphicon-globe"></span>&nbsp;&nbsp;Website Tour</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
+                            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                            <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                            <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+                        </ol>
+
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner">
+                            <div class="item active">
+                                <img src="bootstrap/img/plan1.jpg" />
+                                <div class="carousel-caption">
+                                    Plan Your Trip
+                                </div>
+                            </div>
+                            <div class="item">
+                                <img src="bootstrap/img/Live1.jpg" alt="...">
+                                <div class="carousel-caption">
+                                    Live Bus Info
+                                </div>
+                            </div>
+                            <div class="item">
+                                <img src="bootstrap/img/tt1.jpg" alt="...">
+                                <div class="carousel-caption">
+                                    Time Table
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Left and right controls -->
+                        <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                        <!-- Controls -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="modal fade" id="bs-example-modal-lg-map" role="dialog" style="z-index: 9999999999999999999999">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class=" ">&times;</span></button>
+                    <h4 class="modal-title" id="H1"><span class="glyphicon glyphicon-map-marker"></span>&nbsp;&nbsp;BRTS Routes</h4>
+                </div>
+                <div class="modal-body" style="overflow-y: auto; height: 430px;">
+                    <div id="Div2" class="carousel slide" data-ride="carousel">
+                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators">
+                                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                                <li data-target="#myCarousel" data-slide-to="1"></li>
+
+                            </ol>
+
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner">
+                                <div class="item active">
+                                    <img src="bootstrap/img/BRTSphase01_1_big.jpg" class="img-responsive" alt="BRTS MAP - 1">
+                                </div>
+
+                                <div class="item">
+                                    <img src="bootstrap/img/BRTSphase01_2_big.jpg" class="img-responsive" alt="BRTS MAP - 2">
+                                </div>
+
+                            </div>
+
+                            <!-- Left and right controls -->
+                            <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    
+
+
+
+
+        </div>
+        <!-- Start Footer Section -->
+        <footer id="Stickyfooter">
+            <div class="container">
+                <div class="row footer-widgets">
+
+                    <!-- Start Contact Widget -->
+                    <div class="col-md-4 col-xs-12">
+                        <div class="footer-widget contact-widget">
+                            <h4><span>SITILINK AN UNDERTAKING OF</span> </h4>
+                            <img src="bootstrap/img/footerlogo.png" alt="" />
+
+                            
+                            <ul class="address">
+
+                                <li><span>Toll Free Number :</span><a href="tel:18002330233"> 1800-233-0233</a></li>
+                                
+                                <li><span>Phone Number :</span><a href="tel:+91-261-2300500"> +91-261-2300500</a> </li>
+                                                                    
+                            </ul>
+                        </div>
+                        <div class="col-lg-8 col-md-7 col-sm-7 col-xs-12 visitor-count mar-t15">
+                            <div>
+                                Visitor Count : 
+                             <span id="visitcount">6912201</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- .col-md-3 -->
+                    <!-- End Contact Widget -->
+
+                    <!-- Website Policy / Quick Links -->
+                    <div class="">
+                        <div class="col-md-2 col-xs-12">
+                            <div class="footer-widget social-widget">
+                                <h5 style="margin-left: 0px; color: #FFFFFF">Important Links</h5>
+                                <ul class="footerList">
+                                    <li><a href="PlanYourTrip.aspx">Home</a></li>
+                                    
+                                    <li><a onclick="ViewPakage()" href="LiveBusInfo.aspx">Live Bus Info</a></li>
+                                    <li><a href="TimeTable.aspx">Time Table</a></li>
+                                    <li><a href="download_sitilink_mobile_app.aspx">Our Mobile App</a></li>
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-xs-12">
+                            <div class="footer-widget mail-subscribe-widget">
+                                <h5 style="margin-left: 0px; color: #FFFFFF">ABOUT WEBSITE</h5>
+                                <ul class="footerList">
+                                    <li><a href="AboutUs.aspx">About Us</a></li>
+
+                                    <li><a href="CopyrightStatement.aspx">Copyright Statement</a></li>
+                                    <li><a href="Disclaimer.aspx">Disclaimer</a></li>
+                                    <li><a href="PrivacyPolicy.aspx">Privacy Policy</a></li>
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-xs-12">
+                            <div class="footer-widget mail-subscribe-widget">
+                                <h5 style="margin-left: 0px; color: #FFFFFF">Info</h5>
+                                <ul class="footerList">
+
+
+                                    <li><a href="GetFare.aspx">Fares</a></li>
+                                    <li><a href="gallery.aspx">Gallery</a></li>
+                                    <li><a href="News.aspx">News</a></li>
+                                    
+                                    <li><a id="A1" href="javascript:__doPostBack(&#39;ctl00$A1&#39;,&#39;&#39;)">Download Route Info</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-xs-12">
+                            <div class="footer-widget mail-subscribe-widget">
+                                <h5 style="margin-left: 0px; color: #FFFFFF">Contact Us</h5>
+                                <ul class="footerList">
+                                    <li><a href="Feedback.aspx">Feedback</a></li>
+                                    <li><a href="complaint.aspx">complaint</a></li>
+                                    <li><a href="Contacts.aspx">Contact Us</a></li>
+                                    <li><a href="Filedownload.aspx">Downloads</a></li>
+                                    <li><a href="Careers.aspx">Career</a></li>
+                                    
+                                    
+                                </ul>
+                                <br />
+                                
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                        </div>
+                        
+                    </div>
+
+                    <!-- .col-md-3 -->
+                    <!--Website Policy / Quick Links -->
+
+                    <!-- Contacts / Info -->
+                    <!-- .col-md-3 -->
+                    <!--Contacts / Info -->
+                    <!-- Contacts / Info -->
+                    <!-- .col-md-3 -->
+                    <!--Contacts / Info -->
+                </div>
+                <!-- .row -->
+                <div class="col-md-12">
+                    <h5 class="col-md-4 col-xs-12" style="margin-left: 0px; color: #FFFFFF">Important Links</h5>
+                    <a class="col-md-2 col-xs-12" href="http://india.gov.in/" target="_blank" rel="nofollow" title="india.gov.in - National Portal of India">
+                        <img src="bootstrap/img/india-portal.png" alt="india.gov.in - National Portal of India" border="0" class="img-responsive" style="border-radius: 18px; padding-bottom: 5px;"></a>
+                    <a class="col-md-2 col-xs-12" href="http://suratsmartcity.com/" target="_blank" rel="nofollow" title="Surat Smart City Development Ltd.">
+                        <img src="bootstrap/img/ssdl-portal.png" alt="Surat Smart City Development Ltd." border="0" class="img-responsive" style="border-radius: 18px; padding-bottom: 5px;">
+                    </a>
+
+                    <a class="col-md-2 col-xs-12" href="http://gujaratindia.com/" target="_blank" rel="nofollow" title="gujaratindia.com - Gujarat State Portal">
+                        <img src="bootstrap/img/gujarat-portal.png" alt="gujaratindia.com - Gujarat State Portal" class="img-responsive" style="border-radius: 18px; padding-bottom: 5px;">
+                    </a>
+                    <a class="col-md-2 col-xs-12" href="https://surat.data.gov.in/" target="_blank" rel="nofollow" title="surat.data.gov.in - Open Data Portal">
+                        <img src="bootstrap/img/suratopendata-portal.png" alt="surat.data.gov.in - Open Data Portal" class="img-responsive" style="border-radius: 18px; padding-bottom: 5px;"></a>
+
+                </div>
+                <!-- Start Copyright -->
+                <div class="copyright-section">
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            <p>&copy; 2017 Developed for SITILINK / Powered by <a href="http://www.ars-traffic.com/">ARS T & TT </a></p>
+                        </div>
+                        <!-- .col-md-6 -->
+                        
+                        <!-- .col-md-6 -->
+                    </div>
+
+                    <!-- .row -->
+                </div>
+                <!-- End Copyright -->
+
+            </div>
+        </footer>
+        <!-- End Footer Section -->
+        <div class="social-links hidden-xs hidden-sm">
+            <div class="hidesociallinks-btn show" id="hidesociallinks" title="Our Social Links"><i class="fa fa-caret-left"></i></div>
+            <ul class="list-unstyled">
+                <li><a href="https://www.facebook.com" class="sociallink facebook-link" target="_blank" rel="nofollow noreferrer"><i class="fa fa-facebook"></i></a></li>
+                <li><a href="https://twitter.com" class="sociallink twitter-link" target="_blank" rel="nofollow noreferrer"><i class="fa fa-twitter"></i></a></li>
+
+            </ul>
+        </div>
+    </form>
+
+    <script type="text/javascript" src="smc_js/jquery-1.9.1.min.js"></script>
+    
+
+    <!-- jQuery -->
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    
+    <script src="bootstrap/js/jquery.slicknav.js"></script>
+    <script src="bootstrap/js/jquery.migrate.js"></script>
+    <script src="bootstrap/js/modernizrr.js"></script>
+    <script src="bootstrap/js/jquery.isotope.min.js"></script>
+    <script src="bootstrap/js/jquery.appear.js"></script>
+    <script src="bootstrap/js/jquery.easypiechart.min.js"></script>
+    <script src="bootstrap/js/jquery.fitvids.js"></script>
+    <script src="bootstrap/js/jquery.lettering.js"></script>
+    
+    <script src="bootstrap/js/jquery.nicescroll.min.js"></script>
+    <script src="bootstrap/js/jquery.parallax.js"></script>
+        
+    <script src="bootstrap/js/mediaelement-and-player.js"></script>
+    
+    <script src="bootstrap/js/owl.carousel.js"></script>
+    <script src="bootstrap/js/script.js"></script>
+    <script src="bootstrap/js/jquery.marquee.min.js"></script>
+    
+
+    <!--<script src="jquery-1.4.min.js"></script>-->
+    
+    
+    <script>
+
+        (function ($) {
+
+            $.fn.speedometer = function (options) {
+
+                /* A tad bit speedier, plus avoids possible confusion with other $(this) references. */
+                var $this = $(this);
+
+                /* handle multiple selectors */
+                if ($this.length > 1) {
+                    $this.each(function () {
+                        $(this).speedometer(options);
+
+                    });
+                    return $this;
+                }
+
+                var def = {
+                    /* If not specified, look in selector's innerHTML before defaulting to zero. */
+                    percentage: $.trim($this.html()) || 0,
+                    scale: 100,
+                    limit: true,
+                    minimum: 0,
+                    maximum: 100,
+                    suffix: '%',
+                    animate: true,
+                    thisCss: {
+                        position: 'relative', /* Very important to align needle with gague. */
+                        width: '210px',
+                        height: '180px',
+                        padding: '0px',
+                        border: '0px',
+                        fontFamily: 'Arial',
+                        fontWeight: '700',
+                        backgroundImage: "url('/AVLS/application/images/background.jpg')"
+
+
+                    },
+                    digitalCss: {
+                        backgroundColor: 'black',
+                        borderColor: '#555555 #999999 #999999 #555555',
+                        borderStyle: 'solid',
+                        borderWidth: '2px',
+                        color: 'white',
+                        fontSize: '22px',
+                        height: '24px',
+                        left: '72px',
+                        padding: '1px',
+                        position: 'absolute',
+                        textAlign: 'center',
+                        top: '65px',
+                        width: '60px',
+                        zIndex: '10',
+                        lineHeight: '20px',
+                        overflow: 'hidden'
+                    }
+                }
+
+
+
+                $this.html('');
+
+                $this.css(def.thisCss);
+
+                $.extend(def, options);
+
+                /* out of range */
+                if (def.limit && (def.percentage > def.maximum || def.percentage < def.minimum)) {
+                    /* the glass cracks */
+                    $this.css('backgroundImage', 'url("/AVLS/application/images/background-broken.jpg")');
+                } else {
+
+
+
+
+
+
+
+                    /* call modified jqcanvas file to generate needle line */
+                    $this.jqcanvas(function (canvas, width, height) {
+
+                        var ctx = canvas.getContext("2d"),
+						lingrad, thisWidth;
+
+                        ctx.lineWidth = 2;
+                        ctx.strokeStyle = "rgb(255,0,0)";
+
+                        /* point of origin for drawing AND canvas rotation (lines up with middle of the black circle on the image) */
+                        ctx.translate(105, 105);
+
+                        ctx.save(); //remember linewidth, strokestyle, and translate
+
+                        function animate() {
+
+                            ctx.restore(); //reset ctx.rotate to properly draw clearRect
+                            ctx.save();	//remember this default state again
+
+                            ctx.clearRect(-105, -105, 300, 300); //erase the canvas
+
+
+
+
+
+                            /* rotate based on percentage. */
+                            ctx.rotate(i * Math.PI / def.scale);
+
+
+
+                            /* draw the needle */
+                            ctx.beginPath();
+                            ctx.moveTo(-80, 0);
+                            ctx.lineTo(10, 0);
+                            ctx.stroke();
+
+                            /* internally remember current needle value */
+                            $this.data('currentPercentage', i);
+
+                            if (i != def.percentage) {
+
+                                //properly handle fractions
+                                i += Math.abs(def.percentage - i) < 1 ? def.percentage - i : def.increment;
+
+                                setTimeout(function () {
+                                    animate()
+                                }, 20);
+                            }
+                        }
+
+                        /* Are we animating or just displaying the percentage? */
+                        if (def.animate) {
+                            var i = parseInt($this.data('currentPercentage')) || 0;
+                            def.increment = (i < def.percentage) ? 1 : -1;
+                        } else {
+                            var i = (def.percentage);
+                        }
+
+
+                        animate();
+
+
+
+
+                    }, { verifySize: false, customClassName: '' });
+
+
+
+                }
+
+                /* digital percentage displayed in middle of image */
+
+                var digitalGauge = $('<div></div>');
+                $this.append(digitalGauge);
+                digitalGauge.css(def.digitalCss);
+                digitalGauge.text(def.percentage + def.suffix);
+
+                return $this;
+
+            }
+
+
+        })(jQuery)
+
+        $("#hidesociallinks").click(function () {
+            $(".sociallink").toggleClass("hidesociallinks", "showsociallinks");
+            $("#hidesociallinks i").toggleClass("fa-caret-right", "fa-caret-left");
+        });
+    </script>
+    <script src="/AVLS/application/assets/js/jquery.jqcanvas-modified.js"></script>
+    <!--<script src="jquery.speedometer.js"></script>
+		<script src="jquery.jqcanvas-modified.js"></script>-->
+    <script>
+
+        //var tripadherence = 20;//document.getElementById("lblTrip").innerText;
+        //var scheduleadherence = 30;// document.getElementById("lblSch").innerText;
+        //var BusOnRoad = 40;//document.getElementById("lblOnroad").innerText;
+        var tripadherence = document.getElementById("hdnTrip").value;
+        var scheduleadherence = document.getElementById("hdnSch").value;
+        //var BusOnRoad = document.getElementById("hdnOnroad").value;
+        //var BusAlloc = document.getElementById("hdnAlloc").value;
+        $(function () {
+
+            $('#tripadherence').speedometer({ percentage: tripadherence || 0 });
+            $('#scheduleadherence').speedometer({ percentage: scheduleadherence || 0 });
+            $('#BusOnRoad').speedometer({ percentage: BusOnRoad || 0 });
+            RidershipData();
+        });
+    </script>
+    <!-- <script src="http://117.232.115.58:8080/AVLS/application/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+			<script src="/AVLS/application/assets/plugins/chartjs/Chart.js"></script>-->
+    <script src="bootstrap/js/canvasjs.min.js"></script>
+    <script>
+
+        $(function () {
+
+            var onroadFld = document.getElementById("hdnOnroad").value;
+            var AllocFld = document.getElementById("hdnAlloc").value;
+            var AllocatedVehicles = parseInt(AllocFld);//document.getElementById("hdnAlloc").value;
+            var onroadVehicles = parseInt(onroadFld);//document.getElementById('hdnOnroad').value;
+            //var days = ["Scheduled ("+AllocatedVehicles+")","Actual ("+onroadVehicles+")"];	//[AllocatedVehicles,onroadVehicles];
+            CanvasJS.addColorSet("greenShades",
+                [//colorSet Array
+
+                 "#56A2F9",
+                "#7EF0AC"
+
+                ]);
+
+            var chart = new CanvasJS.Chart("BusOnRoad", {
+                //theme: "light2",//theme1	
+                height: 180,
+                //animationEnabled: true,
+                colorSet: "greenShades",
+
+
+                axisY: {
+                    //title: "axisY Title",
+                    //interlacedColor: "#F8F1E4",
+                    tickLength: 10,
+                    labelFontSize: 14,
+                    labelFontColor: "Black",
+                    labelFontWeight: 500
+                },
+
+                axisX: {
+                    labelAngle: 0,
+                    labelFontSize: 14,
+                    labelFontColor: "Black",
+                    labelFontWeight: 500
+                },
+                data: [
+				{
+				    type: "column",
+
+				    dataPoints: [
+						{ label: "Scheduled", y: AllocatedVehicles, indexLabelFontSize: 15, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + AllocatedVehicles + "'" },
+						{ label: "Running", y: onroadVehicles, indexLabelFontSize: 15, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + onroadVehicles + "'" }
+
+				    ]
+				}
+                ]
+            });
+
+            //start new code
+            function updateChart() {
+                var ScheduledColor, RunningColor, deltaY, yVal1, yval2;
+                var dps = chart.options.data[0].dataPoints;
+                for (var i = 0; i < dps.length; i++) {
+                    deltaY = Math.round(2 + Math.random() * (-2 - 2));
+                    yVal = deltaY + dps[i].y > 0 ? dps[i].y + deltaY : 0;
+                    ScheduledColor = yVal > 200 ? "#56A2F9" : yVal >= 170 ? "#56A2F9" : yVal < 170 ? "#56A2F9 " : null;
+                    RunningColor = yVal > 200 ? "#7EF0AC" : yVal >= 170 ? "#7EF0AC" : yVal < 170 ? "#7EF0AC " : null;
+                    if (i == 0) {
+                        dps[i] = { label: "Scheduled ", y: yVal, color: ScheduledColor };
+                    }
+                    else {
+                        dps[i] = { label: "Running ", y: yVal, color: RunningColor };
+                    }
+
+                }
+                chart.options.data[0].dataPoints = dps;
+                chart.render();
+            };
+
+            //chart.render();
+
+            updateChart();
+
+            //setInterval(function () { updateChart() }, 500);
+
+            //end new code
+
+
+
+
+        });
+
+        function RidershipData() {
+
+            var hdnRidershipLMonthId = document.getElementById("hdnRidershipLMonth").value;
+            var hdnRidershipLWeekId = document.getElementById("hdnRidershipLWeek").value;
+            var hdnRidershipYesterdayId = document.getElementById("hdnRidershipYesterday").value;
+            var hdnRidershipTodayId = document.getElementById("hdnRidershipToday").value;
+
+            var hdnRidershipLMonth = parseInt(hdnRidershipLMonthId);
+            var hdnRidershipLWeek = parseInt(hdnRidershipLWeekId);
+            var hdnRidershipYesterday = parseInt(hdnRidershipYesterdayId);
+            var hdnRidershipToday = parseInt(hdnRidershipTodayId);
+            //var segments =
+            //        [
+            //                { label: "Last Month", y: hdnRidershipLMonth, indexLabelLMFontSize: 7, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + hdnRidershipLMonth + "'", dataPoint: { x: hdnRidershipLMonth } },
+            //                { label: "Last Week", y: hdnRidershipLWeek, indexLabelFontSize: 7, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + hdnRidershipLWeek + "'", dataPoint: { x: hdnRidershipLWeek } },
+            //                { label: "Yesterday", y: hdnRidershipYesterday, indexLabelFontSize: 7, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + hdnRidershipYesterday + "'", dataPoint: { x: hdnRidershipYesterday } },
+            //                { label: "Today", y: hdnRidershipToday, indexLabelFontSize: 7, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + hdnRidershipToday + "'", dataPoint: { x: hdnRidershipToday } }
+            //        ];
+
+            chart = new CanvasJS.Chart("RidershipData", {
+                height: 180,
+                //animationEnabled: true,
+                theme: "theme1", // "light1", "light2", "dark1", "dark2"
+                axisY: {
+
+                    tickLength: 10,
+                    labelFontSize: 13,
+                    labelFontColor: "Black",
+                    labelFontWeight: 500
+                },
+
+                axisX: {
+                    labelAngle: 0,
+                    labelFontSize: 10.8,
+                    labelFontColor: "Black",
+                    labelFontWeight: 500
+                },
+
+                data: [
+                    {
+                        type: "column",
+                        //   dataPoints: segments
+                        dataPoints: [
+                                    { label: "Last Month", y: hdnRidershipLMonth, indexLabelFontSize: 7, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + hdnRidershipLMonth + "'" },
+                                    { label: "Last Week", y: hdnRidershipLWeek, indexLabelFontSize: 7, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + hdnRidershipLWeek + "'" },
+                                    { label: "Yesterday", y: hdnRidershipYesterday, indexLabelFontSize: 7, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + hdnRidershipYesterday + "'" },
+                                    { label: "Today", y: hdnRidershipToday, indexLabelFontSize: 7, indexLabelFontColor: "white", indexLabelFontWeight: "bold", indexLabel: "'" + hdnRidershipToday + "'" }
+
+                        ]
+                    }]
+            });
+
+            //start new code
+            function updateChart() {
+                var LastMonthColor, LastWeekColor, YesterdayColor, TodayColor, deltaY, yVal1, yval2;
+                var dps = chart.options.data[0].dataPoints;
+                for (var i = 0; i < dps.length; i++) {
+                    // deltaY = Math.round(2 + Math.random() * (-2 - 2));
+                    deltaY = 0;
+                    yVal = deltaY + dps[i].y > 0 ? dps[i].y + deltaY : 0;
+                    LastMonthColor = yVal > 150000 ? "#b99ee5" : yVal >= 100000 ? "#b99ee5" : yVal < 100000 ? "#b99ee5 " : null;
+                    LastWeekColor = yVal > 150000 ? "#EC5657" : yVal >= 100000 ? "#EC5657" : yVal < 100000 ? "#EC5657 " : null;
+                    YesterdayColor = yVal > 150000 ? "#1BCDD1" : yVal >= 100000 ? "#1BCDD1" : yVal < 100000 ? "#1BCDD1 " : null;
+                    TodayColor = yVal > 150000 ? "#8FAABB" : yVal >= 100000 ? "#8FAABB" : yVal < 100000 ? "#8FAABB " : null;
+
+                    if (i == 0) {
+                        dps[i] = { label: "Last Month ", y: yVal, color: LastMonthColor };
+                    }
+                    else if (i == 1) {
+                        dps[i] = { label: "Last Week ", y: yVal, color: LastWeekColor };
+                    }
+                    else if (i == 2) {
+                        dps[i] = { label: "Yesterday ", y: yVal, color: YesterdayColor };
+                    }
+                    else {
+                        dps[i] = { label: "Today ", y: yVal, color: TodayColor };
+                    }
+                }
+
+                chart.options.data[0].dataPoints = dps;
+                chart.render();
+            };
+
+            //chart.render();
+
+            updateChart();
+
+
+            //end new code
+
+            //chart.render();
+
+
+
+        }
+    </script>
+
+
+
+</body>
+</html>
