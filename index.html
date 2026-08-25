@@ -14,6 +14,11 @@
   <style>
     :root { --ink:#17212b; --muted:#6b7785; --paper:#f5f7f8; --line:#dce3e8; --red:#e4573d; --teal:#087f8c; --yellow:#f6c85f; --glass:#ffffffd9; --fog:#ffffff80; --card:#ffffff; --card-hover:#eef6f5; }
     body.night { --ink:#edf4f5; --muted:#a6b7bc; --paper:#101b25; --line:#30404b; --glass:#172733e8; --fog:#213541aa; --card:#1b2d39; --card-hover:#223746; background:#101b25; }
+    body.midnight { --ink:#e9eef0; --muted:#aeb9bd; --paper:#17202a; --line:#3a4650; --glass:#202d38e8; --fog:#293943b8; --card:#253540; --card-hover:#2d404c; background:#17202a; }
+    body.midnight .intro { border-left-color:#f0b85a; background:linear-gradient(135deg,#293943d9,#23313be8); }
+    body.midnight .brand-mark { background:linear-gradient(135deg,#e4573d 0%,#f0b85a 100%); }
+    body.midnight #map { filter:brightness(.82) saturate(.86); }
+
     * { box-sizing:border-box; } html,body { height:100%; margin:0; }
     body { color:var(--ink); background:var(--paper); font:14px "DM Sans",sans-serif; overflow:hidden; }
     .app { display:grid; grid-template-columns:350px 1fr; height:100%; }
@@ -29,7 +34,7 @@
     .eta { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); } .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; } .eta-name { margin-top:5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .eta-list { display:grid; gap:8px; margin-top:14px; max-height:170px; overflow-y:auto; } .eta-row { display:grid; grid-template-columns:45px 1fr auto; gap:8px; align-items:center; padding:10px; background:#fff8e7; border:1px solid #f2dfab; border-radius:6px; } .eta-row b { font-size:12px; } .eta-row small { color:var(--muted); } .eta-time { color:#ae6a12; font-weight:700; } .empty { color:var(--muted); font-size:13px; line-height:1.5; }
     .map-wrap { position:relative; min-width:0; } #map { width:100%; height:100%; background:#dfe8e6; transition:filter .5s ease; } body.night #map { filter:brightness(.72) saturate(.76); } .map-top { position:absolute; z-index:1; top:22px; left:22px; right:22px; display:flex; align-items:center; justify-content:space-between; pointer-events:none; } .map-top>* { pointer-events:auto; }
-    .map-pill { padding:10px 14px; background:var(--glass); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px #18283218; backdrop-filter:blur(18px) saturate(130%); } .map-pill b { font:600 14px "Space Grotesk",sans-serif; } .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; }
+    .map-pill { padding:10px 14px; background:var(--glass); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px #18283218; backdrop-filter:blur(18px) saturate(130%); } .map-pill b { font:600 14px "Space Grotesk",sans-serif; } .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; } .map-pill #ist-clock { font-variant-numeric:tabular-nums; font-weight:700; }
     .locate { width:40px; height:40px; color:var(--ink); background:var(--glass); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px #18283218; font-size:20px; cursor:pointer; backdrop-filter:blur(18px); } .locate:hover { color:var(--teal); }
     .stop-dot { width:12px; height:12px; background:var(--yellow); border:3px solid #fff; border-radius:50%; box-shadow:0 1px 5px #18283255; } .stop-dot.route { background:var(--red); }
     .popup-name { font-weight:700; } .popup-id { color:var(--muted); font-size:11px; }
@@ -46,7 +51,7 @@
       <div class="stats"><div class="stat"><b id="route-count">--</b><span>routes mapped</span></div><div class="stat"><b id="stop-count">--</b><span>official stations</span></div></div>
       <section class="eta"><div class="eta-title"><h2>Next arrivals</h2><span id="eta-status" class="eyebrow">Select a stop</span></div><p id="eta-name" class="eta-name">Click any stop on the map</p><div id="eta-list" class="eta-list"><p class="empty">Live timings appear here when you choose a stop.</p></div></section>
     </aside>
-    <section class="map-wrap"><div id="map"></div><div class="map-top"><div class="map-pill"><b id="map-label">Surat transit</b><span id="map-subtitle">OpenStreetMap</span></div><button class="locate" id="locate" title="Use my location" aria-label="Use my location">◎</button></div></section>
+    <section class="map-wrap"><div id="map"></div><div class="map-top"><div class="map-pill"><b id="map-label">Surat transit</b><span id="map-subtitle">OpenStreetMap</span><span id="ist-clock" aria-label="Current IST time">--:--:-- -- IST</span></div><button class="locate" id="locate" title="Use my location" aria-label="Use my location">◎</button></div></section>
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
@@ -56,13 +61,56 @@
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
     const DATA_URL = './transit_data.json';
     const surat = [21.1702, 72.8311];
-    const fallbackSolarTimes = { sunrise: new Date(new Date().setHours(6, 15, 0, 0)), sunset: new Date(new Date().setHours(18, 45, 0, 0)) };
-    const solarTimes = window.SunCalc ? SunCalc.getTimes(new Date(), surat[0], surat[1]) : fallbackSolarTimes;
-    const isNight = new Date() < solarTimes.sunrise || new Date() > solarTimes.sunset;
-    document.body.classList.toggle('night', isNight);
-    document.getElementById('mode-title').textContent = isNight ? 'The city is winding down.' : 'Move through the city.';
-    document.getElementById('mode-copy').textContent = isNight ? 'The map stays open after sunset. Live arrivals return with the morning service.' : 'Choose a route or search for a stop to see the network and live arrivals.';
-    document.getElementById('map-subtitle').textContent = `${isNight ? 'Night' : 'Day'} mode · OpenStreetMap`;
+    const fallbackSolarTimes = {
+      sunrise: new Date(new Date().setHours(6, 15, 0, 0)),
+      sunset: new Date(new Date().setHours(18, 45, 0, 0))
+    };
+    const now = new Date();
+    const solarTimes = window.SunCalc
+      ? SunCalc.getTimes(now, surat[0], surat[1])
+      : fallbackSolarTimes;
+
+    // 12:00 AM -> sunrise: midnight theme
+    // sunrise -> sunset: morning/day theme
+    // sunset -> 12:00 AM: night theme
+    const isMidnight = now < solarTimes.sunrise && now.getHours() < 6;
+    const isNight = now >= solarTimes.sunset;
+
+    document.body.classList.toggle('midnight', isMidnight);
+    document.body.classList.toggle('night', isNight && !isMidnight);
+
+    const modeTitle = document.getElementById('mode-title');
+    const modeCopy = document.getElementById('mode-copy');
+    const mapSubtitle = document.getElementById('map-subtitle');
+
+    if (isMidnight) {
+      modeTitle.textContent = 'Midnight in the city.';
+      modeCopy.textContent = 'The map stays open after sunset. Live arrivals return with the morning service.';
+      mapSubtitle.textContent = 'Midnight mode · OpenStreetMap';
+    } else if (isNight) {
+      modeTitle.textContent = 'The city is winding down.';
+      modeCopy.textContent = 'The map stays open after sunset. Live arrivals return with the morning service.';
+      mapSubtitle.textContent = 'Night mode · OpenStreetMap';
+    } else {
+      modeTitle.textContent = 'Good morning, Surat.';
+      modeCopy.textContent = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
+      mapSubtitle.textContent = 'Morning mode · OpenStreetMap';
+    }
+
+    const istClock = document.getElementById('ist-clock');
+    const updateISTClock = () => {
+      if (!istClock) return;
+      istClock.textContent = new Intl.DateTimeFormat('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      }).format(new Date()) + ' IST';
+    };
+    updateISTClock();
+    setInterval(updateISTClock, 1000);
+
     const map = L.map('map', { zoomControl:false }).setView(surat, 12);
     L.control.zoom({ position:'bottomright' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
@@ -74,7 +122,7 @@
     const drawStops = (stops, routeMode=false) => { stopLayer.clearLayers(); stops.filter(stop => stop.lat != null && stop.lng != null).forEach(stop => { const marker=L.marker([stop.lat,stop.lng],{icon:stopIcon(routeMode)}).addTo(stopLayer); marker.bindPopup(`<div class="popup-name">${escapeHtml(stop.name)}</div><div class="popup-id">Stop ${escapeHtml(stop.id)}</div>`); marker.on('click', () => loadEta(stop)); }); };
     const renderSearchResults = (matches) => { searchResults.innerHTML = matches.length ? matches.slice(0, 30).map((stop, index) => `<button class="search-result" data-index="${index}"><span>${escapeHtml(stop.name)}</span><small>${stop.lat != null && stop.lng != null ? `Stop ${escapeHtml(stop.id)}` : 'No map location'}</small></button>`).join('') : '<p class="empty">No stations found.</p>'; [...searchResults.querySelectorAll('.search-result')].forEach(button => button.addEventListener('click', () => selectStop(matches[Number(button.dataset.index)]))); };
     const selectStop = stop => { if (stop.lat != null && stop.lng != null) { map.setView([stop.lat, stop.lng], 15); drawStops([stop], routeStops.length > 0); } loadEta(stop); };
-    const loadEta = async stop => { document.getElementById('eta-name').textContent=stop.name; document.getElementById('eta-status').textContent='Loading'; document.getElementById('eta-list').innerHTML='<p class="empty">Contacting live service...</p>'; if (!API_BASE) { document.getElementById('eta-status').textContent='Backend needed'; document.getElementById('eta-list').innerHTML='<p class="empty">Mapping works on GitHub Pages. Add your Flask API with <b>?api=https://your-api.example.com</b> to enable live timings.</p>'; return; } try { const response=await fetch(`${API_BASE}/api/eta/${encodeURIComponent(stop.id)}`); const data=await response.json().catch(() => ({})); if(!response.ok) throw new Error(data.details || data.error || 'Live API request failed'); const buses=(data.routes || []).flatMap(route => (route.buses || []).map(bus => ({...bus,route:route.route_name}))); document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`; document.getElementById('eta-list').innerHTML=buses.length ? buses.map(bus=>`<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">${isNight ? 'No buses are expected after sunset. Service resumes after sunrise.' : 'No live arrivals reported for this stop.'}</p>`; } catch(error) { document.getElementById('eta-status').textContent='Unavailable'; document.getElementById('eta-list').innerHTML=`<p class="empty">${escapeHtml(error.message || 'Live timings are unavailable right now.')}</p>`; } };
+    const loadEta = async stop => { document.getElementById('eta-name').textContent=stop.name; document.getElementById('eta-status').textContent='Loading'; document.getElementById('eta-list').innerHTML='<p class="empty">Contacting live service...</p>'; if (!API_BASE) { document.getElementById('eta-status').textContent='Backend needed'; document.getElementById('eta-list').innerHTML='<p class="empty">Mapping works on GitHub Pages. Add your Flask API with <b>?api=https://your-api.example.com</b> to enable live timings.</p>'; return; } try { const response=await fetch(`${API_BASE}/api/eta/${encodeURIComponent(stop.id)}`); const data=await response.json().catch(() => ({})); if(!response.ok) throw new Error(data.details || data.error || 'Live API request failed'); const buses=(data.routes || []).flatMap(route => (route.buses || []).map(bus => ({...bus,route:route.route_name}))); document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`; document.getElementById('eta-list').innerHTML=buses.length ? buses.map(bus=>`<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">${isMidnight ? 'It is midnight in Surat. BRTS service resumes after sunrise.' : isNight ? 'BRTS service is winding down for the night. Service resumes after sunrise.' : 'No live arrivals reported for this stop right now.'}</p>`; } catch(error) { document.getElementById('eta-status').textContent='Unavailable'; document.getElementById('eta-list').innerHTML=`<p class="empty">${escapeHtml(error.message || 'Live timings are unavailable right now.')}</p>`; } };
     const showRoute = async id => { if(!network) return; if(routeLine){map.removeLayer(routeLine);routeLine=null;} if(!id){routeStops=[];drawStops(network.stops);searchResults.innerHTML='';map.setView(surat,12);document.getElementById('map-label').textContent='Surat transit';document.getElementById('map-subtitle').textContent='OpenStreetMap';return;} const route=network.routes[id]; if(!route){return;} const points=route.stops.map(stop=>[stop.lat,stop.lng]); routeStops=route.stops; routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); drawStops(routeStops,true); if(points.length) map.fitBounds(routeLine.getBounds(),{padding:[45,45]}); document.getElementById('map-label').textContent=`Route ${id}`;document.getElementById('map-subtitle').textContent=routeName(route.name); };
     const loadNetwork = async () => { const response=await fetch(DATA_URL); if(!response.ok) throw new Error('transit_data.json could not be loaded'); const data=await response.json(); const stops=Object.values(data.stops); const mappedStops=stops.filter(stop=>stop.lat!=null&&stop.lng!=null); const routes={}; Object.entries(data.routes).forEach(([id,route])=>{const valid=route.stops.map(stop=>({...stop,id:String(stop.stopCode),name:stop.stopName,lat:Number(stop.stopLatitude),lng:Number(stop.stopLongitude),sequence:stop.sequenceNumber})).filter(stop=>Number.isFinite(stop.lat)&&Number.isFinite(stop.lng));routes[id]={...route,stops:valid};const option=document.createElement('option');option.value=id;option.textContent=`${id} · ${routeName(route.name)}`;routeSelect.appendChild(option);});network={stops:mappedStops,routes};document.getElementById('stop-count').textContent=mappedStops.length.toLocaleString();document.getElementById('route-count').textContent=Object.keys(routes).length.toLocaleString();drawStops(mappedStops); };
     routeSelect.addEventListener('change',()=>showRoute(routeSelect.value));
