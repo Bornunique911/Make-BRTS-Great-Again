@@ -29,8 +29,8 @@
     .intro { padding:18px; background:var(--fog); border-left:4px solid var(--teal); box-shadow:0 12px 30px #1828320c; } .intro strong { display:block; margin-bottom:6px; font:600 15px "Space Grotesk",sans-serif; } .intro span { color:var(--muted); line-height:1.5; }
     label { display:block; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
     select,input { width:100%; height:44px; padding:0 12px; color:var(--ink); background:var(--fog); border:1px solid var(--line); border-radius:7px; font:inherit; outline:0; } select:focus,input:focus { border-color:var(--teal); box-shadow:0 0 0 3px #087f8c1c; }
-    /* make route dropdown taller */
-    #route { height:auto; max-height:220px; overflow-y:auto; }
+    /* normal dropdown – no listbox */
+    #route { height:44px; }
     .search { position:relative; } .search input { padding-left:38px; } .search:before { content:"⌕"; position:absolute; z-index:1; top:8px; left:13px; color:var(--muted); font-size:23px; } .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; } .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:9px 10px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:6px; cursor:pointer; } .search-result:hover { border-color:var(--teal); background:var(--card-hover); } .search-result small { color:var(--muted); white-space:nowrap; }
     .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; } .stat { padding:13px; background:var(--fog); border:1px solid var(--line); border-radius:7px; } .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; } .stat span { color:var(--muted); font-size:11px; }
     .eta { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); } .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; } .eta-name { margin-top:5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -49,7 +49,7 @@
     <aside class="sidebar">
       <header class="brand"><div class="brand-mark">S</div><div><h1>Surat BRTS</h1><p class="eyebrow">Live network map</p></div></header>
       <div class="intro"><strong id="mode-title">Move through the city.</strong><span id="mode-copy">Choose a route or search for a stop to see the network and live arrivals.</span></div>
-      <section><label for="route">Route</label><select id="route" size="10"><option value="">All routes</option></select></section>
+      <section><label for="route">Route</label><select id="route"><option value="">All routes</option></select></section>
       <section class="search"><label for="stop-search">Stops on this route</label><input id="stop-search" type="search" placeholder="Search or scroll the list" autocomplete="off"><div id="search-results" class="search-results"></div></section>
       <div class="stats"><div class="stat"><b id="route-count">--</b><span>routes mapped</span></div><div class="stat"><b id="stop-count">--</b><span>official stations</span></div></div>
       <section class="eta"><div class="eta-title"><h2>Next arrivals</h2><span id="eta-status" class="eyebrow">Select a stop</span></div><p id="eta-name" class="eta-name">Click any stop on the map</p><div id="eta-list" class="eta-list"><p class="empty">Live timings appear here when you choose a stop.</p></div></section>
