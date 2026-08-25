@@ -705,6 +705,18 @@ def get_local_route_stops(route_id):
     )
 
 
+@app.get("/api/health")
+def api_health():
+    return jsonify({
+        "status": "ok",
+        "transit_data": {
+            "stops": len(TRANSIT["stops"]),
+            "routes": len(TRANSIT["routes"]),
+        },
+        "live_eta": "available",
+    })
+
+
 @app.get("/api/stops")
 def api_stops():
     stops = [
