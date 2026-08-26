@@ -1,5 +1,7 @@
 Flask
 Flask-Cors
+fastapi
+uvicorn[standard]
 requests
 beautifulsoup4
 urllib3
