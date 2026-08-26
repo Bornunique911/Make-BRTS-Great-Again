@@ -1,9 +1,8 @@
 """Fast API-facing adapter for the Sitilink ASP.NET ETA scraper.
 
 The map dataset and the live Sitilink WebForms page do not always use the
-same stop ID.  In particular, route data can contain an older/alternate stop
-code that is absent from the current LiveBusInfo dropdown.  Resolve the map
-stop to the current live ID by name before scraping.
+same stop ID. Route data can contain an older/alternate stop code that is
+absent from the current LiveBusInfo dropdown. Resolve by stop name first.
 """
 
 import json
@@ -11,6 +10,7 @@ import re
 from difflib import SequenceMatcher
 from pathlib import Path
 
+from bs4 import BeautifulSoup
 from surat_brts_eta_menu import get_stops, request_get, make_session, scrape_single_stop
 
 
@@ -37,11 +37,22 @@ def _load_stop_name(stop_id):
             continue
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-            stop = (data.get("stops") or {}).get(str(stop_id), {})
+            stops = data.get("stops") or {}
+            stop = stops.get(str(stop_id))
             if isinstance(stop, dict):
-                return stop.get("name") or stop.get("stopName") or ""
+                name = stop.get("name") or stop.get("stopName") or ""
+                if name:
+                    return name
+
+            # Route-only IDs are deliberately not promoted to the master stop
+            # list. Still allow the ETA endpoint to resolve them by their
+            # official route stop name.
+            for route in (data.get("routes") or {}).values():
+                for route_stop in route.get("stops", []):
+                    if str(route_stop.get("sourceStopCode", route_stop.get("stopCode", ""))) == str(stop_id):
+                        return route_stop.get("stopName") or ""
         except Exception:
-            pass
+            continue
     return ""
 
 
@@ -49,7 +60,6 @@ def _resolve_live_id(official_id, live_stops):
     official_id = str(official_id).strip()
     live_by_id = {str(s["id"]): s for s in live_stops}
 
-    # Prefer the real live ID when it is already current.
     if official_id in live_by_id:
         return official_id
 
@@ -62,19 +72,14 @@ def _resolve_live_id(official_id, live_stops):
             f"Official stop {official_id} is not in the current Sitilink stop list"
         )
 
-    # Exact normalized name.
     for stop in live_stops:
         if _norm(stop.get("name")) == wanted_norm:
             return str(stop["id"])
 
-    # Handle harmless spacing/punctuation differences such as
-    # "PRABHU DARSHAN SOCIETY" vs "PRABHUDARSHAN SOCIETY".
     for stop in live_stops:
         if _compact(stop.get("name")) == wanted_compact:
             return str(stop["id"])
 
-    # Finally use a conservative fuzzy match. Require both a high score and
-    # a meaningful shared prefix so an unrelated station is never selected.
     best_id = None
     best_score = 0.0
     for stop in live_stops:
@@ -103,10 +108,8 @@ def get_eta(stop_id: str):
     if not stop_id:
         raise ValueError("stop_id is required")
 
-    # Discover the current live IDs once, then resolve the map's ID/name to it.
     session = make_session()
     response = request_get(session)
-    from bs4 import BeautifulSoup
     soup = BeautifulSoup(response.text, "html.parser")
     live_stops = get_stops(soup)
 
@@ -115,8 +118,6 @@ def get_eta(stop_id: str):
     if result is None:
         raise LookupError(f"Live Sitilink stop {live_id!r} was not found")
 
-    # Keep the map's original ID while exposing the actual live ID for
-    # debugging and future caching.
     result["requested_stop_id"] = stop_id
     result["live_stop_id"] = str(live_id)
     return result
