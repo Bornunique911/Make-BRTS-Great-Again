@@ -284,7 +284,8 @@ def scrape_all_brt_eta(delay_between_stops=0.2):
     print(f"Found {len(stops)} stops.")
 
     results = []
-    total_routes = 0
+    route_stop_count = 0
+    unique_route_ids = set()
 
     for index, stop in enumerate(stops, start=1):
         stop_id = stop["id"]
@@ -343,7 +344,8 @@ def scrape_all_brt_eta(delay_between_stops=0.2):
                         "buses": buses,
                     })
 
-                    total_routes += 1
+                    route_stop_count += 1
+                    unique_route_ids.add(route_id)
 
                     if buses:
                         for bus in buses:
@@ -378,7 +380,8 @@ def scrape_all_brt_eta(delay_between_stops=0.2):
         "generated_at": datetime.now().astimezone().isoformat(),
         "service_type": "BRT",
         "stop_count": len(results),
-        "route_count": total_routes,
+        "route_count": len(unique_route_ids),
+        "route_stop_count": route_stop_count,
         "stops": results,
     }
 
