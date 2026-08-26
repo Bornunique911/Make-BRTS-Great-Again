@@ -61,7 +61,7 @@
     const params = new URLSearchParams(location.search);
     const sameOriginApi = location.hostname && !location.hostname.endsWith('github.io') ? location.origin : '';
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
-    const DATA_URL = './static/assets/transit_data.json';
+    const DATA_URL = './static/transit_data.json';
     const surat = [21.1702, 72.8311];
     const fallbackSolarTimes = {
       sunrise: new Date(new Date().setHours(6, 15, 0, 0)),
