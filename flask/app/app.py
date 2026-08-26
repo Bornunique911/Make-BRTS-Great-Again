@@ -23,7 +23,6 @@ ROUTE_SELECT = "ctl00$ContentPlaceHolder1$ddlroute"
 ETA_TABLE_ID = "ContentPlaceHolder1_ETATableDetail"
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-# GitHub Pages and the Vercel/Flask API are different origins.
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 cache = {}
@@ -40,20 +39,18 @@ TRANSIT_CANDIDATES = [
 
 def _find_transit_file():
     for path in TRANSIT_CANDIDATES:
-        path = path.resolve()
         if path.is_file():
-            return path
-    raise FileNotFoundError(
-        "transit_data.json not found. Checked:\n"
-        + "\n".join(f"- {p.resolve()}" for p in TRANSIT_CANDIDATES)
-    )
+            return path.resolve()
+    raise FileNotFoundError("transit_data.json not found")
 
 
 TRANSIT_FILE = _find_transit_file()
 with TRANSIT_FILE.open(encoding="utf-8") as f:
     TRANSIT = json.load(f)
+
 if not isinstance(TRANSIT.get("stops"), dict) or not isinstance(TRANSIT.get("routes"), dict):
     raise ValueError(f"Invalid transit dataset: {TRANSIT_FILE}")
+
 print(
     f"[DATA] Loaded {len(TRANSIT['stops'])} stops and "
     f"{len(TRANSIT['routes'])} routes from {TRANSIT_FILE}"
@@ -67,40 +64,46 @@ def _norm(value):
     return " ".join(value.split())
 
 
+def _compact(value):
+    return _norm(value).replace(" ", "")
+
+
+def _tokens(value):
+    return set(_norm(value).split())
+
+
 def _stop_name(stop_id):
     stop = TRANSIT["stops"].get(str(stop_id), {})
-    if not isinstance(stop, dict):
-        return ""
-    return (
-        stop.get("stopName")
-        or stop.get("stopname")
-        or stop.get("name")
-        or stop.get("stop_name")
-        or ""
-    )
+    if isinstance(stop, dict):
+        return stop.get("name") or stop.get("stopName") or ""
+    return ""
 
 
 def _load_master_stops():
     for path in (REPO_DIR / "stops_master.json", APP_DIR / "stops_master.json"):
-        if path.is_file():
-            try:
-                with path.open(encoding="utf-8") as f:
-                    data = json.load(f)
-                rows = data.get("d", []) if isinstance(data, dict) else []
-                if isinstance(rows, list):
-                    return rows
-            except Exception as exc:
-                print("[STOP MAP] master list load failed:", repr(exc))
+        if not path.is_file():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            rows = data.get("d", []) if isinstance(data, dict) else []
+            if isinstance(rows, list):
+                return rows
+        except Exception as exc:
+            print("[STOP MAP] master list load failed:", repr(exc))
     return []
 
 
 MASTER_STOPS = _load_master_stops()
 MASTER_BY_NAME = {}
+MASTER_BY_COMPACT = {}
 for row in MASTER_STOPS:
-    name = _norm(row.get("stopname"))
     sid = row.get("stopid")
-    if name and sid is not None:
-        MASTER_BY_NAME.setdefault(name, str(sid))
+    name = row.get("stopname")
+    if sid is None or not name:
+        continue
+    MASTER_BY_NAME.setdefault(_norm(name), []).append(str(sid))
+    MASTER_BY_COMPACT.setdefault(_compact(name), []).append(str(sid))
+
 print(f"[STOP MAP] loaded {len(MASTER_STOPS)} master stops")
 
 
@@ -108,8 +111,7 @@ def make_session():
     s = requests.Session()
     s.headers.update({
         "User-Agent": (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "Chrome/139.0 Safari/537.36"
         ),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -121,12 +123,11 @@ def make_session():
 
 
 def get_form_data(soup):
-    """Copy the complete current ASP.NET WebForms state."""
-    data = {}
     form = soup.find("form")
     if not form:
         raise RuntimeError("ASP.NET form not found")
 
+    data = {}
     for element in form.find_all(["input", "select", "textarea"]):
         name = element.get("name")
         if not name:
@@ -145,28 +146,22 @@ def get_form_data(soup):
                 data[name] = selected.get("value", "")
         else:
             data[name] = element.get_text(strip=True)
-
     return data
 
 
 def request_get(session):
     response = session.get(
-        URL,
-        timeout=REQUEST_TIMEOUT,
-        verify=False,
-        headers=session.headers,
+        URL, timeout=REQUEST_TIMEOUT, verify=False, headers=session.headers
     )
     response.raise_for_status()
     return response
 
 
 def request_post(session, soup, event_target, values):
-    """Perform one ASP.NET AutoPostBack using the state from this page."""
     payload = get_form_data(soup)
     payload["__EVENTTARGET"] = event_target
     payload["__EVENTARGUMENT"] = ""
     payload.update(values)
-
     response = session.post(
         URL,
         data=payload,
@@ -186,59 +181,89 @@ def get_stops(soup):
     select = find_select(soup, STOP_SELECT)
     if not select:
         return []
-    result = []
-    for option in select.find_all("option"):
-        value = option.get("value")
-        text = option.get_text(" ", strip=True)
-        if value and value not in {"0", "-1"}:
-            result.append({"id": value, "name": text})
-    return result
+    return [
+        {"id": option.get("value"), "name": option.get_text(" ", strip=True)}
+        for option in select.find_all("option")
+        if option.get("value") not in {None, "", "0", "-1"}
+    ]
 
 
 def get_routes(soup):
     select = find_select(soup, ROUTE_SELECT)
     if not select:
         return []
-    result = []
-    for option in select.find_all("option"):
-        value = option.get("value")
-        text = option.get_text(" ", strip=True)
-        if value and value not in {"0", "-1"} and "select" not in text.lower():
-            result.append({"id": value, "name": text})
-    return result
+    return [
+        {"id": option.get("value"), "name": option.get_text(" ", strip=True)}
+        for option in select.find_all("option")
+        if option.get("value") not in {None, "", "0", "-1"}
+        and "select" not in option.get_text(" ", strip=True).lower()
+    ]
 
 
 def resolve_live_stop_id(official_id, live_stops):
+    """Resolve a map stop to a current LiveBusInfo stop without guessing."""
     official_id = str(official_id)
     live_by_id = {str(x["id"]): x for x in live_stops}
+
     if official_id in live_by_id:
         return official_id, live_by_id[official_id]["name"]
 
     official_name = _stop_name(official_id)
     wanted = _norm(official_name)
+    compact = _compact(official_name)
+
     if not wanted:
-        raise ValueError(f"Official stop {official_id} has no name in transit_data.json")
+        # Route-only IDs may still exist in route data.
+        for route in TRANSIT["routes"].values():
+            for route_stop in route.get("stops", []):
+                source_id = str(route_stop.get("sourceStopCode", route_stop.get("stopCode", "")))
+                if source_id == official_id:
+                    official_name = route_stop.get("stopName", "")
+                    wanted = _norm(official_name)
+                    compact = _compact(official_name)
+                    break
+            if wanted:
+                break
 
-    master_id = MASTER_BY_NAME.get(wanted)
-    if master_id and master_id in live_by_id:
-        return master_id, live_by_id[master_id]["name"]
+    if not wanted:
+        raise ValueError(f"Official stop {official_id} has no known name")
 
+    # 1. Exact normalized name. Only accept a unique match.
+    exact = [s for s in live_stops if _norm(s.get("name")) == wanted]
+    if len(exact) == 1:
+        return str(exact[0]["id"]), exact[0]["name"]
+
+    # 2. Exact compact name handles spacing/punctuation differences.
+    compact_matches = [s for s in live_stops if _compact(s.get("name")) == compact]
+    if len(compact_matches) == 1:
+        return str(compact_matches[0]["id"]), compact_matches[0]["name"]
+
+    # 3. If the old master list knows an exact name -> live ID, use it only
+    # when that ID is actually present in the current live dropdown.
+    for candidate_id in MASTER_BY_NAME.get(wanted, []) + MASTER_BY_COMPACT.get(compact, []):
+        if candidate_id in live_by_id:
+            return candidate_id, live_by_id[candidate_id]["name"]
+
+    # 4. Token overlap for harmless abbreviations. Reject ambiguous results.
+    wanted_tokens = _tokens(official_name)
+    ranked = []
     for stop in live_stops:
-        if _norm(stop.get("name")) == wanted:
-            return str(stop["id"]), stop["name"]
-
-    best = None
-    best_score = 0.0
-    for stop in live_stops:
-        candidate = _norm(stop.get("name"))
-        if not candidate:
+        candidate_tokens = _tokens(stop.get("name"))
+        if not candidate_tokens:
             continue
-        score = SequenceMatcher(None, wanted, candidate).ratio()
-        if score > best_score:
-            best_score, best = score, stop
+        intersection = len(wanted_tokens & candidate_tokens)
+        union = len(wanted_tokens | candidate_tokens)
+        jaccard = intersection / union if union else 0.0
+        sequence = SequenceMatcher(None, wanted, _norm(stop.get("name"))).ratio()
+        if intersection >= 2 and jaccard >= 0.75:
+            ranked.append((jaccard, sequence, stop))
 
-    if best is not None and best_score >= 0.92:
-        return str(best["id"]), best["name"]
+    ranked.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    if ranked:
+        best = ranked[0]
+        tied = [x for x in ranked if abs(x[0] - best[0]) < 0.02 and abs(x[1] - best[1]) < 0.02]
+        if len(tied) == 1 and best[0] >= 0.75:
+            return str(best[2]["id"]), best[2]["name"]
 
     raise ValueError(
         f"Could not map official stop {official_id} ({official_name}) "
@@ -259,39 +284,23 @@ def parse_eta_table(soup):
     for row in table.find_all("tr"):
         cols = [c.get_text(" ", strip=True) for c in row.find_all("td")]
         if len(cols) >= 4 and cols[1]:
-            buses.append({
-                "bus": cols[1],
-                "destination": cols[2],
-                "eta": cols[3],
-            })
+            buses.append({"bus": cols[1], "destination": cols[2], "eta": cols[3]})
     return buses
 
 
 def select_stop_and_brt(session, initial_soup, live_stop_id):
-    """Build fresh WebForms state up to the BRT route list."""
-    response = request_post(
-        session,
-        initial_soup,
-        STOP_SELECT,
-        {STOP_SELECT: live_stop_id},
-    )
+    response = request_post(session, initial_soup, STOP_SELECT, {STOP_SELECT: live_stop_id})
     stop_soup = BeautifulSoup(response.text, "html.parser")
-
     response = request_post(
         session,
         stop_soup,
         SERVICE_SELECT,
-        {
-            STOP_SELECT: live_stop_id,
-            SERVICE_SELECT: BRT_SERVICE_TYPE,
-        },
+        {STOP_SELECT: live_stop_id, SERVICE_SELECT: BRT_SERVICE_TYPE},
     )
-    brt_soup = BeautifulSoup(response.text, "html.parser")
-    return brt_soup
+    return BeautifulSoup(response.text, "html.parser")
 
 
 def route_postback(session, brt_soup, live_stop_id, route_id):
-    """Select a route and return its resulting page."""
     response = request_post(
         session,
         brt_soup,
@@ -306,7 +315,6 @@ def route_postback(session, brt_soup, live_stop_id, route_id):
 
 
 def scrape_stop(official_stop_id):
-    """Fetch live BRT ETAs for one official stop ID."""
     session = make_session()
     initial = request_get(session)
     initial_soup = BeautifulSoup(initial.text, "html.parser")
@@ -314,44 +322,32 @@ def scrape_stop(official_stop_id):
     print(f"[DEBUG] discovered {len(live_stops)} live stops")
 
     live_stop_id, live_stop_name = resolve_live_stop_id(official_stop_id, live_stops)
-    print(f"[DEBUG] official stop {official_stop_id} -> live stop {live_stop_id} ({live_stop_name})")
+    print(f"[DEBUG] {official_stop_id} -> {live_stop_id} ({live_stop_name})")
 
     brt_soup = select_stop_and_brt(session, initial_soup, live_stop_id)
     routes = get_routes(brt_soup)
     if not routes:
         raise RuntimeError("No BRT routes found after selecting the stop")
 
-    print(f"[DEBUG] {len(routes)} BRT routes available")
     result_routes = []
-
     for route in routes:
         route_id = str(route["id"])
-        route_name = route["name"]
-        print(f"[DEBUG] route {route_id}: {route_name}")
-
         page = route_postback(session, brt_soup, live_stop_id, route_id)
         buses = parse_eta_table(page)
 
-        # If the ASP.NET page did not keep the route selection, rebuild the
-        # stop -> BRT state once and retry that route. This is important on
-        # long-lived/reused WebForms sessions and is the main failure mode that
-        # produced empty ETA responses despite valid route options.
-        selected_route = page.find("option", selected=True)
-        selected_value = selected_route.get("value") if selected_route else None
+        selected = page.find("option", selected=True)
+        selected_value = selected.get("value") if selected else None
         if selected_value != route_id and not buses:
-            print(f"[DEBUG] route state mismatch for {route_id}; rebuilding WebForms state")
-            retry_brt_soup = select_stop_and_brt(session, initial_soup, live_stop_id)
-            page = route_postback(session, retry_brt_soup, live_stop_id, route_id)
+            retry_brt = select_stop_and_brt(session, initial_soup, live_stop_id)
+            page = route_postback(session, retry_brt, live_stop_id, route_id)
             buses = parse_eta_table(page)
 
         result_routes.append({
             "route_id": route_id,
-            "route_name": route_name,
+            "route_name": route["name"],
             "buses": buses,
         })
-        print(f"[DEBUG] route {route_id}: {len(buses)} live buses")
 
-    total_buses = sum(len(route["buses"]) for route in result_routes)
     return {
         "stop_id": str(official_stop_id),
         "live_stop_id": str(live_stop_id),
@@ -359,7 +355,7 @@ def scrape_stop(official_stop_id):
         "service_type": "BRT",
         "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "route_count": len(result_routes),
-        "live_bus_count": total_buses,
+        "live_bus_count": sum(len(r["buses"]) for r in result_routes),
         "routes": result_routes,
     }
 
@@ -383,11 +379,7 @@ def get_cached_stop(stop_id):
         cache[key] = {"cached_at": time.time(), "data": data}
 
     result = dict(data)
-    result["cache"] = {
-        "hit": False,
-        "age_seconds": 0,
-        "ttl_seconds": CACHE_SECONDS,
-    }
+    result["cache"] = {"hit": False, "age_seconds": 0, "ttl_seconds": CACHE_SECONDS}
     return result
 
 
@@ -403,18 +395,18 @@ def get_local_route_stops(route_id):
             lng = float(stop["stopLongitude"])
         except (KeyError, TypeError, ValueError):
             continue
+        # Prefer the resolved current live ID when the route dataset has one.
+        stop_id = stop.get("liveStopId") or stop.get("stopCode", "")
         result.append({
             "sequence": stop.get("sequenceNumber"),
-            "id": str(stop.get("stopCode", "")),
+            "id": str(stop_id),
+            "source_id": str(stop.get("stopCode", "")),
             "name": stop.get("stopName", ""),
             "lat": lat,
             "lng": lng,
         })
 
-    return sorted(
-        result,
-        key=lambda x: x["sequence"] if x["sequence"] is not None else 999999,
-    )
+    return sorted(result, key=lambda x: x["sequence"] if x["sequence"] is not None else 999999)
 
 
 @app.get("/")
@@ -426,10 +418,7 @@ def home():
 def api_health():
     return jsonify({
         "status": "ok",
-        "transit_data": {
-            "stops": len(TRANSIT["stops"]),
-            "routes": len(TRANSIT["routes"]),
-        },
+        "transit_data": {"stops": len(TRANSIT["stops"]), "routes": len(TRANSIT["routes"])},
         "live_eta": "available",
     })
 
@@ -450,10 +439,7 @@ def api_debug_data():
 @app.get("/api/stops")
 def api_stops():
     return jsonify({
-        "stops": [
-            {"id": str(i), **s}
-            for i, s in TRANSIT["stops"].items()
-        ],
+        "stops": [{"id": str(i), **s} for i, s in TRANSIT["stops"].items()],
         "count": len(TRANSIT["stops"]),
         "source": "transit_data.json",
     })
@@ -463,11 +449,7 @@ def api_stops():
 def api_routes():
     return jsonify({
         "routes": [
-            {
-                "id": str(i),
-                "name": r.get("name", ""),
-                "stop_count": len(r.get("stops", [])),
-            }
+            {"id": str(i), "name": r.get("name", ""), "stop_count": len(r.get("stops", []))}
             for i, r in TRANSIT["routes"].items()
         ],
         "count": len(TRANSIT["routes"]),
@@ -479,15 +461,8 @@ def api_route_stops(route_id):
     route = TRANSIT["routes"].get(str(route_id))
     stops = get_local_route_stops(route_id)
     if not route or not stops:
-        return jsonify({
-            "error": "Route not found or has no valid coordinates",
-            "route_id": route_id,
-        }), 404
-    return jsonify({
-        "route_id": route_id,
-        "name": route.get("name", ""),
-        "stops": stops,
-    })
+        return jsonify({"error": "Route not found or has no valid coordinates", "route_id": route_id}), 404
+    return jsonify({"route_id": route_id, "name": route.get("name", ""), "stops": stops})
 
 
 @app.get("/api/eta/<stop_id>")
@@ -495,25 +470,13 @@ def api_eta(stop_id):
     try:
         return jsonify(get_cached_stop(stop_id))
     except ValueError as exc:
-        return jsonify({
-            "error": "Invalid stop",
-            "stop_id": str(stop_id),
-            "details": str(exc),
-        }), 400
+        return jsonify({"error": "Invalid stop", "stop_id": str(stop_id), "details": str(exc)}), 400
     except requests.RequestException as exc:
         print("[ETA NETWORK ERROR]", repr(exc))
-        return jsonify({
-            "error": "SITILINK request failed",
-            "stop_id": str(stop_id),
-            "details": str(exc),
-        }), 502
+        return jsonify({"error": "SITILINK request failed", "stop_id": str(stop_id), "details": str(exc)}), 502
     except Exception as exc:
         print("[ETA ERROR]", repr(exc))
-        return jsonify({
-            "error": "Failed to fetch ETA",
-            "stop_id": str(stop_id),
-            "details": str(exc),
-        }), 500
+        return jsonify({"error": "Failed to fetch ETA", "stop_id": str(stop_id), "details": str(exc)}), 500
 
 
 if __name__ == "__main__":
