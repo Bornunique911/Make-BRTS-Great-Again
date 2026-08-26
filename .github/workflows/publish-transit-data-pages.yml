@@ -1,0 +1,102 @@
+name: Publish transit data everywhere
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "transit_data.json"
+      - "static/assets/transit_data.json"
+      - "flask/app/static/transit_data.json"
+      - "flask/app/static/assets/transit_data.json"
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
+
+concurrency:
+  group: publish-transit-data
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install requests
+
+      - name: Build official Sitilink dataset
+        run: python build_transit_data.py
+
+      - name: Publish the SAME dataset to every frontend
+        run: |
+          test -s transit_data.json
+          mkdir -p static/assets flask/app/static/assets
+          cp transit_data.json static/assets/transit_data.json
+          cp transit_data.json flask/app/static/transit_data.json
+          cp transit_data.json flask/app/static/assets/transit_data.json
+
+      - name: Validate coordinates before publishing
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          src = json.loads(Path("transit_data.json").read_text())
+          stops = src.get("stops", [])
+
+          bad = []
+          mapped = 0
+          for stop in stops:
+              lat = stop.get("lat")
+              lon = stop.get("lng")
+              if lat is None or lon is None:
+                  continue
+              mapped += 1
+              # Surat city bounds. Anything outside this box must never reach
+              # the map; this catches the old Africa/Europe geocoding failure.
+              if not (20.95 <= float(lat) <= 21.35 and 72.55 <= float(lon) <= 73.15):
+                  bad.append((stop.get("stop_id"), stop.get("name"), lat, lon))
+
+          if bad:
+              print("OUT-OF-SURAT COORDINATES:")
+              for row in bad[:20]:
+                  print(row)
+              raise SystemExit(f"Refusing to publish {len(bad)} invalid station coordinates")
+
+          if mapped < 500:
+              raise SystemExit(f"Only {mapped} stations have coordinates; refusing to publish")
+
+          print(f"Validated {mapped}/{len(stops)} stations with Surat-bounded coordinates")
+
+          for path in [
+              "static/assets/transit_data.json",
+              "flask/app/static/transit_data.json",
+              "flask/app/static/assets/transit_data.json",
+          ]:
+              published = json.loads(Path(path).read_text())
+              if published != src:
+                  raise SystemExit(f"Published dataset differs from source: {path}")
+          PY
+
+      - name: Commit generated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add transit_data.json static/assets/transit_data.json flask/app/static/transit_data.json flask/app/static/assets/transit_data.json
+          if git diff --cached --quiet; then
+            echo "No transit data changes."
+          else
+            git commit -m "chore: refresh official transit data"
+            git push
+          fi
