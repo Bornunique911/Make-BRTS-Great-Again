@@ -50,7 +50,8 @@ APP_DIR = Path(__file__).resolve().parent
 # We also check a couple of fallback locations so the API does not silently
 # load an empty dataset if the working tree is slightly different.
 TRANSIT_CANDIDATES = [
-    APP_DIR.parent / "app" / "static" / "assets" / "transit_data.json",
+    APP_DIR / "static" / "assets" / "transit_data.json",
+    APP_DIR.parent / "static" / "assets" / "transit_data.json",
 ]
 
 def _find_transit_file():
