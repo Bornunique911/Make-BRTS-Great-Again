@@ -1,0 +1,114 @@
+name: Publish transit data everywhere
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "transit_data.json"
+      - "static/assets/transit_data.json"
+      - "flask/app/static/transit_data.json"
+      - "flask/app/static/assets/transit_data.json"
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
+
+concurrency:
+  group: publish-transit-data
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Create virtual environment and install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Build official Sitilink dataset
+        run: |
+          source venv/bin/activate
+          python build_transit_data.py
+
+      - name: Publish the SAME dataset to every frontend
+        run: |
+          test -s transit_data.json
+          mkdir -p static/assets flask/app/static/assets
+          cp transit_data.json static/assets/transit_data.json
+          cp transit_data.json flask/app/static/transit_data.json
+          cp transit_data.json flask/app/static/assets/transit_data.json
+
+      - name: Validate coordinates and dataset shape before publishing
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          src = json.loads(Path("transit_data.json").read_text())
+          stops = src.get("stops") or {}
+          if not isinstance(stops, dict):
+              raise SystemExit("transit_data.json stops must be an object keyed by stop ID")
+
+          MIN_LAT, MAX_LAT = 20.95, 21.40
+          MIN_LNG, MAX_LNG = 72.55, 73.15
+
+          bad = []
+          mapped = 0
+          for stop_id, stop in stops.items():
+              lat = stop.get("lat")
+              lon = stop.get("lng")
+              if lat is None or lon is None:
+                  continue
+              mapped += 1
+              if not (MIN_LAT <= float(lat) <= MAX_LAT and MIN_LNG <= float(lon) <= MAX_LNG):
+                  bad.append((stop_id, stop.get("name"), lat, lon))
+
+          if bad:
+              print("OUT-OF-SURAT COORDINATES:")
+              for row in bad[:20]:
+                  print(row)
+              raise SystemExit(f"Refusing to publish {len(bad)} invalid station coordinates")
+
+          if mapped < 100:
+              raise SystemExit(f"Only {mapped} BRT stations have coordinates; refusing to publish")
+
+          routes = src.get("routes") or {}
+          if not isinstance(routes, dict) or len(routes) < 50:
+              raise SystemExit(f"Only {len(routes)} routes were generated; refusing to publish")
+
+          print(f"Validated {mapped}/{len(stops)} BRT stations and {len(routes)} routes")
+
+          for path in [
+              "static/assets/transit_data.json",
+              "flask/app/static/transit_data.json",
+              "flask/app/static/assets/transit_data.json",
+          ]:
+              published = json.loads(Path(path).read_text())
+              if published != src:
+                  raise SystemExit(f"Published dataset differs from source: {path}")
+          PY
+
+      - name: Commit generated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add transit_data.json static/assets/transit_data.json flask/app/static/transit_data.json flask/app/static/assets/transit_data.json
+          if git diff --cached --quiet; then
+            echo "No transit data changes."
+          else
+            git commit -m "chore: refresh official BRT transit data"
+            git push
+          fi

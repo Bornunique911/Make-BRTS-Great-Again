@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="assets/favicons/favicon-32x32.png" sizes="32x32">
-  <link rel="icon" type="image/png" href="assets/favicons/favicon-16x16.png" sizes="16x16">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-touch-icon.png"> 
+  <link rel="icon" type="image/png" href="static/assets/favicons/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="static/assets/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="apple-touch-icon" sizes="180x180" href="static/assets/favicons/apple-touch-icon.png"> 
   <title>Surat BRTS | Live map</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -178,7 +178,27 @@
       renderSearchResults(routeStops);
       search.value = '';
     };
-    const loadNetwork = async () => { const response=await fetch(DATA_URL); if(!response.ok) throw new Error('transit_data.json could not be loaded'); const data=await response.json(); const stops=Object.values(data.stops); const mappedStops=stops.filter(stop=>stop.lat!=null&&stop.lng!=null); const routes={}; Object.entries(data.routes).forEach(([id,route])=>{const valid=route.stops.map(stop=>({...stop,id:String(stop.stopCode),name:stop.stopName,lat:Number(stop.stopLatitude),lng:Number(stop.stopLongitude),sequence:stop.sequenceNumber})).filter(stop=>Number.isFinite(stop.lat)&&Number.isFinite(stop.lng));routes[id]={...route,stops:valid};const option=document.createElement('option');option.value=id;option.textContent=`${id} · ${routeName(route.name)}`;routeSelect.appendChild(option);});network={stops:mappedStops,routes};document.getElementById('stop-count').textContent=mappedStops.length.toLocaleString();document.getElementById('route-count').textContent=Object.keys(routes).length.toLocaleString();drawStops(mappedStops); };
+    const loadNetwork = async () => { 
+    const response = await fetch(DATA_URL); 
+    if (!response.ok) throw new Error('transit_data.json could not be loaded'); 
+    const data = await response.json(); 
+    const stops = Object.values(data.stops); 
+    const mappedStops = stops.filter(stop => stop.lat != null && stop.lng != null); 
+    const routes = {}; 
+    Object.entries(data.routes).forEach(([id, route]) => {
+      const valid = route.stops.map(stop => ({ ...stop, id: String(stop.stopCode), name: stop.stopName, lat: Number(stop.stopLatitude), lng: Number(stop.stopLongitude), sequence: stop.sequenceNumber })).filter(stop => Number.isFinite(stop.lat) && Number.isFinite(stop.lng));
+      routes[id] = { ...route, stops: valid };
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = `${id} · ${routeName(route.name)}`;
+      routeSelect.appendChild(option);
+    });
+    network = { stops: mappedStops, routes };
+    // ✅ Use catalog_stop_count for the official station count
+    document.getElementById('stop-count').textContent = data.catalog_stop_count.toLocaleString();
+    document.getElementById('route-count').textContent = Object.keys(routes).length.toLocaleString();
+    drawStops(mappedStops);
+  };
     routeSelect.addEventListener('change',()=>showRoute(routeSelect.value));
     search.addEventListener('input',()=>{if(!network) return; const term=search.value.trim().toLowerCase(),source=routeStops.length?routeStops:network.stops,matches=term?source.filter(stop=>stop.name.toLowerCase().includes(term)||String(stop.id).toLowerCase().includes(term)):source;drawStops(matches,routeStops.length>0);renderSearchResults(matches);if(matches.length===1) selectStop(matches[0]);});
     document.getElementById('locate').addEventListener('click',()=>navigator.geolocation?.getCurrentPosition(position=>map.setView([position.coords.latitude,position.coords.longitude],15)));
