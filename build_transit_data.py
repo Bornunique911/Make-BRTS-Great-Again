@@ -2,7 +2,6 @@ import json
 import math
 import re
 import time
-from difflib import SequenceMatcher
 from pathlib import Path
 
 import requests
@@ -53,7 +52,7 @@ def valid_surat_coordinate(lat, lng):
 
 
 def choose_canonical_coordinate(observations):
-    """Choose a real official coordinate from the dominant 50 m cluster."""
+    """Choose an actual official coordinate from the dominant cluster."""
     if not observations:
         return None
     if len(observations) == 1:
@@ -83,46 +82,31 @@ def choose_canonical_coordinate(observations):
     return min(winning["points"], key=lambda p: distance_m(p, centre))
 
 
-def build_name_indexes(stops):
-    exact = {}
-    compact = {}
+def build_name_index(stops):
+    index = {}
     for stop_id, stop in stops.items():
-        n = norm_name(stop.get("name"))
-        c = compact_name(stop.get("name"))
-        if n:
-            exact.setdefault(n, []).append(stop_id)
-        if c:
-            compact.setdefault(c, []).append(stop_id)
-    return exact, compact
+        name = norm_name(stop.get("name"))
+        if name:
+            index.setdefault(name, []).append(stop_id)
+    return index
 
 
-def resolve_master_stop_id(stop_code, stop_name, master, exact, compact):
-    code = str(stop_code)
-    if code in master:
+def resolve_live_id(stop_code, stop_name, master_stops, name_index):
+    """
+    Map a route stop to the live ETA stop only when the identity is certain.
+
+    NEVER use fuzzy matching here. A fuzzy match can silently attach one
+    station's coordinates/ETA ID to another station with a similar name.
+    """
+    code = str(stop_code or "")
+    if code in master_stops:
         return code
 
-    n = norm_name(stop_name)
-    candidates = exact.get(n, [])
+    name = norm_name(stop_name)
+    candidates = name_index.get(name, [])
     if len(candidates) == 1:
         return candidates[0]
 
-    c = compact_name(stop_name)
-    candidates = compact.get(c, [])
-    if len(candidates) == 1:
-        return candidates[0]
-
-    best_id = None
-    best_score = 0.0
-    for master_id, master_stop in master.items():
-        candidate = norm_name(master_stop.get("name"))
-        if not candidate or not n:
-            continue
-        score = SequenceMatcher(None, n, candidate).ratio()
-        if score > best_score:
-            best_score = score
-            best_id = master_id
-    if best_id is not None and best_score >= 0.96:
-        return best_id
     return None
 
 
@@ -131,8 +115,7 @@ def main():
     print("BUILDING SURAT SITILINK TRANSIT DATABASE")
     print("=" * 70)
 
-    # /Stop/list is the authoritative station list used by LiveBusInfo.aspx.
-    # Route-only stop codes must NOT be promoted to master map stations.
+    # This list is the authoritative station list used by the live ETA flow.
     stop_response = get_json("/Stop/list")
     master_stops = {}
     for stop in stop_response.get("data", []):
@@ -145,8 +128,8 @@ def main():
             "live_id": stop_id,
         }
 
-    print("Authoritative stops:", len(master_stops))
-    exact_names, compact_names = build_name_indexes(master_stops)
+    print("Authoritative live stops:", len(master_stops))
+    name_index = build_name_index(master_stops)
 
     route_response = get_json("/Route/list/")
     routes = route_response.get("data", [])
@@ -176,13 +159,16 @@ def main():
                     continue
 
                 if not valid_surat_coordinate(lat, lng):
-                    print(f"  Ignoring invalid coordinate for {raw_stop.get('stopCode')}: {lat}, {lng}")
+                    print(
+                        f"  Ignoring invalid coordinate for "
+                        f"{raw_stop.get('stopCode')}: {lat}, {lng}"
+                    )
                     continue
 
                 stop_code = str(raw_stop.get("stopCode", ""))
                 stop_name = raw_stop.get("stopName", stop_code)
-                live_id = resolve_master_stop_id(
-                    stop_code, stop_name, master_stops, exact_names, compact_names
+                live_id = resolve_live_id(
+                    stop_code, stop_name, master_stops, name_index
                 )
 
                 item = dict(raw_stop)
@@ -191,12 +177,18 @@ def main():
                 item["liveStopId"] = live_id
                 cleaned.append(item)
 
+                # Only authoritative live IDs get a master-map coordinate.
+                # Route-only IDs remain route-only and are never assigned to a
+                # different station merely because their names look similar.
                 if live_id is not None:
-                    coordinate_observations.setdefault(live_id, []).append((lat, lng))
+                    coordinate_observations.setdefault(live_id, []).append(
+                        (lat, lng)
+                    )
 
             route_data[route_id] = {
                 "route_id": route_id,
                 "name": route_name,
+                # Preserve the exact coordinates returned for this route.
                 "stops": cleaned,
             }
             print("  ✓", len(cleaned), "route stops")
@@ -210,7 +202,8 @@ def main():
             master_stops[stop_id]["lat"], master_stops[stop_id]["lng"] = coordinate
 
     missing = sum(
-        1 for stop in master_stops.values()
+        1
+        for stop in master_stops.values()
         if stop["lat"] is None or stop["lng"] is None
     )
 
@@ -223,13 +216,16 @@ def main():
         "routes": route_data,
     }
 
-    OUT.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
+    OUT.write_text(
+        json.dumps(output, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
     print("\n" + "=" * 70)
     print("DONE")
     print("=" * 70)
     print("Master stops:", len(master_stops))
-    print("Stops without official route coordinates:", missing)
+    print("Stops without authoritative route coordinates:", missing)
     print("Routes with coordinates:", len(route_data))
     print("Saved:", OUT)
 
