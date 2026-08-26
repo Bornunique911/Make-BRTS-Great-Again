@@ -1,13 +1,12 @@
 """Fast API-facing adapter for the Sitilink ASP.NET ETA scraper.
 
-The map dataset and the live Sitilink WebForms page do not always use the
-same stop ID. Route data can contain an older/alternate stop code that is
-absent from the current LiveBusInfo dropdown. Resolve by stop name first.
+Map stop IDs and the live Sitilink WebForms stop IDs can differ. Resolve an
+alternate map ID only through an exact official stop name match; never use
+fuzzy matching because a wrong match returns another station's ETA.
 """
 
 import json
 import re
-from difflib import SequenceMatcher
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -44,12 +43,9 @@ def _load_stop_name(stop_id):
                 if name:
                     return name
 
-            # Route-only IDs are deliberately not promoted to the master stop
-            # list. Still allow the ETA endpoint to resolve them by their
-            # official route stop name.
             for route in (data.get("routes") or {}).values():
                 for route_stop in route.get("stops", []):
-                    if str(route_stop.get("sourceStopCode", route_stop.get("stopCode", ""))) == str(stop_id):
+                    if str(route_stop.get("stopCode", "")) == str(stop_id):
                         return route_stop.get("stopName") or ""
         except Exception:
             continue
@@ -72,29 +68,19 @@ def _resolve_live_id(official_id, live_stops):
             f"Official stop {official_id} is not in the current Sitilink stop list"
         )
 
-    for stop in live_stops:
-        if _norm(stop.get("name")) == wanted_norm:
-            return str(stop["id"])
+    exact = [
+        stop for stop in live_stops
+        if _norm(stop.get("name")) == wanted_norm
+    ]
+    if len(exact) == 1:
+        return str(exact[0]["id"])
 
-    for stop in live_stops:
-        if _compact(stop.get("name")) == wanted_compact:
-            return str(stop["id"])
-
-    best_id = None
-    best_score = 0.0
-    for stop in live_stops:
-        candidate = _norm(stop.get("name"))
-        if not candidate:
-            continue
-        score = SequenceMatcher(None, wanted_norm, candidate).ratio()
-        prefix = min(len(wanted_norm), len(candidate), 12)
-        prefix_ok = wanted_norm[:prefix] == candidate[:prefix]
-        if prefix_ok and score > best_score:
-            best_score = score
-            best_id = str(stop["id"])
-
-    if best_id is not None and best_score >= 0.94:
-        return best_id
+    compact = [
+        stop for stop in live_stops
+        if _compact(stop.get("name")) == wanted_compact
+    ]
+    if len(compact) == 1:
+        return str(compact[0]["id"])
 
     raise LookupError(
         f"Could not map official stop {official_id} ({wanted}) "
