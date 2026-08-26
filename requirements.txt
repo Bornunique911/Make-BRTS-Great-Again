@@ -1,2 +1,6 @@
-datetime
-timezones
+Flask
+Flask-Cors
+requests
+beautifulsoup4
+urllib3
+gunicorn
