@@ -1,8 +1,8 @@
 import json
+import math
 import time
 import requests
 from pathlib import Path
-from statistics import median
 
 BASE = "https://suratcitytransportapp.co.in"
 OUT = Path("transit_data.json")
@@ -20,6 +20,69 @@ def get_json(path):
     response = session.get(url, timeout=20)
     response.raise_for_status()
     return response.json()
+
+
+def distance_m(a, b):
+    """Distance in metres between two WGS84 coordinates."""
+    lat1, lng1 = a
+    lat2, lng2 = b
+    r = 6371000.0
+    p1 = math.radians(lat1)
+    p2 = math.radians(lat2)
+    dp = math.radians(lat2 - lat1)
+    dl = math.radians(lng2 - lng1)
+    h = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * r * math.asin(math.sqrt(h))
+
+
+def choose_canonical_coordinate(observations):
+    """
+    Pick an actual coordinate returned by Sitilink rather than inventing a
+    coordinate between observations.
+
+    A stop can occur on many routes. A simple average/median can move a stop
+    away from the road when one route record contains a bad point. We cluster
+    observations within 40 m, keep the largest cluster, and choose the point
+    nearest that cluster's centre (a medoid).
+    """
+    if not observations:
+        return None
+    if len(observations) == 1:
+        return observations[0]
+
+    clusters = []
+    for point in observations:
+        best_cluster = None
+        best_distance = float("inf")
+        for cluster in clusters:
+            d = distance_m(point, cluster["center"])
+            if d <= 40 and d < best_distance:
+                best_cluster = cluster
+                best_distance = d
+
+        if best_cluster is None:
+            clusters.append({"points": [point], "center": point})
+        else:
+            best_cluster["points"].append(point)
+            points = best_cluster["points"]
+            best_cluster["center"] = (
+                sum(p[0] for p in points) / len(points),
+                sum(p[1] for p in points) / len(points),
+            )
+
+    clusters.sort(key=lambda c: len(c["points"]), reverse=True)
+    winning = clusters[0]["points"]
+    centre = (
+        sum(p[0] for p in winning) / len(winning),
+        sum(p[1] for p in winning) / len(winning),
+    )
+    return min(winning, key=lambda p: distance_m(p, centre))
+
+
+def valid_surat_coordinate(lat, lng):
+    # Generous Surat bounding box; catches obvious 0/garbage values without
+    # rejecting legitimate edge-of-city stops.
+    return 20.95 <= lat <= 21.40 and 72.60 <= lng <= 73.05
 
 
 def main():
@@ -65,17 +128,23 @@ def main():
                 print("  No stops")
                 continue
 
-            route_data[route_id] = {
-                "route_id": route_id,
-                "name": route.get("routeLongName", ""),
-                "stops": coordinates,
-            }
-
+            cleaned = []
             for stop in coordinates:
-                stop_id = str(stop["stopCode"])
-                lat = float(stop["stopLatitude"])
-                lng = float(stop["stopLongitude"])
+                try:
+                    lat = float(stop["stopLatitude"])
+                    lng = float(stop["stopLongitude"])
+                except (KeyError, TypeError, ValueError):
+                    continue
 
+                if not valid_surat_coordinate(lat, lng):
+                    print(f"  Ignoring invalid coordinate for {stop.get('stopCode')}: {lat}, {lng}")
+                    continue
+
+                stop["stopLatitude"] = lat
+                stop["stopLongitude"] = lng
+                cleaned.append(stop)
+
+                stop_id = str(stop["stopCode"])
                 if stop_id not in stops:
                     stops[stop_id] = {
                         "id": stop_id,
@@ -83,32 +152,26 @@ def main():
                         "lat": None,
                         "lng": None,
                     }
-
                 coordinate_observations.setdefault(stop_id, []).append((lat, lng))
 
-            print("  ✓", len(coordinates), "stops")
+            route_data[route_id] = {
+                "route_id": route_id,
+                "name": route.get("routeLongName", ""),
+                # Keep exact route coordinates returned by the official API.
+                # Do not replace every route with a synthetic master point.
+                "stops": cleaned,
+            }
+            print("  ✓", len(cleaned), "stops")
         except Exception as exc:
             print("  ERROR:", exc)
         time.sleep(0.2)
 
-    # A stop can appear in several routes. Do not let the last route overwrite
-    # the station's location. Use the median observation, which is robust to a
-    # single bad coordinate and keeps one physical station in one place.
+    # Master coordinate = one real coordinate from the largest consistent
+    # cluster of official observations for that stop ID.
     for stop_id, observations in coordinate_observations.items():
-        if not observations:
-            continue
-        stops[stop_id]["lat"] = median(point[0] for point in observations)
-        stops[stop_id]["lng"] = median(point[1] for point in observations)
-
-    # Replace route-level coordinates with the same canonical station
-    # coordinate so a station does not jump between routes.
-    for route in route_data.values():
-        for stop in route["stops"]:
-            stop_id = str(stop["stopCode"])
-            canonical = stops.get(stop_id)
-            if canonical and canonical["lat"] is not None:
-                stop["stopLatitude"] = canonical["lat"]
-                stop["stopLongitude"] = canonical["lng"]
+        coordinate = choose_canonical_coordinate(observations)
+        if coordinate:
+            stops[stop_id]["lat"], stops[stop_id]["lng"] = coordinate
 
     output = {
         "generated_at": time.time(),
