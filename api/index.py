@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Vercel entrypoint for the Surat BRTS Flask application."""
 
 import sys
@@ -8,7 +9,9 @@ REPO_DIR = APP_DIR.parent.parent
 sys.path.insert(0, str(APP_DIR))
 sys.path.insert(0, str(REPO_DIR))
 
-from app import app  # noqa: E402,F401
+from importlib import import_module  # noqa: E402
+
+app = import_module("app").app
 
 
 # The Flask app contains an older ETA implementation.  Vercel must use the
