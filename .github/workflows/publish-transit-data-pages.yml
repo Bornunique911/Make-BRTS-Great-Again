@@ -46,27 +46,27 @@ jobs:
           cp transit_data.json flask/app/static/transit_data.json
           cp transit_data.json flask/app/static/assets/transit_data.json
 
-      - name: Validate coordinates before publishing
+      - name: Validate coordinates and dataset shape before publishing
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
           src = json.loads(Path("transit_data.json").read_text())
-          stops = src.get("stops", [])
+          stops = src.get("stops") or {}
+          if not isinstance(stops, dict):
+              raise SystemExit("transit_data.json stops must be an object keyed by stop ID")
 
           bad = []
           mapped = 0
-          for stop in stops:
+          for stop_id, stop in stops.items():
               lat = stop.get("lat")
               lon = stop.get("lng")
               if lat is None or lon is None:
                   continue
               mapped += 1
-              # Surat city bounds. Anything outside this box must never reach
-              # the map; this catches the old Africa/Europe geocoding failure.
               if not (20.95 <= float(lat) <= 21.35 and 72.55 <= float(lon) <= 73.15):
-                  bad.append((stop.get("stop_id"), stop.get("name"), lat, lon))
+                  bad.append((stop_id, stop.get("name"), lat, lon))
 
           if bad:
               print("OUT-OF-SURAT COORDINATES:")
@@ -75,9 +75,13 @@ jobs:
               raise SystemExit(f"Refusing to publish {len(bad)} invalid station coordinates")
 
           if mapped < 500:
-              raise SystemExit(f"Only {mapped} stations have coordinates; refusing to publish")
+              raise SystemExit(f"Only {mapped} BRT stations have coordinates; refusing to publish")
 
-          print(f"Validated {mapped}/{len(stops)} stations with Surat-bounded coordinates")
+          routes = src.get("routes") or {}
+          if not isinstance(routes, dict) or len(routes) < 50:
+              raise SystemExit(f"Only {len(routes)} routes were generated; refusing to publish")
+
+          print(f"Validated {mapped}/{len(stops)} BRT stations and {len(routes)} routes")
 
           for path in [
               "static/assets/transit_data.json",
@@ -97,6 +101,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No transit data changes."
           else
-            git commit -m "chore: refresh official transit data"
+            git commit -m "chore: refresh official BRT transit data"
             git push
           fi
