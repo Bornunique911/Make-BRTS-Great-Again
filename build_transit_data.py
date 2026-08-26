@@ -43,11 +43,9 @@ def norm_name(value):
     return " ".join(value.split())
 
 
-def compact_name(value):
-    return norm_name(value).replace(" ", "")
-
-
 def valid_surat_coordinate(lat, lng):
+    # Surat city + immediate BRT corridor area. Anything outside this box is
+    # rejected before it can ever reach the map.
     return 20.95 <= lat <= 21.40 and 72.60 <= lng <= 73.05
 
 
@@ -92,12 +90,7 @@ def build_name_index(stops):
 
 
 def resolve_live_id(stop_code, stop_name, master_stops, name_index):
-    """
-    Map a route stop to the live ETA stop only when the identity is certain.
-
-    NEVER use fuzzy matching here. A fuzzy match can silently attach one
-    station's coordinates/ETA ID to another station with a similar name.
-    """
+    """Resolve a route stop to the authoritative live stop ID only exactly."""
     code = str(stop_code or "")
     if code in master_stops:
         return code
@@ -112,10 +105,11 @@ def resolve_live_id(stop_code, stop_name, master_stops, name_index):
 
 def main():
     print("=" * 70)
-    print("BUILDING SURAT SITILINK TRANSIT DATABASE")
+    print("BUILDING SURAT BRTS TRANSIT DATABASE")
     print("=" * 70)
 
-    # This list is the authoritative station list used by the live ETA flow.
+    # /Stop/list contains the complete Sitilink stop catalogue. It is NOT a
+    # BRT-only list. Keep it only as the authoritative ID/name dictionary.
     stop_response = get_json("/Stop/list")
     master_stops = {}
     for stop in stop_response.get("data", []):
@@ -128,15 +122,16 @@ def main():
             "live_id": stop_id,
         }
 
-    print("Authoritative live stops:", len(master_stops))
+    print("Authoritative Sitilink stops:", len(master_stops))
     name_index = build_name_index(master_stops)
 
     route_response = get_json("/Route/list/")
     routes = route_response.get("data", [])
-    print("Routes:", len(routes))
+    print("Routes downloaded:", len(routes))
 
     route_data = {}
     coordinate_observations = {}
+    brt_stop_ids = set()
 
     for index, route in enumerate(routes, 1):
         route_id = str(route["routeId"])
@@ -177,10 +172,11 @@ def main():
                 item["liveStopId"] = live_id
                 cleaned.append(item)
 
-                # Only authoritative live IDs get a master-map coordinate.
-                # Route-only IDs remain route-only and are never assigned to a
-                # different station merely because their names look similar.
+                # Only stops actually present on a downloaded BRT route become
+                # map stations. This prevents the complete city-bus stop
+                # catalogue from appearing as BRT stations.
                 if live_id is not None:
+                    brt_stop_ids.add(live_id)
                     coordinate_observations.setdefault(live_id, []).append(
                         (lat, lng)
                     )
@@ -188,7 +184,6 @@ def main():
             route_data[route_id] = {
                 "route_id": route_id,
                 "name": route_name,
-                # Preserve the exact coordinates returned for this route.
                 "stops": cleaned,
             }
             print("  ✓", len(cleaned), "route stops")
@@ -196,23 +191,44 @@ def main():
             print("  ERROR:", exc)
         time.sleep(0.15)
 
+    # Give every BRT-served master stop one canonical official coordinate.
     for stop_id, observations in coordinate_observations.items():
         coordinate = choose_canonical_coordinate(observations)
         if coordinate:
             master_stops[stop_id]["lat"], master_stops[stop_id]["lng"] = coordinate
 
-    missing = sum(
-        1
-        for stop in master_stops.values()
-        if stop["lat"] is None or stop["lng"] is None
-    )
+    # IMPORTANT: do not publish all /Stop/list entries. That list contains
+    # stops that are not served by BRT. Publish only stops that occur on the
+    # BRT route geometry we downloaded above.
+    brt_stops = {
+        stop_id: master_stops[stop_id]
+        for stop_id in sorted(brt_stop_ids)
+        if stop_id in master_stops
+        and master_stops[stop_id]["lat"] is not None
+        and master_stops[stop_id]["lng"] is not None
+    }
+
+    # Final safety check: every published station must be in Surat.
+    invalid = []
+    for stop_id, stop in brt_stops.items():
+        lat = float(stop["lat"])
+        lng = float(stop["lng"])
+        if not valid_surat_coordinate(lat, lng):
+            invalid.append((stop_id, lat, lng))
+
+    if invalid:
+        raise RuntimeError(
+            f"Refusing to publish {len(invalid)} station(s) outside Surat: "
+            f"{invalid[:5]}"
+        )
 
     output = {
         "generated_at": time.time(),
         "coordinate_source": "Surat Sitilink official Route/stopcoordinates API",
-        "stop_count": len(master_stops),
+        "stop_count": len(brt_stops),
         "route_count": len(route_data),
-        "stops": master_stops,
+        "catalog_stop_count": len(master_stops),
+        "stops": brt_stops,
         "routes": route_data,
     }
 
@@ -224,9 +240,9 @@ def main():
     print("\n" + "=" * 70)
     print("DONE")
     print("=" * 70)
-    print("Master stops:", len(master_stops))
-    print("Stops without authoritative route coordinates:", missing)
-    print("Routes with coordinates:", len(route_data))
+    print("BRT map stops:", len(brt_stops))
+    print("Full Sitilink catalogue:", len(master_stops))
+    print("Routes:", len(route_data))
     print("Saved:", OUT)
 
 
