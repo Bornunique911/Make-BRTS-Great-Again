@@ -9,19 +9,16 @@ REPO_DIR = APP_DIR.parent.parent
 sys.path.insert(0, str(APP_DIR))
 sys.path.insert(0, str(REPO_DIR))
 
-from importlib import import_module  # noqa: E402
+from importlib import import_module
 
-app = import_module("app").app
+# Import the Flask app and its robust ETA resolver
+app_module = import_module("app")
+app = app_module.app
+get_cached_stop = app_module.get_cached_stop
 
+# Remove the old /api/eta/<stop_id> rule if it exists
+from flask import jsonify
 
-# The Flask app contains an older ETA implementation.  Vercel must use the
-# same tested adapter as the FastAPI/local backend so that map stop IDs are
-# resolved against the current Sitilink LiveBusInfo stop list consistently.
-from flask import jsonify  # noqa: E402
-from surat_brts_eta_fast import get_eta  # noqa: E402
-
-
-# Remove the old /api/eta/<stop_id> rule before registering the corrected one.
 for _rule in list(app.url_map.iter_rules()):
     if _rule.rule == "/api/eta/<stop_id>":
         app.url_map._rules.remove(_rule)
@@ -31,11 +28,11 @@ for _rule in list(app.url_map.iter_rules()):
             endpoint_rules.remove(_rule)
         app.view_functions.pop(endpoint, None)
 
-
+# Register new endpoint using app.py's robust resolver
 @app.get("/api/eta/<stop_id>")
 def corrected_api_eta(stop_id):
     try:
-        return jsonify(get_eta(stop_id))
+        return jsonify(get_cached_stop(stop_id))
     except LookupError as exc:
         return jsonify({"error": str(exc)}), 404
     except ValueError as exc:
