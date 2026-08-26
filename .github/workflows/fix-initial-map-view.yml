@@ -1,0 +1,61 @@
+name: Fix initial Surat map view
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-map-view:
+    if: ${{ !contains(github.event.head_commit.message, '[skip map fix]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch map startup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          files = [Path('index.html'), Path('flask/app/templates/index.html')]
+          for path in files:
+              if not path.exists():
+                  continue
+              text = path.read_text(encoding='utf-8')
+
+              text = text.replace(
+                  "const INITIAL_ZOOM=13;",
+                  "const INITIAL_ZOOM=13;\nconst SURAT_BOUNDS=L.latLngBounds([21.02,72.65],[21.34,73.05]);"
+              )
+
+              text = text.replace(
+                  "const map=L.map('map',{zoomControl:false}).setView(surat,INITIAL_ZOOM);",
+                  "const map=L.map('map',{zoomControl:false,minZoom:11,maxZoom:19,maxBounds:SURAT_BOUNDS,maxBoundsViscosity:1}).setView(surat,INITIAL_ZOOM);"
+              )
+
+              text = text.replace(
+                  "function fitNetwork(){map.setView(surat,INITIAL_ZOOM);}",
+                  "function fitNetwork(){map.invalidateSize({pan:false});map.setView(surat,INITIAL_ZOOM,false);}")
+
+              old = "drawStops(stops);renderSearch(stops);map.setView(surat,INITIAL_ZOOM);"
+              new = "drawStops(stops);renderSearch(stops);map.invalidateSize({pan:false});map.setView(surat,INITIAL_ZOOM,false);"
+              text = text.replace(old, new)
+
+              old = "updateTheme();updateClock();setInterval(updateTheme,60000);setInterval(updateClock,1000);loadNetwork().catch(e=>"
+              new = "updateTheme();updateClock();setInterval(updateTheme,60000);setInterval(updateClock,1000);window.addEventListener('load',()=>setTimeout(()=>fitNetwork(),100));loadNetwork().catch(e=>"
+              text = text.replace(old, new)
+
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit patched files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html flask/app/templates/index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Force map to open on Surat [skip map fix]"
+          git push
