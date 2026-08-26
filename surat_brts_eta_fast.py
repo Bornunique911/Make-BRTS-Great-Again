@@ -1,8 +1,9 @@
-"""Fast API-facing adapter for the Sitilink ASP.NET ETA scraper.
+"""API-facing adapter for the Sitilink ASP.NET ETA scraper.
 
-Map stop IDs and the live Sitilink WebForms stop IDs can differ. Resolve an
-alternate map ID only through an exact official stop name match; never use
-fuzzy matching because a wrong match returns another station's ETA.
+The map dataset and the LiveBusInfo.aspx dropdown do not always use the same
+stop ID. Resolve by exact official stop name and, when a name is duplicated,
+try the exact-name live candidates until one actually exposes BRT routes.
+Never use fuzzy matching for ETA.
 """
 
 import json
@@ -10,8 +11,7 @@ import re
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from surat_brts_eta_menu import get_stops, request_get, make_session, scrape_single_stop
-
+from surat_brts_eta_menu import get_stops, make_session, request_get, scrape_single_stop
 
 DATA_CANDIDATES = [
     Path(__file__).with_name("transit_data.json"),
@@ -42,50 +42,35 @@ def _load_stop_name(stop_id):
                 name = stop.get("name") or stop.get("stopName") or ""
                 if name:
                     return name
-
             for route in (data.get("routes") or {}).values():
                 for route_stop in route.get("stops", []):
-                    if str(route_stop.get("stopCode", "")) == str(stop_id):
+                    source_id = route_stop.get("sourceStopCode", route_stop.get("stopCode", ""))
+                    if str(source_id) == str(stop_id):
                         return route_stop.get("stopName") or ""
         except Exception:
             continue
     return ""
 
 
-def _resolve_live_id(official_id, live_stops):
+def _live_candidates(official_id, live_stops):
+    """Return only exact-ID/exact-name live candidates, strongest first."""
     official_id = str(official_id).strip()
     live_by_id = {str(s["id"]): s for s in live_stops}
-
     if official_id in live_by_id:
-        return official_id
+        return [live_by_id[official_id]]
 
     wanted = _load_stop_name(official_id)
+    if not wanted:
+        return []
+
     wanted_norm = _norm(wanted)
     wanted_compact = _compact(wanted)
 
-    if not wanted_norm:
-        raise LookupError(
-            f"Official stop {official_id} is not in the current Sitilink stop list"
-        )
+    exact = [s for s in live_stops if _norm(s.get("name")) == wanted_norm]
+    if exact:
+        return exact
 
-    exact = [
-        stop for stop in live_stops
-        if _norm(stop.get("name")) == wanted_norm
-    ]
-    if len(exact) == 1:
-        return str(exact[0]["id"])
-
-    compact = [
-        stop for stop in live_stops
-        if _compact(stop.get("name")) == wanted_compact
-    ]
-    if len(compact) == 1:
-        return str(compact[0]["id"])
-
-    raise LookupError(
-        f"Could not map official stop {official_id} ({wanted}) "
-        f"to the current Sitilink stop list ({len(live_stops)} stops)"
-    )
+    return [s for s in live_stops if _compact(s.get("name")) == wanted_compact]
 
 
 def get_eta(stop_id: str):
@@ -99,11 +84,41 @@ def get_eta(stop_id: str):
     soup = BeautifulSoup(response.text, "html.parser")
     live_stops = get_stops(soup)
 
-    live_id = _resolve_live_id(stop_id, live_stops)
-    result = scrape_single_stop(live_id)
-    if result is None:
-        raise LookupError(f"Live Sitilink stop {live_id!r} was not found")
+    candidates = _live_candidates(stop_id, live_stops)
+    if not candidates:
+        wanted = _load_stop_name(stop_id)
+        raise LookupError(
+            f"Could not map official stop {stop_id} ({wanted}) "
+            f"to the live Sitilink stop list ({len(live_stops)} stops)"
+        )
 
-    result["requested_stop_id"] = stop_id
-    result["live_stop_id"] = str(live_id)
-    return result
+    # A live stop can exist more than once under the same name. The first
+    # candidate may be a non-BRT stop, so try only exact-name candidates until
+    # the official BRT dropdown actually exposes routes.
+    failures = []
+    for candidate in candidates:
+        live_id = str(candidate["id"])
+        try:
+            result = scrape_single_stop(live_id)
+        except Exception as exc:
+            failures.append(f"{live_id}: {exc}")
+            continue
+
+        if result is None:
+            failures.append(f"{live_id}: stop not found")
+            continue
+
+        if result.get("routes"):
+            result["requested_stop_id"] = stop_id
+            result["live_stop_id"] = live_id
+            return result
+
+        failures.append(f"{live_id}: no BRT routes")
+
+    wanted = _load_stop_name(stop_id)
+    detail = "; ".join(failures[:6])
+    raise LookupError(
+        f"No BRT routes found for official stop {stop_id} ({wanted}). "
+        f"Tried {len(candidates)} exact live-stop candidate(s)"
+        + (f": {detail}" if detail else "")
+    )
