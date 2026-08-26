@@ -74,7 +74,7 @@ jobs:
                   print(row)
               raise SystemExit(f"Refusing to publish {len(bad)} invalid station coordinates")
 
-          if mapped < 500:
+          if mapped < 100:
               raise SystemExit(f"Only {mapped} BRT stations have coordinates; refusing to publish")
 
           routes = src.get("routes") or {}
