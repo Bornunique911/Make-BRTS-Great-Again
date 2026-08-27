@@ -8,42 +8,52 @@ from flask_cors import CORS
 app = Flask(__name__, template_folder="templates", static_folder="static")
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-APP_DIR = Path(__file__).resolve().parent
-REPO_DIR = APP_DIR.parent.parent
+# ----- Directories (Vercel: /var/task) -----
+APP_DIR = Path(__file__).resolve().parent          # /var/task/flask/app
+REPO_DIR = APP_DIR.parent.parent                   # /var/task
 
-def load_json_file(candidates, file_desc):
-    """Try each candidate path and return loaded JSON, or None."""
-    for path in candidates:
-        if path.is_file():
-            try:
-                with path.open(encoding="utf-8") as f:
-                    print(f"[LOAD] {file_desc} loaded from {path}", file=sys.stderr)
-                    return json.load(f)
-            except Exception as e:
-                print(f"[ERROR] Failed to parse {path}: {e}", file=sys.stderr)
-    print(f"[ERROR] {file_desc} not found in any candidate: {candidates}", file=sys.stderr)
-    return None
-
-# Load transit_data.json
+# ----- Candidate paths for data files -----
 TRANSIT_CANDIDATES = [
     REPO_DIR / "transit_data.json",
+    REPO_DIR / "static" / "transit_data.json",
     APP_DIR / "static" / "transit_data.json",
     APP_DIR / "static" / "assets" / "transit_data.json",
 ]
-TRANSIT = load_json_file(TRANSIT_CANDIDATES, "transit_data.json")
-if TRANSIT is None:
-    TRANSIT = {"stops": {}, "routes": {}}
 
-# Load mock_eta_data.json
 MOCK_CANDIDATES = [
     REPO_DIR / "mock_eta_data.json",
     APP_DIR / "mock_eta_data.json",
 ]
-MOCK_ETA = load_json_file(MOCK_CANDIDATES, "mock_eta_data.json")
-if MOCK_ETA is None:
-    MOCK_ETA = {}
 
-# Helper
+def load_json_safe(candidates, desc):
+    """
+    Try each path; return loaded JSON dict, or None if none found or parse fails.
+    Logs to stderr for Vercel logs.
+    """
+    for p in candidates:
+        if p.is_file():
+            try:
+                with p.open(encoding="utf-8") as f:
+                    data = json.load(f)
+                    print(f"[INFO] Loaded {desc} from {p}", file=sys.stderr)
+                    return data
+            except Exception as e:
+                print(f"[ERROR] Failed to parse {p}: {e}", file=sys.stderr)
+    print(f"[ERROR] {desc} not found in any candidate: {candidates}", file=sys.stderr)
+    return None
+
+# ----- Load data with fallback -----
+TRANSIT = load_json_safe(TRANSIT_CANDIDATES, "transit_data.json") or {"stops": {}, "routes": {}}
+MOCK_ETA = load_json_safe(MOCK_CANDIDATES, "mock_eta_data.json") or {}
+
+# Log sample keys for debugging
+if MOCK_ETA:
+    sample = list(MOCK_ETA.keys())[:5]
+    print(f"[INFO] Loaded mock data for {len(MOCK_ETA)} stops. Sample keys: {sample}", file=sys.stderr)
+else:
+    print("[WARN] No mock data loaded – ETAs will return 404.", file=sys.stderr)
+
+# ----- Helper for route stops -----
 def get_local_route_stops(route_id):
     route = TRANSIT.get("routes", {}).get(str(route_id))
     if not route:
@@ -66,6 +76,7 @@ def get_local_route_stops(route_id):
         })
     return sorted(result, key=lambda x: x["sequence"] if x["sequence"] is not None else 999999)
 
+# ----- API Endpoints -----
 @app.get("/")
 def home():
     return render_template("index.html")
@@ -88,6 +99,8 @@ def debug_files():
         "cwd": str(Path.cwd()),
         "app_dir": str(APP_DIR),
         "repo_dir": str(REPO_DIR),
+        "transit_loaded": len(TRANSIT.get("stops", {})) > 0,
+        "mock_loaded": len(MOCK_ETA) > 0,
     })
 
 @app.get("/api/stops")
