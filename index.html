@@ -592,7 +592,7 @@
       animation: busFloat 1.5s ease-in-out infinite;
     }
 
-    /* ---- Mock mode badge ---- */
+    /* ---- Mock mode badge & switcher ---- */
     .mock-badge {
       display: inline-block;
       padding: 2px 10px;
@@ -605,6 +605,13 @@
       text-transform: uppercase;
       margin-left: 8px;
       vertical-align: middle;
+    }
+    #modeSwitcher {
+      margin-top: 4px;
+    }
+    #modeSwitcher select {
+      height: 40px;
+      font-size: 13px;
     }
 
     @media (max-width:760px) {
@@ -626,7 +633,22 @@
     <aside class="sidebar">
       <header class="brand"><div class="brand-mark">S</div><div><h1>Surat BRTS <span id="mockBadge" style="display:none;" class="mock-badge">🎭 Mock</span></h1><p class="eyebrow">Live network map</p></div></header>
       <div class="intro"><strong id="mode-title">Move through the city.</strong><span id="mode-copy">Choose a route or search for a stop to see the network and live arrivals.</span></div>
+
       <section><label for="route">Route</label><select id="route"><option value="">All routes</option></select></section>
+
+      <!-- Manual mode switcher (visible only in mock mode) -->
+      <section id="modeSwitcher" style="display:none;">
+        <label for="themeSelect">Theme (mock mode)</label>
+        <select id="themeSelect">
+          <option value="auto">🌐 Auto (real time)</option>
+          <option value="morning">🌅 Morning</option>
+          <option value="afternoon">☀️ Afternoon</option>
+          <option value="evening">🌇 Evening</option>
+          <option value="night">🌙 Night</option>
+          <option value="midnight">🌃 Midnight</option>
+        </select>
+      </section>
+
       <!-- FIXED SEARCH SECTION -->
       <section class="search">
         <label for="stop-search">Stops on this route</label>
@@ -637,6 +659,7 @@
         <div id="search-results" class="search-results"></div>
       </section>
       <!-- END FIXED SEARCH SECTION -->
+
       <div class="stats"><div class="stat"><b id="route-count">--</b><span>routes mapped</span></div><div class="stat"><b id="stop-count">--</b><span>official stations</span></div></div>
       <section class="eta"><div class="eta-title"><h2>Next arrivals</h2><span id="eta-status" class="eyebrow">Select a stop</span></div><p id="eta-name" class="eta-name">Click any stop on the map</p><div id="eta-list" class="eta-list"><p class="empty">Live timings appear here when you choose a stop.</p></div></section>
     </aside>
@@ -672,67 +695,85 @@
     const mapLabel = document.getElementById('map-label');
     const mapGlow = document.getElementById('mapGlow');
     const mockBadge = document.getElementById('mockBadge');
+    const modeSwitcher = document.getElementById('modeSwitcher');
+    const themeSelect = document.getElementById('themeSelect');
 
     // ---- URL params (single declaration, used everywhere) ----
     const params = new URLSearchParams(location.search);
     const isMock = params.get('mock') === 'true';
-    if (isMock) mockBadge.style.display = 'inline-block';
+    if (isMock) {
+      mockBadge.style.display = 'inline-block';
+      modeSwitcher.style.display = 'block';
+    }
 
-    // ---- Theme updater with 5 modes + glow animation ----
+    // ---- Forced mode (for mock) ----
+    let forcedMode = null; // null means auto (real time)
+
+    // ---- Theme updater with manual override ----
     function updateTheme() {
       const now = new Date();
-      const solarTimes = window.SunCalc
-        ? SunCalc.getTimes(now, surat[0], surat[1])
-        : {
-            sunrise: new Date(new Date().setHours(6, 15, 0, 0)),
-            sunset: new Date(new Date().setHours(18, 45, 0, 0))
-          };
-
+      let solarTimes;
+      if (window.SunCalc) {
+        solarTimes = SunCalc.getTimes(now, surat[0], surat[1]);
+      } else {
+        solarTimes = {
+          sunrise: new Date(new Date().setHours(6, 15, 0, 0)),
+          sunset: new Date(new Date().setHours(18, 45, 0, 0))
+        };
+      }
       const sunrise = solarTimes.sunrise;
       const sunset = solarTimes.sunset;
 
       // Define time windows
       const morningEnd = new Date(sunrise);
       morningEnd.setHours(11, 30, 0, 0);
-
       const afternoonEnd = new Date(sunrise);
       afternoonEnd.setHours(16, 0, 0, 0);
 
-      const isMidnight = now < sunrise && now.getHours() < 6;
-      const isNight = now >= sunset || (now.getHours() >= 0 && now.getHours() < 4);
-      const isEvening = now >= afternoonEnd && now < sunset;
-      const isAfternoon = now >= morningEnd && now < afternoonEnd;
-      const isMorning = now >= sunrise && now < morningEnd;
+      let isMidnight, isNight, isEvening, isAfternoon, isMorning;
 
-      // --- Glow animation (sunrise / sunset) ---
-      const sunriseStart = new Date(sunrise);
-      sunriseStart.setMinutes(sunrise.getMinutes() - 30);
-      const sunriseEnd = new Date(sunrise);
-      sunriseEnd.setMinutes(sunrise.getMinutes() + 30);
+      // If in mock mode and a forced mode is set, override
+      if (isMock && forcedMode) {
+        // Force the booleans based on selected mode
+        isMidnight = forcedMode === 'midnight';
+        isNight = forcedMode === 'night';
+        isEvening = forcedMode === 'evening';
+        isAfternoon = forcedMode === 'afternoon';
+        isMorning = forcedMode === 'morning';
+        // Also force glow for sunrise/sunset? We'll set glow based on mode (morning = sunrise glow, evening = sunset glow)
+        document.body.classList.toggle('sunrise-glow', forcedMode === 'morning');
+        document.body.classList.toggle('sunset-glow', forcedMode === 'evening');
+      } else {
+        // Real time detection
+        isMidnight = now < sunrise && now.getHours() < 6;
+        isNight = now >= sunset || (now.getHours() >= 0 && now.getHours() < 4);
+        isEvening = now >= afternoonEnd && now < sunset;
+        isAfternoon = now >= morningEnd && now < afternoonEnd;
+        isMorning = now >= sunrise && now < morningEnd;
 
-      const sunsetStart = new Date(sunset);
-      sunsetStart.setMinutes(sunset.getMinutes() - 30);
-      const sunsetEnd = new Date(sunset);
-      sunsetEnd.setMinutes(sunset.getMinutes() + 30);
+        // Glow based on real time
+        const sunriseStart = new Date(sunrise);
+        sunriseStart.setMinutes(sunrise.getMinutes() - 30);
+        const sunriseEnd = new Date(sunrise);
+        sunriseEnd.setMinutes(sunrise.getMinutes() + 30);
+        const sunsetStart = new Date(sunset);
+        sunsetStart.setMinutes(sunset.getMinutes() - 30);
+        const sunsetEnd = new Date(sunset);
+        sunsetEnd.setMinutes(sunset.getMinutes() + 30);
+        document.body.classList.toggle('sunrise-glow', now >= sunriseStart && now <= sunriseEnd);
+        document.body.classList.toggle('sunset-glow', now >= sunsetStart && now <= sunsetEnd);
+      }
 
-      const isSunriseGlow = now >= sunriseStart && now <= sunriseEnd;
-      const isSunsetGlow = now >= sunsetStart && now <= sunsetEnd;
-
-      document.body.classList.toggle('sunrise-glow', isSunriseGlow);
-      document.body.classList.toggle('sunset-glow', isSunsetGlow);
-
-      // --- Apply mode classes ---
-      document.body.classList.toggle('midnight', isMidnight);
-      document.body.classList.toggle('night', isNight && !isMidnight);
-      document.body.classList.toggle('evening', isEvening);
-      document.body.classList.toggle('afternoon', isAfternoon);
-      document.body.classList.toggle('morning', isMorning);
+      // Apply mode classes (clear all first)
+      document.body.classList.remove('midnight', 'night', 'evening', 'afternoon', 'morning');
+      if (isMidnight) document.body.classList.add('midnight');
+      else if (isNight) document.body.classList.add('night');
+      else if (isEvening) document.body.classList.add('evening');
+      else if (isAfternoon) document.body.classList.add('afternoon');
+      else if (isMorning) document.body.classList.add('morning');
 
       // --- Update intro text ---
-      let modeLabel = 'Morning mode · OpenStreetMap';
-      let titleText = 'Good morning, Surat.';
-      let copyText = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
-
+      let modeLabel, titleText, copyText;
       if (isMidnight) {
         modeLabel = 'Midnight mode · Network view';
         titleText = 'Deep night in Surat.';
@@ -750,7 +791,7 @@
         titleText = 'The afternoon is bright and bustling.';
         copyText = 'BRTS runs at full frequency. Check live arrivals and navigate the city in the midday light.';
       } else {
-        // Morning
+        // Morning (or default)
         modeLabel = 'Morning mode · OpenStreetMap';
         titleText = 'Good morning, Surat.';
         copyText = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
@@ -760,6 +801,17 @@
       modeCopy.textContent = copyText;
       mapSubtitle.textContent = modeLabel + (isMock ? ' 🎭 mock' : '');
     }
+
+    // ---- Theme select listener ----
+    themeSelect.addEventListener('change', () => {
+      const val = themeSelect.value;
+      if (val === 'auto') {
+        forcedMode = null;
+      } else {
+        forcedMode = val;
+      }
+      updateTheme();
+    });
 
     // ---- IST clock ----
     const istClock = document.getElementById('ist-clock');
@@ -781,7 +833,6 @@
     setInterval(updateTheme, 60000);
 
     // ---- Map and transit logic with 3D Bus Animation ----
-    // Reuse the same 'params' from above – no redeclaration!
     const sameOriginApi = location.hostname && !location.hostname.endsWith('github.io') ? location.origin : '';
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
     const DATA_URL = './static/assets/transit_data.json';
@@ -791,7 +842,7 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
     const routeSelect = document.getElementById('route'), search = document.getElementById('stop-search'), searchResults = document.getElementById('search-results'), stopLayer = L.layerGroup().addTo(map);
     let network, routeStops = [], routeLine;
-    let busMarker = null; // reference to the animated bus marker
+    let busMarker = null;
 
     // ---- Create a pure CSS 3D bus icon ----
     function createBusIcon(stopName = '') {
@@ -823,7 +874,6 @@
 
     // ---- Animate bus along a route ----
     function animateBusAlongRoute(routeStopsData, routeId) {
-      // Remove existing bus marker if any
       if (busMarker) {
         map.removeLayer(busMarker);
         busMarker = null;
@@ -834,43 +884,29 @@
         return;
       }
 
-      // Get the route name for the label
       const route = network?.routes[routeId];
       const routeNameStr = route ? routeName(route.name) : 'Bus';
-
-      // Create path points from route stops (lat, lng)
       const pathPoints = routeStopsData.map(stop => [stop.lat, stop.lng]);
-
-      // Create the bus icon with route name as label
       const icon = createBusIcon(routeNameStr);
-
-      // Calculate a reasonable speed (km/h) based on route length
-      // Average BRTS speed ~20-30 km/h, we'll use 25 km/h
       const speedKmH = 25;
 
       try {
-        // Use Leaflet.MarkerMotion to animate the bus
         busMarker = L.markerMotion(pathPoints, speedKmH, {
           icon: icon,
           rotation: true,
           autoplay: true,
           loop: true,
-          // Marker options
           riseOnHover: true,
           title: `Bus on ${routeNameStr}`
         }).addTo(map);
 
-        // Fit the map to show the full route
         const bounds = L.latLngBounds(pathPoints);
         map.fitBounds(bounds, { padding: [50, 50] });
-
-        // Update map label to show bus is running
         mapLabel.textContent = `🚍 ${routeNameStr} (bus running)`;
         mapSubtitle.textContent = '3D bus animation · Live tracking';
 
       } catch (e) {
         console.warn('MarkerMotion error, falling back to static marker:', e);
-        // Fallback: just show a static marker at the first stop
         const fallbackIcon = createBusIcon(routeNameStr);
         busMarker = L.marker(pathPoints[0], {
           icon: fallbackIcon,
@@ -930,7 +966,6 @@
       document.getElementById('eta-status').textContent='Loading';
       document.getElementById('eta-list').innerHTML='<p class="empty">Contacting live service...</p>';
 
-      // If mock mode is forced, skip real API
       if (isMock) {
         document.getElementById('eta-status').textContent='🎭 Mock data';
         const mockData = generateMockEta(stop);
@@ -953,7 +988,6 @@
         document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`;
         document.getElementById('eta-list').innerHTML=buses.length ? buses.map(bus=>`<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">${document.body.classList.contains('midnight') ? 'It is midnight in Surat. BRTS service resumes after sunrise.' : document.body.classList.contains('night') ? 'BRTS service is winding down for the night. Service resumes after sunrise.' : 'No live arrivals reported for this stop right now.'}</p>`;
       } catch(error) {
-        // Real API failed – fallback to mock data
         console.warn('Real API failed, falling back to mock data:', error.message);
         document.getElementById('eta-status').textContent='⚠️ Fallback (mock)';
         const fallbackData = generateMockEta(stop);
@@ -988,12 +1022,8 @@
       const points=route.stops.map(stop=>[stop.lat,stop.lng]); 
       routeStops=route.stops; 
       
-      // Diagnostic – prints to console
-      console.log(`Route ${id} has ${routeStops.length} stops with coordinates.`);
-      
       if(routeStops.length === 0){
         searchResults.innerHTML = '<p class="empty">No stops with valid coordinates for this route.</p>';
-        // Draw the route line if possible
         if(points.length > 1) {
           routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); 
           map.fitBounds(routeLine.getBounds(),{padding:[45,45]});
@@ -1004,23 +1034,18 @@
         return;
       }
       
-      // Draw the route line and stops
       routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); 
       drawStops(routeStops,true); 
       if(points.length) { map.fitBounds(routeLine.getBounds(),{padding:[45,45]}); }
       
-      // Start the 3D bus animation
       animateBusAlongRoute(routeStops, id);
       
       mapLabel.textContent=`Route ${id} (${routeStops.length} stops)`; 
       mapSubtitle.textContent=routeName(route.name) + (isMock ? ' 🎭 mock' : '');
       search.placeholder = `Type to filter ${routeStops.length} stops`;
-      
-      // Render the stop list
       renderSearchResults(routeStops);
       search.value = '';
       
-      // Scroll the search results into view so you see them immediately
       const resultsContainer = document.getElementById('search-results');
       if(resultsContainer && routeStops.length > 0) {
         resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1052,7 +1077,6 @@
     search.addEventListener('input',()=>{if(!network) return; const term=search.value.trim().toLowerCase(),source=routeStops.length?routeStops:network.stops,matches=term?source.filter(stop=>stop.name.toLowerCase().includes(term)||String(stop.id).toLowerCase().includes(term)):source;drawStops(matches,routeStops.length>0);renderSearchResults(matches);if(matches.length===1) selectStop(matches[0]);});
     document.getElementById('locate').addEventListener('click',()=>navigator.geolocation?.getCurrentPosition(position=>map.setView([position.coords.latitude,position.coords.longitude],15)));
     document.getElementById('reset-view').addEventListener('click',()=>{
-      // Reset view and remove bus animation
       if(busMarker) {
         map.removeLayer(busMarker);
         busMarker = null;
