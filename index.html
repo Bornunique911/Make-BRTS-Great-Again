@@ -29,19 +29,21 @@
     .intro { padding:18px; background:var(--fog); border-left:4px solid var(--teal); box-shadow:0 12px 30px #1828320c; } .intro strong { display:block; margin-bottom:6px; font:600 15px "Space Grotesk",sans-serif; } .intro span { color:var(--muted); line-height:1.5; }
     label { display:block; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
 
-    /* ---- Transparent glass theme for dropdown & search ---- */
+    /* ---- Transparent glass for dropdown & search ---- */
     select, input {
       width:100%; height:44px; padding:0 16px;
       color:var(--ink);
-      background: rgba(255,255,255,0.08);  /* very transparent */
+      background: rgba(255,255,255,0.08);
       border:1px solid rgba(255,255,255,0.15);
       border-radius:12px;
       font:inherit;
       outline:0;
       backdrop-filter:blur(24px) saturate(180%);
       -webkit-backdrop-filter:blur(24px) saturate(180%);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02); /* minimal shadow */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
       transition: all 0.3s ease;
+      appearance: none; /* better for custom styling */
+      -webkit-appearance: none;
     }
     select:hover, input:hover {
       background: rgba(255,255,255,0.15);
@@ -52,8 +54,40 @@
       background: rgba(255,255,255,0.12);
       box-shadow: 0 0 0 3px rgba(8,127,140,0.12), 0 4px 12px rgba(0,0,0,0.02);
     }
+    /* Dropdown arrow (select) – subtle custom arrow */
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7785' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 12px;
+      padding-right: 40px; /* space for arrow */
+    }
+    /* Improve option styling for mobile */
+    select option {
+      background: var(--card);
+      color: var(--ink);
+      padding: 8px 12px;
+    }
+
     #route { height:44px; }
-    .search { position:relative; } .search input { padding-left:38px; } .search:before { content:"⌕"; position:absolute; z-index:1; top:8px; left:13px; color:var(--muted); font-size:23px; } .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; } .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:9px 10px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:6px; cursor:pointer; } .search-result:hover { border-color:var(--teal); background:var(--card-hover); } .search-result small { color:var(--muted); white-space:nowrap; }
+    .search { position:relative; }
+    .search input { padding-left:44px; } /* space for icon */
+    .search:before {
+      content:"⌕";
+      position:absolute;
+      z-index:1;
+      top:50%;
+      left:14px;
+      transform:translateY(-50%);
+      color:var(--muted);
+      font-size:20px;
+      pointer-events:none;
+      line-height:1;
+    }
+    .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; }
+    .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:10px 12px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:14px; transition:all .2s; }
+    .search-result:hover { border-color:var(--teal); background:var(--card-hover); }
+    .search-result small { color:var(--muted); white-space:nowrap; font-size:12px; }
     .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; } .stat { padding:13px; background:var(--fog); border:1px solid var(--line); border-radius:7px; } .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; } .stat span { color:var(--muted); font-size:11px; }
     .eta { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); } .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; } .eta-name { margin-top:5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .eta-list { display:grid; gap:8px; margin-top:14px; max-height:170px; overflow-y:auto; } .eta-row { display:grid; grid-template-columns:45px 1fr auto; gap:8px; align-items:center; padding:10px; background:#fff8e7; border:1px solid #f2dfab; border-radius:6px; } .eta-row b { font-size:12px; } .eta-row small { color:var(--muted); } .eta-time { color:#ae6a12; font-weight:700; } .empty { color:var(--muted); font-size:13px; line-height:1.5; }
@@ -133,6 +167,9 @@
       .eta { margin-top:0; }
       .map-top { top:14px; left:14px; right:14px; flex-wrap:wrap; gap:8px; }
       .map-top>* { flex:1 0 auto; }
+      /* Improve dropdown on mobile – larger tap area */
+      select, input { height:48px; font-size:16px; } /* prevents iOS zoom */
+      .search-result { padding:12px; font-size:15px; }
     }
   </style>
 </head>
