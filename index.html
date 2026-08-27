@@ -815,13 +815,13 @@
 
       // Get the route name for the label
       const route = network?.routes[routeId];
-      const routeName = route ? routeName(route.name) : 'Bus';
+      const routeNameStr = route ? routeName(route.name) : 'Bus';
 
       // Create path points from route stops (lat, lng)
       const pathPoints = routeStopsData.map(stop => [stop.lat, stop.lng]);
 
       // Create the bus icon with route name as label
-      const icon = createBusIcon(routeName);
+      const icon = createBusIcon(routeNameStr);
 
       // Calculate a reasonable speed (km/h) based on route length
       // Average BRTS speed ~20-30 km/h, we'll use 25 km/h
@@ -836,7 +836,7 @@
           loop: true,
           // Marker options
           riseOnHover: true,
-          title: `Bus on ${routeName}`
+          title: `Bus on ${routeNameStr}`
         }).addTo(map);
 
         // Fit the map to show the full route
@@ -844,19 +844,19 @@
         map.fitBounds(bounds, { padding: [50, 50] });
 
         // Update map label to show bus is running
-        mapLabel.textContent = `🚍 ${routeName} (bus running)`;
+        mapLabel.textContent = `🚍 ${routeNameStr} (bus running)`;
         mapSubtitle.textContent = '3D bus animation · Live tracking';
 
       } catch (e) {
         console.warn('MarkerMotion error, falling back to static marker:', e);
         // Fallback: just show a static marker at the first stop
-        const fallbackIcon = createBusIcon(routeName);
+        const fallbackIcon = createBusIcon(routeNameStr);
         busMarker = L.marker(pathPoints[0], {
           icon: fallbackIcon,
-          title: `Bus on ${routeName}`
+          title: `Bus on ${routeNameStr}`
         }).addTo(map);
         map.fitBounds(L.latLngBounds(pathPoints), { padding: [50, 50] });
-        mapLabel.textContent = `🚍 ${routeName} (static)`;
+        mapLabel.textContent = `🚍 ${routeNameStr} (static)`;
       }
     }
 
@@ -908,7 +908,7 @@
       }
     };
 
-    // ===== UPDATED showRoute with diagnostic log and scroll =====
+    // ---- showRoute: draws the route, stops, search results, and starts bus animation ----
     const showRoute = async id => { 
       if(!network) return; 
       if(routeLine){map.removeLayer(routeLine);routeLine=null;} 
@@ -934,7 +934,7 @@
       const points=route.stops.map(stop=>[stop.lat,stop.lng]); 
       routeStops=route.stops; 
       
-      // 🔍 Diagnostic – prints to console
+      // Diagnostic – prints to console
       console.log(`Route ${id} has ${routeStops.length} stops with coordinates.`);
       
       if(routeStops.length === 0){
@@ -966,7 +966,7 @@
       renderSearchResults(routeStops);
       search.value = '';
       
-      // 👇 Scroll the search results into view so you see them immediately
+      // Scroll the search results into view so you see them immediately
       const resultsContainer = document.getElementById('search-results');
       if(resultsContainer && routeStops.length > 0) {
         resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
