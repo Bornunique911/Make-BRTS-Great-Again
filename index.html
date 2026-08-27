@@ -908,15 +908,11 @@
       }
     };
 
+    // ===== UPDATED showRoute with diagnostic log and scroll =====
     const showRoute = async id => { 
       if(!network) return; 
       if(routeLine){map.removeLayer(routeLine);routeLine=null;} 
-      
-      // Remove any existing bus animation
-      if(busMarker) {
-        map.removeLayer(busMarker);
-        busMarker = null;
-      }
+      if(busMarker) { map.removeLayer(busMarker); busMarker = null; }
       
       if(!id){
         routeStops=[];
@@ -930,23 +926,51 @@
       } 
       
       const route=network.routes[id]; 
-      if(!route){return;} 
+      if(!route){ 
+        searchResults.innerHTML = '<p class="empty">Route not found.</p>';
+        return; 
+      } 
+      
       const points=route.stops.map(stop=>[stop.lat,stop.lng]); 
       routeStops=route.stops; 
-      routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); 
-      drawStops(routeStops,true); 
-      if(points.length) {
-        map.fitBounds(routeLine.getBounds(),{padding:[45,45]});
+      
+      // 🔍 Diagnostic – prints to console
+      console.log(`Route ${id} has ${routeStops.length} stops with coordinates.`);
+      
+      if(routeStops.length === 0){
+        searchResults.innerHTML = '<p class="empty">No stops with valid coordinates for this route.</p>';
+        // Draw the route line if possible
+        if(points.length > 1) {
+          routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); 
+          map.fitBounds(routeLine.getBounds(),{padding:[45,45]});
+        }
+        mapLabel.textContent=`Route ${id} (no stops)`; 
+        mapSubtitle.textContent=routeName(route.name);
+        search.placeholder = 'No stops available';
+        return;
       }
       
-      // Start the 3D bus animation along the route
+      // Draw the route line and stops
+      routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); 
+      drawStops(routeStops,true); 
+      if(points.length) { map.fitBounds(routeLine.getBounds(),{padding:[45,45]}); }
+      
+      // Start the 3D bus animation
       animateBusAlongRoute(routeStops, id);
       
       mapLabel.textContent=`Route ${id} (${routeStops.length} stops)`; 
       mapSubtitle.textContent=routeName(route.name);
       search.placeholder = `Type to filter ${routeStops.length} stops`;
+      
+      // Render the stop list
       renderSearchResults(routeStops);
       search.value = '';
+      
+      // 👇 Scroll the search results into view so you see them immediately
+      const resultsContainer = document.getElementById('search-results');
+      if(resultsContainer && routeStops.length > 0) {
+        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
     };
 
     const loadNetwork = async () => {
