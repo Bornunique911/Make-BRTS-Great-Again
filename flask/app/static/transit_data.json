@@ -7,7 +7,7 @@
   "stops": {
     "0010": {
       "id": "0010",
-      "name": "RAILWAY STATION TERMINAL",
+      "name": "RAILWAY STATION TER",
       "lat": 21.204651,
       "lng": 72.840155,
       "live_id": "0010"
@@ -6932,7 +6932,7 @@
   "routes": {
     "01U": {
       "route_id": "01U",
-      "name": "ADAJAN G.S.R.T.C-RAILWAY STATION TERMINAL-ADAJAN G.S.R.T.C(CLOCKWISE)",
+      "name": "ADAJAN G.S.R.T.C-RAILWAY STATION TER-ADAJAN G.S.R.T.C(CLOCKWISE)",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -6985,7 +6985,7 @@
         {
           "sequenceNumber": 7,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -7130,7 +7130,7 @@
     },
     "02U": {
       "route_id": "02U",
-      "name": "ADAJAN G.S.R.T.C-RAILWAY STATION TERMINAL-ADAJAN G.S.R.T.C(ANTI CLOCKWISE)",
+      "name": "ADAJAN G.S.R.T.C-RAILWAY STATION TER-ADAJAN G.S.R.T.C(ANTI CLOCKWISE)",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -7279,7 +7279,7 @@
         {
           "sequenceNumber": 19,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -7328,7 +7328,7 @@
     },
     "102RD": {
       "route_id": "102RD",
-      "name": "VED GAM - RAILWAY STATION TERMINAL",
+      "name": "VED GAM - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -7485,7 +7485,7 @@
         {
           "sequenceNumber": 20,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -7494,12 +7494,12 @@
     },
     "102RU": {
       "route_id": "102RU",
-      "name": "RAILWAY STATION TERMINAL - VED GAM",
+      "name": "RAILWAY STATION TER - VED GAM",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -7660,7 +7660,7 @@
     },
     "102DRD": {
       "route_id": "102DRD",
-      "name": "VED GAM - RAILWAY STATION TERMINAL(VIA DD SPORT CIRCLE)",
+      "name": "VED GAM - RAILWAY STATION TER(VIA DD SPORT CIRCLE)",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -7841,7 +7841,7 @@
         {
           "sequenceNumber": 23,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -7850,12 +7850,12 @@
     },
     "102DRU": {
       "route_id": "102DRU",
-      "name": "RAILWAY STATION TERMINAL - VED GAM(VIA DD SPORT CIRCLE)",
+      "name": "RAILWAY STATION TER - VED GAM(VIA DD SPORT CIRCLE)",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -9852,7 +9852,7 @@
     },
     "104D": {
       "route_id": "104D",
-      "name": "DINDOLI GAM - RAILWAY STATION TERMINAL",
+      "name": "DINDOLI GAM - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -10025,7 +10025,7 @@
         {
           "sequenceNumber": 22,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -10034,12 +10034,12 @@
     },
     "104U": {
       "route_id": "104U",
-      "name": " RAILWAY STATION TERMINAL - DINDOLI GAM ",
+      "name": " RAILWAY STATION TER - DINDOLI GAM ",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -10216,7 +10216,7 @@
     },
     "105D": {
       "route_id": "105D",
-      "name": "PANDESARA HOUSING - RAILWAY STATION TERMINAL",
+      "name": "PANDESARA HOUSING - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -10461,7 +10461,7 @@
         {
           "sequenceNumber": 31,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -10470,12 +10470,12 @@
     },
     "105U": {
       "route_id": "105U",
-      "name": "RAILWAY STATION TERMINAL - PANDESARA HOUSING",
+      "name": "RAILWAY STATION TER - PANDESARA HOUSING",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -10724,7 +10724,7 @@
     },
     "106RD": {
       "route_id": "106RD",
-      "name": "ABHVA GAM - RAILWAY STATION TERMINAL",
+      "name": "ABHVA GAM - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -11049,7 +11049,7 @@
         {
           "sequenceNumber": 41,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -11058,12 +11058,12 @@
     },
     "106RU": {
       "route_id": "106RU",
-      "name": "RAILWAY STATION TERMINAL - ABHVA GAM",
+      "name": "RAILWAY STATION TER - ABHVA GAM",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -11384,17 +11384,17 @@
     },
     "106SD": {
       "route_id": "106SD",
-      "name": "ABHVA GAM(SARASWATI MAHAVIDHYALAY) - RAILWAY STATION TERMINAL",
+      "name": "ABHVA GAM(SARASWATI MAHAVIDHYALAY) - RAILWAY STATION TER",
       "stops": []
     },
     "106SU": {
       "route_id": "106SU",
-      "name": "RAILWAY STATION TERMINAL - ABHVA GAM(SARASWATI MAHAVIDHYALAY)",
+      "name": "RAILWAY STATION TER - ABHVA GAM(SARASWATI MAHAVIDHYALAY)",
       "stops": []
     },
     "107JD": {
       "route_id": "107JD",
-      "name": "VIVEKANAND COLLEGE - RAILWAY STATION TERMINAL",
+      "name": "VIVEKANAND COLLEGE - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -11655,7 +11655,7 @@
         {
           "sequenceNumber": 33,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -11664,7 +11664,7 @@
     },
     "107JPD": {
       "route_id": "107JPD",
-      "name": "VIVEKANAND COLLEGE - RAILWAY STATION TERMINAL(VIA PAL GAAM)",
+      "name": "VIVEKANAND COLLEGE - RAILWAY STATION TER(VIA PAL GAAM)",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -11949,7 +11949,7 @@
         {
           "sequenceNumber": 36,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -11958,12 +11958,12 @@
     },
     "107JPU": {
       "route_id": "107JPU",
-      "name": "RAILWAY STATION TERMINAL - VIVEKANAND COLLEGE(VIA PAL GAAM)",
+      "name": "RAILWAY STATION TER - VIVEKANAND COLLEGE(VIA PAL GAAM)",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -12252,12 +12252,12 @@
     },
     "107JU": {
       "route_id": "107JU",
-      "name": "RAILWAY STATION TERMINAL - VIVEKANAND COLLEGE",
+      "name": "RAILWAY STATION TER - VIVEKANAND COLLEGE",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -12522,7 +12522,7 @@
     },
     "112D": {
       "route_id": "112D",
-      "name": "BARTHANA (KOSAD GAM) - RAILWAY STATION TERMINAL ",
+      "name": "BARTHANA (KOSAD GAM) - RAILWAY STATION TER ",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -12735,7 +12735,7 @@
         {
           "sequenceNumber": 27,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -12744,12 +12744,12 @@
     },
     "112U": {
       "route_id": "112U",
-      "name": "RAILWAY STATION TERMINAL - BARTHANA (KOSAD GAM)",
+      "name": "RAILWAY STATION TER - BARTHANA (KOSAD GAM)",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -12966,7 +12966,7 @@
     },
     "116ARD": {
       "route_id": "116ARD",
-      "name": "KHAJOD GAM - RAILWAY STATION TERMINAL(VIA MAHADEVNAGAR)",
+      "name": "KHAJOD GAM - RAILWAY STATION TER(VIA MAHADEVNAGAR)",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -13227,7 +13227,7 @@
         {
           "sequenceNumber": 33,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -13236,7 +13236,7 @@
     },
     "116BRD": {
       "route_id": "116BRD",
-      "name": "KHAJOD GAM(VIA BHIMRAD) - RAILWAY STATION TERMINAL",
+      "name": "KHAJOD GAM(VIA BHIMRAD) - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -13489,7 +13489,7 @@
         {
           "sequenceNumber": 32,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -13498,12 +13498,12 @@
     },
     "116BRU": {
       "route_id": "116BRU",
-      "name": "RAILWAY STATION TERMINAL - KHAJOD GAM(VIA BHIMRAD)",
+      "name": "RAILWAY STATION TER - KHAJOD GAM(VIA BHIMRAD)",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -13760,7 +13760,7 @@
     },
     "116RD": {
       "route_id": "116RD",
-      "name": "KHAJOD GAM - RAILWAY STATION TERMINAL",
+      "name": "KHAJOD GAM - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -14013,7 +14013,7 @@
         {
           "sequenceNumber": 32,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -14022,12 +14022,12 @@
     },
     "116RU": {
       "route_id": "116RU",
-      "name": "RAILWAY STATION TERMINAL - KHAJOD GAM",
+      "name": "RAILWAY STATION TER - KHAJOD GAM",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -14284,7 +14284,7 @@
     },
     "117D": {
       "route_id": "117D",
-      "name": "PALANPUR GAM-RAILWAY STATION TERMINAL ",
+      "name": "PALANPUR GAM-RAILWAY STATION TER ",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -14561,7 +14561,7 @@
         {
           "sequenceNumber": 35,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -14570,7 +14570,7 @@
     },
     "117PD": {
       "route_id": "117PD",
-      "name": "PALANPUR GAM-RAILWAY STATION TERMINAL(VIA PALANPUR DEPOT) ",
+      "name": "PALANPUR GAM-RAILWAY STATION TER(VIA PALANPUR DEPOT) ",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -14879,7 +14879,7 @@
         {
           "sequenceNumber": 39,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -14888,12 +14888,12 @@
     },
     "117PU": {
       "route_id": "117PU",
-      "name": "RAILWAY STATION TERMINAL-PALANPUR GAM(VIA PALANPUR DEPOT)",
+      "name": "RAILWAY STATION TER-PALANPUR GAM(VIA PALANPUR DEPOT)",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -15206,12 +15206,12 @@
     },
     "117U": {
       "route_id": "117U",
-      "name": "RAILWAY STATION TERMINAL-PALANPUR GAM",
+      "name": "RAILWAY STATION TER-PALANPUR GAM",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -15548,7 +15548,7 @@
     },
     "118D": {
       "route_id": "118D",
-      "name": "SAYAN - RAILWAY STATION TERMINAL",
+      "name": "SAYAN - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -15785,7 +15785,7 @@
         {
           "sequenceNumber": 30,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -15794,12 +15794,12 @@
     },
     "118U": {
       "route_id": "118U",
-      "name": "RAILWAY STATION TERMINAL - SAYAN",
+      "name": "RAILWAY STATION TER - SAYAN",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -16348,7 +16348,7 @@
     },
     "126RD": {
       "route_id": "126RD",
-      "name": "V.N.S.G. UNIVERSITY BRTS-RAILWAY STATION TERMINAL",
+      "name": "V.N.S.G. UNIVERSITY BRTS-RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -16569,7 +16569,7 @@
         {
           "sequenceNumber": 28,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -16578,12 +16578,12 @@
     },
     "126RU": {
       "route_id": "126RU",
-      "name": "RAILWAY STATION TERMINAL-V.N.S.G. UNIVERSITY BRTS",
+      "name": "RAILWAY STATION TER-V.N.S.G. UNIVERSITY BRTS",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -16800,7 +16800,7 @@
     },
     "127JD": {
       "route_id": "127JD",
-      "name": "RANDER GAM - RAILWAY STATION TERMINAL",
+      "name": "RANDER GAM - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -16957,7 +16957,7 @@
         {
           "sequenceNumber": 20,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -16966,12 +16966,12 @@
     },
     "127JU": {
       "route_id": "127JU",
-      "name": "RAILWAY STATION TERMINAL - RANDER GAM",
+      "name": "RAILWAY STATION TER - RANDER GAM",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -17760,7 +17760,7 @@
     },
     "136D": {
       "route_id": "136D",
-      "name": "SURAT AIRPORT - RAILWAY STATION TERMINAL",
+      "name": "SURAT AIRPORT - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -18021,7 +18021,7 @@
         {
           "sequenceNumber": 33,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -18030,12 +18030,12 @@
     },
     "136U": {
       "route_id": "136U",
-      "name": "RAILWAY STATION TERMINAL - SURAT AIRPORT",
+      "name": "RAILWAY STATION TER - SURAT AIRPORT",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -18300,7 +18300,7 @@
     },
     "137JD": {
       "route_id": "137JD",
-      "name": "VARIAV GAM - RAILWAY STATION TERMINAL",
+      "name": "VARIAV GAM - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -18513,7 +18513,7 @@
         {
           "sequenceNumber": 27,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -18522,12 +18522,12 @@
     },
     "137JU": {
       "route_id": "137JU",
-      "name": "RAILWAY STATION TERMINAL - VARIAV GAM",
+      "name": "RAILWAY STATION TER - VARIAV GAM",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -19220,7 +19220,7 @@
     },
     "146D": {
       "route_id": "146D",
-      "name": "GAIL INDIA LTD VIP ROAD - RAILWAY STATION TERMINAL",
+      "name": "GAIL INDIA LTD VIP ROAD - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -19473,7 +19473,7 @@
         {
           "sequenceNumber": 32,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -19482,12 +19482,12 @@
     },
     "146U": {
       "route_id": "146U",
-      "name": "RAILWAY STATION TERMINAL - GAIL INDIA LTD VIP ROAD",
+      "name": "RAILWAY STATION TER - GAIL INDIA LTD VIP ROAD",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -19933,7 +19933,7 @@
         {
           "sequenceNumber": 24,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -19963,7 +19963,7 @@
         {
           "sequenceNumber": 2,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -20901,7 +20901,7 @@
         {
           "sequenceNumber": 10,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -21475,7 +21475,7 @@
         {
           "sequenceNumber": 36,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -23081,7 +23081,7 @@
         {
           "sequenceNumber": 12,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -23495,7 +23495,7 @@
         {
           "sequenceNumber": 26,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -23592,7 +23592,7 @@
     },
     "18D": {
       "route_id": "18D",
-      "name": "UTRAN R.O.B. BRIDGE BRTS - RAILWAY STATION TERMINAL",
+      "name": "UTRAN R.O.B. BRIDGE BRTS - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -23669,7 +23669,7 @@
         {
           "sequenceNumber": 10,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -23678,12 +23678,12 @@
     },
     "18U": {
       "route_id": "18U",
-      "name": "RAILWAY STATION TERMINAL - UTRAN R.O.B. BRIDGE BRTS",
+      "name": "RAILWAY STATION TER - UTRAN R.O.B. BRIDGE BRTS",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -23764,7 +23764,7 @@
     },
     "19D": {
       "route_id": "19D",
-      "name": "KADODARA - RAILWAY STATION TERMINAL",
+      "name": "KADODARA - RAILWAY STATION TER",
       "stops": [
         {
           "sequenceNumber": 1,
@@ -23913,7 +23913,7 @@
         {
           "sequenceNumber": 19,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -23922,12 +23922,12 @@
     },
     "19U": {
       "route_id": "19U",
-      "name": "RAILWAY STATION TERMINAL -  KADODARA",
+      "name": "RAILWAY STATION TER -  KADODARA",
       "stops": [
         {
           "sequenceNumber": 1,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -29883,7 +29883,7 @@
         {
           "sequenceNumber": 6,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -30113,7 +30113,7 @@
         {
           "sequenceNumber": 14,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -33799,7 +33799,7 @@
         {
           "sequenceNumber": 27,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -34005,7 +34005,7 @@
         {
           "sequenceNumber": 13,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -35539,7 +35539,7 @@
         {
           "sequenceNumber": 27,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -35937,7 +35937,7 @@
         {
           "sequenceNumber": 25,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -36383,7 +36383,7 @@
         {
           "sequenceNumber": 29,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -36621,7 +36621,7 @@
         {
           "sequenceNumber": 15,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -39571,7 +39571,7 @@
         {
           "sequenceNumber": 15,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
@@ -39849,7 +39849,7 @@
         {
           "sequenceNumber": 18,
           "stopCode": "0010",
-          "stopName": "RAILWAY STATION TERMINAL",
+          "stopName": "RAILWAY STATION TER",
           "stopLatitude": 21.204651,
           "stopLongitude": 72.840155,
           "liveStopId": "0010"
