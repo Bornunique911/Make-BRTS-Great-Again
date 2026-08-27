@@ -102,7 +102,6 @@
     body.night #map {
       filter: brightness(.72) saturate(.76);
     }
-    /* Night fix: ETA rows now readable */
     body.night .eta-row {
       background: #1b2d39;
       border-color: #3a4a55;
@@ -266,20 +265,26 @@
       padding: 8px 12px;
     }
     #route { height:44px; }
+
+    /* ---- Search input – icon always visible ---- */
     .search { position:relative; }
-    .search input { padding-left:48px; }
+    .search input {
+      padding-left: 52px !important; /* extra space for icon + text */
+    }
     .search:before {
       content:"⌕";
       position:absolute;
-      z-index:1;
+      z-index:10; /* ensure icon stays above input text */
       top:50%;
       left:14px;
       transform:translateY(-50%);
       color:var(--muted);
-      font-size:24px;
+      font-size:22px;
       pointer-events:none;
       line-height:1;
+      transition: color var(--transition-duration) ease;
     }
+
     .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; }
     .search-result {
       display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -440,6 +445,7 @@
       .map-top { top:14px; left:14px; right:14px; flex-wrap:wrap; gap:8px; }
       .map-top>* { flex:1 0 auto; }
       select, input { height:48px; font-size:16px; }
+      .search input { padding-left:52px !important; }
       .search-result { padding:12px; font-size:15px; }
     }
   </style>
