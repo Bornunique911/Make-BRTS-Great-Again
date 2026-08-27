@@ -843,6 +843,7 @@
     const routeSelect = document.getElementById('route'), search = document.getElementById('stop-search'), searchResults = document.getElementById('search-results'), stopLayer = L.layerGroup().addTo(map);
     let network, routeStops = [], routeLine;
     let busMarker = null;
+    let currentRouteId = null; // track the active route ID
 
     // ---- Create a pure CSS 3D bus icon ----
     function createBusIcon(stopName = '') {
@@ -873,7 +874,8 @@
     }
 
     // ---- Animate bus along a route ----
-    function animateBusAlongRoute(routeStopsData, routeId) {
+    function animateBusAlongRoute(routeStopsData, routeId, startStopId = null) {
+      // Remove existing bus marker
       if (busMarker) {
         map.removeLayer(busMarker);
         busMarker = null;
@@ -884,9 +886,20 @@
         return;
       }
 
+      // Get the route name for the label
       const route = network?.routes[routeId];
       const routeNameStr = route ? routeName(route.name) : 'Bus';
-      const pathPoints = routeStopsData.map(stop => [stop.lat, stop.lng]);
+
+      // Build path points, optionally reorder starting from startStopId
+      let pathPoints = routeStopsData.map(stop => [stop.lat, stop.lng]);
+      if (startStopId) {
+        const startIndex = routeStopsData.findIndex(stop => stop.id === startStopId);
+        if (startIndex !== -1) {
+          // Rotate array so that startIndex becomes first
+          pathPoints = pathPoints.slice(startIndex).concat(pathPoints.slice(0, startIndex));
+        }
+      }
+
       const icon = createBusIcon(routeNameStr);
       const speedKmH = 25;
 
@@ -926,39 +939,53 @@
       stops.filter(stop => stop.lat != null && stop.lng != null).forEach(stop => { 
         const marker=L.marker([stop.lat,stop.lng],{icon:stopIcon(routeMode)}).addTo(stopLayer); 
         marker.bindPopup(`<div class="popup-name">${escapeHtml(stop.name)}</div><div class="popup-id">Stop ${escapeHtml(stop.id)}</div>`); 
-        marker.on('click', () => loadEta(stop)); 
+        marker.on('click', () => selectStop(stop)); 
       }); 
     };
 
     const renderSearchResults = (matches) => { 
       searchResults.innerHTML = matches.length ? matches.slice(0, 30).map((stop, index) => `<button class="search-result" data-index="${index}"><span>${escapeHtml(stop.name)}</span><small>${stop.lat != null && stop.lng != null ? `Stop ${escapeHtml(stop.id)}` : 'No map location'}</small></button>`).join('') : '<p class="empty">No stations found.</p>'; 
-      [...searchResults.querySelectorAll('.search-result')].forEach(button => button.addEventListener('click', () => selectStop(matches[Number(button.dataset.index)]))); 
+      [...searchResults.querySelectorAll('.search-result')].forEach(button => button.addEventListener('click', () => {
+        const stop = matches[Number(button.dataset.index)];
+        selectStop(stop);
+      })); 
     };
 
+    // ---- Enhanced selectStop: also re‑animates the bus from the selected stop ----
     const selectStop = stop => { 
       if (stop.lat != null && stop.lng != null) { 
         map.setView([stop.lat, stop.lng], 15); 
         drawStops([stop], routeStops.length > 0); 
       } 
-      loadEta(stop); 
+      loadEta(stop);
+
+      // If a route is active, re‑animate the bus starting from this stop
+      if (currentRouteId && routeStops.length > 0) {
+        // Check if this stop is part of the current route (if not, we can still attempt but it may not be found)
+        const found = routeStops.some(s => s.id === stop.id);
+        if (found) {
+          animateBusAlongRoute(routeStops, currentRouteId, stop.id);
+        } else {
+          // If the stop is not on the route, just use default start
+          animateBusAlongRoute(routeStops, currentRouteId);
+        }
+      }
     };
 
-    // ---- Mock ETA generator ----
-    function generateMockEta(stop) {
-      const busNames = ['BRTS-01', 'BRTS-02', 'BRTS-03', 'BRTS-04', 'BRTS-05'];
-      const destinations = ['City Centre', 'Railway Station', 'Bus Terminal', 'Town Hall', 'Airport'];
-      const etaValues = ['2 min', '4 min', '7 min', '10 min', '12 min', '15 min', '20 min'];
-      const count = 1 + Math.floor(Math.random() * 3);
-      const buses = [];
-      for (let i = 0; i < count; i++) {
-        buses.push({
-          bus: busNames[Math.floor(Math.random() * busNames.length)],
-          destination: destinations[Math.floor(Math.random() * destinations.length)],
-          eta: etaValues[Math.floor(Math.random() * etaValues.length)]
-        });
+    // ---- Mock ETA data cache ----
+    let mockEtaData = null;
+    const loadMockEtaData = async () => {
+      if (mockEtaData) return mockEtaData;
+      try {
+        const response = await fetch('./static/assets/mock_eta_data.json');
+        if (!response.ok) throw new Error('Failed to load mock_eta_data.json');
+        mockEtaData = await response.json();
+        return mockEtaData;
+      } catch (e) {
+        console.warn('Could not load mock_eta_data.json:', e);
+        return null;
       }
-      return { routes: [{ route_name: `Route ${Math.floor(Math.random() * 20) + 1}`, buses }] };
-    }
+    };
 
     // ---- loadEta with mock support and fallback ----
     const loadEta = async stop => {
@@ -967,13 +994,31 @@
       document.getElementById('eta-list').innerHTML='<p class="empty">Contacting live service...</p>';
 
       if (isMock) {
-        document.getElementById('eta-status').textContent='🎭 Mock data';
-        const mockData = generateMockEta(stop);
-        const buses = mockData.routes.flatMap(route => (route.buses || []).map(bus => ({ ...bus, route: route.route_name })));
-        document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">No mock arrivals for this stop.</p>`;
+        // Use static mock_eta_data.json
+        const data = await loadMockEtaData();
+        if (!data) {
+          document.getElementById('eta-status').textContent='Error';
+          document.getElementById('eta-list').innerHTML='<p class="empty">Mock data file could not be loaded.</p>';
+          return;
+        }
+        const stopData = data[stop.id];
+        if (!stopData || !stopData.routes || stopData.routes.length === 0) {
+          document.getElementById('eta-status').textContent='No buses';
+          document.getElementById('eta-list').innerHTML='<p class="empty">No scheduled arrivals for this stop in mock data.</p>';
+          return;
+        }
+        // Flatten all buses from all routes
+        const buses = stopData.routes.flatMap(route => 
+          (route.buses || []).map(bus => ({ ...bus, route: route.route_name }))
+        );
+        document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`;
+        document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => 
+          `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`
+        ).join('') : `<p class="empty">No mock arrivals for this stop.</p>`;
         return;
       }
 
+      // Not mock mode – use real API if available
       if (!API_BASE) {
         document.getElementById('eta-status').textContent='Backend needed';
         document.getElementById('eta-list').innerHTML='<p class="empty">Mapping works on GitHub Pages. Add your Flask API with <b>?api=https://your-api.example.com</b> to enable live timings.</p>';
@@ -990,9 +1035,19 @@
       } catch(error) {
         console.warn('Real API failed, falling back to mock data:', error.message);
         document.getElementById('eta-status').textContent='⚠️ Fallback (mock)';
-        const fallbackData = generateMockEta(stop);
-        const buses = fallbackData.routes.flatMap(route => (route.buses || []).map(bus => ({ ...bus, route: route.route_name })));
-        document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">No mock arrivals available. (API error: ${escapeHtml(error.message)})</p>`;
+        // Try mock data as fallback
+        const data = await loadMockEtaData();
+        if (data && data[stop.id]) {
+          const stopData = data[stop.id];
+          const buses = stopData.routes.flatMap(route => 
+            (route.buses || []).map(bus => ({ ...bus, route: route.route_name }))
+          );
+          document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => 
+            `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`
+          ).join('') : `<p class="empty">No mock arrivals available. (API error: ${escapeHtml(error.message)})</p>`;
+        } else {
+          document.getElementById('eta-list').innerHTML=`<p class="empty">No mock arrivals available. (API error: ${escapeHtml(error.message)})</p>`;
+        }
       }
     };
 
@@ -1002,6 +1057,8 @@
       if(routeLine){map.removeLayer(routeLine);routeLine=null;} 
       if(busMarker) { map.removeLayer(busMarker); busMarker = null; }
       
+      currentRouteId = id || null; // track the route
+
       if(!id){
         routeStops=[];
         drawStops(network.stops);
@@ -1038,6 +1095,7 @@
       drawStops(routeStops,true); 
       if(points.length) { map.fitBounds(routeLine.getBounds(),{padding:[45,45]}); }
       
+      // Start the bus animation from the first stop (default)
       animateBusAlongRoute(routeStops, id);
       
       mapLabel.textContent=`Route ${id} (${routeStops.length} stops)`; 
