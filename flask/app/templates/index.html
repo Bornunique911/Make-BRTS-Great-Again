@@ -592,6 +592,21 @@
       animation: busFloat 1.5s ease-in-out infinite;
     }
 
+    /* ---- Mock mode badge ---- */
+    .mock-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      background: #f6c85f;
+      color: #17212b;
+      border-radius: 20px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
     @media (max-width:760px) {
       body { overflow:auto; }
       .app { display:block; height:auto; }
@@ -609,7 +624,7 @@
 <body>
   <main class="app">
     <aside class="sidebar">
-      <header class="brand"><div class="brand-mark">S</div><div><h1>Surat BRTS</h1><p class="eyebrow">Live network map</p></div></header>
+      <header class="brand"><div class="brand-mark">S</div><div><h1>Surat BRTS <span id="mockBadge" style="display:none;" class="mock-badge">🎭 Mock</span></h1><p class="eyebrow">Live network map</p></div></header>
       <div class="intro"><strong id="mode-title">Move through the city.</strong><span id="mode-copy">Choose a route or search for a stop to see the network and live arrivals.</span></div>
       <section><label for="route">Route</label><select id="route"><option value="">All routes</option></select></section>
       <!-- FIXED SEARCH SECTION -->
@@ -656,6 +671,12 @@
     const mapSubtitle = document.getElementById('map-subtitle');
     const mapLabel = document.getElementById('map-label');
     const mapGlow = document.getElementById('mapGlow');
+    const mockBadge = document.getElementById('mockBadge');
+
+    // ---- URL params (single declaration, used everywhere) ----
+    const params = new URLSearchParams(location.search);
+    const isMock = params.get('mock') === 'true';
+    if (isMock) mockBadge.style.display = 'inline-block';
 
     // ---- Theme updater with 5 modes + glow animation ----
     function updateTheme() {
@@ -737,7 +758,7 @@
 
       modeTitle.textContent = titleText;
       modeCopy.textContent = copyText;
-      mapSubtitle.textContent = modeLabel;
+      mapSubtitle.textContent = modeLabel + (isMock ? ' 🎭 mock' : '');
     }
 
     // ---- IST clock ----
@@ -760,7 +781,7 @@
     setInterval(updateTheme, 60000);
 
     // ---- Map and transit logic with 3D Bus Animation ----
-    const params = new URLSearchParams(location.search);
+    // Reuse the same 'params' from above – no redeclaration!
     const sameOriginApi = location.hostname && !location.hostname.endsWith('github.io') ? location.origin : '';
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
     const DATA_URL = './static/assets/transit_data.json';
@@ -886,15 +907,44 @@
       loadEta(stop); 
     };
 
+    // ---- Mock ETA generator ----
+    function generateMockEta(stop) {
+      const busNames = ['BRTS-01', 'BRTS-02', 'BRTS-03', 'BRTS-04', 'BRTS-05'];
+      const destinations = ['City Centre', 'Railway Station', 'Bus Terminal', 'Town Hall', 'Airport'];
+      const etaValues = ['2 min', '4 min', '7 min', '10 min', '12 min', '15 min', '20 min'];
+      const count = 1 + Math.floor(Math.random() * 3);
+      const buses = [];
+      for (let i = 0; i < count; i++) {
+        buses.push({
+          bus: busNames[Math.floor(Math.random() * busNames.length)],
+          destination: destinations[Math.floor(Math.random() * destinations.length)],
+          eta: etaValues[Math.floor(Math.random() * etaValues.length)]
+        });
+      }
+      return { routes: [{ route_name: `Route ${Math.floor(Math.random() * 20) + 1}`, buses }] };
+    }
+
+    // ---- loadEta with mock support and fallback ----
     const loadEta = async stop => {
       document.getElementById('eta-name').textContent=stop.name;
       document.getElementById('eta-status').textContent='Loading';
       document.getElementById('eta-list').innerHTML='<p class="empty">Contacting live service...</p>';
+
+      // If mock mode is forced, skip real API
+      if (isMock) {
+        document.getElementById('eta-status').textContent='🎭 Mock data';
+        const mockData = generateMockEta(stop);
+        const buses = mockData.routes.flatMap(route => (route.buses || []).map(bus => ({ ...bus, route: route.route_name })));
+        document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">No mock arrivals for this stop.</p>`;
+        return;
+      }
+
       if (!API_BASE) {
         document.getElementById('eta-status').textContent='Backend needed';
         document.getElementById('eta-list').innerHTML='<p class="empty">Mapping works on GitHub Pages. Add your Flask API with <b>?api=https://your-api.example.com</b> to enable live timings.</p>';
         return;
       }
+
       try {
         const response=await fetch(`${API_BASE}/api/eta/${encodeURIComponent(stop.id)}`);
         const data=await response.json().catch(() => ({}));
@@ -903,8 +953,12 @@
         document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`;
         document.getElementById('eta-list').innerHTML=buses.length ? buses.map(bus=>`<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">${document.body.classList.contains('midnight') ? 'It is midnight in Surat. BRTS service resumes after sunrise.' : document.body.classList.contains('night') ? 'BRTS service is winding down for the night. Service resumes after sunrise.' : 'No live arrivals reported for this stop right now.'}</p>`;
       } catch(error) {
-        document.getElementById('eta-status').textContent='Unavailable';
-        document.getElementById('eta-list').innerHTML=`<p class="empty">${escapeHtml(error.message || 'Live timings are unavailable right now.')}</p>`;
+        // Real API failed – fallback to mock data
+        console.warn('Real API failed, falling back to mock data:', error.message);
+        document.getElementById('eta-status').textContent='⚠️ Fallback (mock)';
+        const fallbackData = generateMockEta(stop);
+        const buses = fallbackData.routes.flatMap(route => (route.buses || []).map(bus => ({ ...bus, route: route.route_name })));
+        document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">No mock arrivals available. (API error: ${escapeHtml(error.message)})</p>`;
       }
     };
 
@@ -921,7 +975,7 @@
         search.placeholder='Search or scroll the list';
         map.setView(surat,12);
         mapLabel.textContent='Surat transit';
-        mapSubtitle.textContent='OpenStreetMap';
+        mapSubtitle.textContent='OpenStreetMap' + (isMock ? ' 🎭 mock' : '');
         return;
       } 
       
@@ -945,7 +999,7 @@
           map.fitBounds(routeLine.getBounds(),{padding:[45,45]});
         }
         mapLabel.textContent=`Route ${id} (no stops)`; 
-        mapSubtitle.textContent=routeName(route.name);
+        mapSubtitle.textContent=routeName(route.name) + (isMock ? ' 🎭 mock' : '');
         search.placeholder = 'No stops available';
         return;
       }
@@ -959,7 +1013,7 @@
       animateBusAlongRoute(routeStops, id);
       
       mapLabel.textContent=`Route ${id} (${routeStops.length} stops)`; 
-      mapSubtitle.textContent=routeName(route.name);
+      mapSubtitle.textContent=routeName(route.name) + (isMock ? ' 🎭 mock' : '');
       search.placeholder = `Type to filter ${routeStops.length} stops`;
       
       // Render the stop list
