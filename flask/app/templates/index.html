@@ -266,26 +266,41 @@
     }
     #route { height:44px; }
 
-    /* ---- Search input – icon always visible ---- */
-    .search { position:relative; }
-    .search input {
-      padding-left: 52px !important; /* extra space for icon + text */
+    /* ---- Fixed search with real icon ---- */
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
     }
-    .search:before {
-      content:"⌕";
-      position:absolute;
-      z-index:10; /* ensure icon stays above input text */
-      top:50%;
-      left:14px;
-      transform:translateY(-50%);
-      color:var(--muted);
-      font-size:22px;
-      pointer-events:none;
-      line-height:1;
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 22px;
+      pointer-events: none;
+      line-height: 1;
+      z-index: 5;
       transition: color var(--transition-duration) ease;
     }
 
-    .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; }
+    .search-wrapper input {
+      width: 100%;
+      padding-left: 48px !important;
+      height: 44px;
+      /* other input styles inherited from above */
+    }
+
+    .search-results {
+      display:grid;
+      gap:5px;
+      max-height:210px;
+      margin-top:8px;
+      overflow-y:auto;
+    }
     .search-result {
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       width:100%; padding:10px 12px;
@@ -300,6 +315,7 @@
     }
     .search-result:hover { border-color:var(--teal); background:var(--card-hover); }
     .search-result small { color:var(--muted); white-space:nowrap; font-size:12px; }
+
     .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
     .stat {
       padding:13px;
@@ -445,7 +461,7 @@
       .map-top { top:14px; left:14px; right:14px; flex-wrap:wrap; gap:8px; }
       .map-top>* { flex:1 0 auto; }
       select, input { height:48px; font-size:16px; }
-      .search input { padding-left:52px !important; }
+      .search-wrapper input { padding-left:48px !important; }
       .search-result { padding:12px; font-size:15px; }
     }
   </style>
@@ -456,7 +472,16 @@
       <header class="brand"><div class="brand-mark">S</div><div><h1>Surat BRTS</h1><p class="eyebrow">Live network map</p></div></header>
       <div class="intro"><strong id="mode-title">Move through the city.</strong><span id="mode-copy">Choose a route or search for a stop to see the network and live arrivals.</span></div>
       <section><label for="route">Route</label><select id="route"><option value="">All routes</option></select></section>
-      <section class="search"><label for="stop-search">Stops on this route</label><input id="stop-search" type="search" placeholder="Search or scroll the list" autocomplete="off"><div id="search-results" class="search-results"></div></section>
+      <!-- FIXED SEARCH SECTION -->
+      <section class="search">
+        <label for="stop-search">Stops on this route</label>
+        <div class="search-wrapper">
+          <span class="search-icon">⌕</span>
+          <input id="stop-search" type="search" placeholder="Search or scroll the list" autocomplete="off">
+        </div>
+        <div id="search-results" class="search-results"></div>
+      </section>
+      <!-- END FIXED SEARCH SECTION -->
       <div class="stats"><div class="stat"><b id="route-count">--</b><span>routes mapped</span></div><div class="stat"><b id="stop-count">--</b><span>official stations</span></div></div>
       <section class="eta"><div class="eta-title"><h2>Next arrivals</h2><span id="eta-status" class="eyebrow">Select a stop</span></div><p id="eta-name" class="eta-name">Click any stop on the map</p><div id="eta-list" class="eta-list"><p class="empty">Live timings appear here when you choose a stop.</p></div></section>
     </aside>
