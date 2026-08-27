@@ -1110,27 +1110,101 @@
       }
     };
 
+    // ---- loadNetwork: fetch both data files, filter in mock mode ----
     const loadNetwork = async () => {
-      const response = await fetch(DATA_URL);
-      if (!response.ok) throw new Error('transit_data.json could not be loaded');
-      const data = await response.json();
-      const stops = Object.values(data.stops);
-      const mappedStops = stops.filter(stop => stop.lat != null && stop.lng != null);
-      const routes = {};
-      Object.entries(data.routes).forEach(([id, route]) => {
-        const valid = route.stops.map(stop => ({ ...stop, id: String(stop.stopCode), name: stop.stopName, lat: Number(stop.stopLatitude), lng: Number(stop.stopLongitude), sequence: stop.sequenceNumber })).filter(stop => Number.isFinite(stop.lat) && Number.isFinite(stop.lng));
-        routes[id] = { ...route, stops: valid };
+      // Fetch transit_data
+      const transitResponse = await fetch(DATA_URL);
+      if (!transitResponse.ok) throw new Error('transit_data.json could not be loaded');
+      const transitData = await transitResponse.json();
+
+      // If mock mode, also load mock_eta_data to filter stops/routes
+      let validStopIds = null;
+      if (isMock) {
+        const mockData = await loadMockEtaData();
+        if (mockData) {
+          validStopIds = new Set(Object.keys(mockData));
+        } else {
+          console.warn('Mock data not loaded – falling back to full transit data');
+        }
+      }
+
+      // Build stops
+      const allStops = Object.values(transitData.stops).map(s => ({ 
+        id: String(s.stopCode || s.id), 
+        name: s.stopName || s.name, 
+        lat: Number(s.stopLatitude || s.latitude), 
+        lng: Number(s.stopLongitude || s.longitude) 
+      })).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
+
+      // Filter stops if mock mode and we have valid IDs
+      let filteredStops = allStops;
+      if (isMock && validStopIds) {
+        filteredStops = allStops.filter(s => validStopIds.has(s.id));
+      }
+
+      // Build routes
+      const allRoutes = transitData.routes || {};
+      const filteredRoutes = {};
+      const routeOptions = [];
+
+      for (const [id, route] of Object.entries(allRoutes)) {
+        // Build stops for this route (with coordinates)
+        const routeStops = route.stops.map(stop => ({
+          id: String(stop.stopCode || stop.liveStopId || stop.id),
+          name: stop.stopName || stop.name,
+          lat: Number(stop.stopLatitude || stop.latitude),
+          lng: Number(stop.stopLongitude || stop.longitude),
+          sequence: stop.sequenceNumber || stop.sequence
+        })).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
+
+        // If mock mode, filter stops to those in validStopIds
+        let filteredRouteStops = routeStops;
+        if (isMock && validStopIds) {
+          filteredRouteStops = routeStops.filter(s => validStopIds.has(s.id));
+        }
+
+        // Only keep route if it has at least one stop after filtering
+        if (filteredRouteStops.length > 0) {
+          filteredRoutes[id] = {
+            name: route.name,
+            stops: filteredRouteStops
+          };
+          routeOptions.push({ id, name: route.name, stopCount: filteredRouteStops.length });
+        }
+      }
+
+      // Build final network
+      network = {
+        stops: filteredStops,
+        routes: filteredRoutes
+      };
+
+      // Populate route dropdown
+      routeSelect.innerHTML = '<option value="">All routes</option>';
+      routeOptions.sort((a, b) => a.id.localeCompare(b.id));
+      for (const opt of routeOptions) {
         const option = document.createElement('option');
-        option.value = id;
-        option.textContent = `${id} · ${routeName(route.name)}`;
+        option.value = opt.id;
+        option.textContent = `${opt.id} · ${routeName(opt.name)} (${opt.stopCount} stops)`;
         routeSelect.appendChild(option);
-      });
-      network = { stops: mappedStops, routes };
-      document.getElementById('stop-count').textContent = data.catalog_stop_count.toLocaleString();
-      document.getElementById('route-count').textContent = Object.keys(routes).length.toLocaleString();
-      drawStops(mappedStops);
+      }
+
+      // Update stats
+      document.getElementById('stop-count').textContent = network.stops.length.toLocaleString();
+      document.getElementById('route-count').textContent = Object.keys(network.routes).length.toLocaleString();
+
+      // Draw initial stops
+      drawStops(network.stops);
+
+      // If in mock mode and we filtered, update intro
+      if (isMock && validStopIds) {
+        const totalTransitStops = allStops.length;
+        const filtered = network.stops.length;
+        modeCopy.textContent = `Mock demo: showing ${filtered} of ${totalTransitStops} stops that have ETA data.`;
+      }
     };
 
+    // ---- Event listeners ----
     routeSelect.addEventListener('change',()=>showRoute(routeSelect.value));
     search.addEventListener('input',()=>{if(!network) return; const term=search.value.trim().toLowerCase(),source=routeStops.length?routeStops:network.stops,matches=term?source.filter(stop=>stop.name.toLowerCase().includes(term)||String(stop.id).toLowerCase().includes(term)):source;drawStops(matches,routeStops.length>0);renderSearchResults(matches);if(matches.length===1) selectStop(matches[0]);});
     document.getElementById('locate').addEventListener('click',()=>navigator.geolocation?.getCurrentPosition(position=>map.setView([position.coords.latitude,position.coords.longitude],15)));
@@ -1143,7 +1217,11 @@
       showRoute('');
       map.setView(surat,12);
     });
-    loadNetwork().catch(error=>{document.getElementById('eta-list').innerHTML=`<p class="empty">Could not load transit data: ${escapeHtml(error.message)}</p>`;});
+
+    // ---- Start ----
+    loadNetwork().catch(error=>{
+      document.getElementById('eta-list').innerHTML=`<p class="empty">Could not load transit data: ${escapeHtml(error.message)}</p>`;
+    });
   </script>
 </body>
 </html>
