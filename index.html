@@ -12,13 +12,13 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    /* --- Your existing styles --- */
     :root { --ink:#17212b; --muted:#6b7785; --paper:#f5f7f8; --line:#dce3e8; --red:#e4573d; --teal:#087f8c; --yellow:#f6c85f; --glass:#ffffffd9; --fog:#ffffff80; --card:#ffffff; --card-hover:#eef6f5; }
     body.night { --ink:#edf4f5; --muted:#a6b7bc; --paper:#101b25; --line:#30404b; --glass:#172733e8; --fog:#213541aa; --card:#1b2d39; --card-hover:#223746; background:#101b25; }
     body.midnight { --ink:#e9eef0; --muted:#aeb9bd; --paper:#17202a; --line:#3a4650; --glass:#202d38e8; --fog:#293943b8; --card:#253540; --card-hover:#2d404c; background:#17202a; }
     body.midnight .intro { border-left-color:#f0b85a; background:linear-gradient(135deg,#293943d9,#23313be8); }
     body.midnight .brand-mark { background:linear-gradient(135deg,#e4573d 0%,#f0b85a 100%); }
     body.midnight #map { filter:brightness(.82) saturate(.86); }
+
     * { box-sizing:border-box; } html,body { height:100%; margin:0; }
     body { color:var(--ink); background:var(--paper); font:14px "DM Sans",sans-serif; overflow:hidden; }
     .app { display:grid; grid-template-columns:350px 1fr; height:100%; }
@@ -28,19 +28,60 @@
     .eyebrow { margin-top:3px; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; }
     .intro { padding:18px; background:var(--fog); border-left:4px solid var(--teal); box-shadow:0 12px 30px #1828320c; } .intro strong { display:block; margin-bottom:6px; font:600 15px "Space Grotesk",sans-serif; } .intro span { color:var(--muted); line-height:1.5; }
     label { display:block; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
-    select,input { width:100%; height:44px; padding:0 12px; color:var(--ink); background:var(--fog); border:1px solid var(--line); border-radius:7px; font:inherit; outline:0; } select:focus,input:focus { border-color:var(--teal); box-shadow:0 0 0 3px #087f8c1c; }
+    select, input {
+      width:100%; height:44px; padding:0 12px;
+      color:var(--ink);
+      background:var(--fog);
+      border:1px solid var(--line);
+      border-radius:7px;
+      font:inherit;
+      outline:0;
+      backdrop-filter:blur(18px) saturate(130%);
+      -webkit-backdrop-filter:blur(18px) saturate(130%);
+    }
+    select:focus, input:focus { border-color:var(--teal); box-shadow:0 0 0 3px #087f8c1c; }
     #route { height:44px; }
     .search { position:relative; } .search input { padding-left:38px; } .search:before { content:"⌕"; position:absolute; z-index:1; top:8px; left:13px; color:var(--muted); font-size:23px; } .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; } .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:9px 10px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:6px; cursor:pointer; } .search-result:hover { border-color:var(--teal); background:var(--card-hover); } .search-result small { color:var(--muted); white-space:nowrap; }
     .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; } .stat { padding:13px; background:var(--fog); border:1px solid var(--line); border-radius:7px; } .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; } .stat span { color:var(--muted); font-size:11px; }
     .eta { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); } .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; } .eta-name { margin-top:5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .eta-list { display:grid; gap:8px; margin-top:14px; max-height:170px; overflow-y:auto; } .eta-row { display:grid; grid-template-columns:45px 1fr auto; gap:8px; align-items:center; padding:10px; background:#fff8e7; border:1px solid #f2dfab; border-radius:6px; } .eta-row b { font-size:12px; } .eta-row small { color:var(--muted); } .eta-time { color:#ae6a12; font-weight:700; } .empty { color:var(--muted); font-size:13px; line-height:1.5; }
-    .map-wrap { position:relative; min-width:0; } #map { width:100%; height:100%; background:#dfe8e6; transition:filter .5s ease; } body.night #map { filter:brightness(.72) saturate(.76); }
-    .map-top { position:absolute; z-index:1; top:22px; left:22px; right:22px; display:flex; align-items:center; justify-content:space-between; pointer-events:none; }
-    .map-top>* { pointer-events:auto; display:flex; gap:8px; }
-    .map-pill { padding:10px 14px; background:var(--glass); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px #18283218; backdrop-filter:blur(18px) saturate(130%); }
+
+    .map-wrap { position:relative; min-width:0; }
+    #map { width:100%; height:100%; background:#dfe8e6; transition:filter .5s ease; }
+    body.night #map { filter:brightness(.72) saturate(.76); }
+
+    /* --- Map top bar: always on top --- */
+    .map-top {
+      position:absolute;
+      z-index:1000;   /* high enough to stay above map tiles */
+      top:22px;
+      left:22px;
+      right:22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      pointer-events:none;  /* allow clicks to pass through container */
+      gap:12px;
+    }
+    .map-top>* {
+      pointer-events:auto;  /* but children can be clicked */
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .map-pill {
+      padding:10px 14px;
+      background:var(--glass);
+      border:1px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 10px 30px #18283218;
+      backdrop-filter:blur(18px) saturate(130%);
+    }
     .map-pill b { font:600 14px "Space Grotesk",sans-serif; }
     .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; }
-    /* New style for the clock – matches the map-pill appearance */
+
+    /* Independent clock – same glass style */
     .map-clock {
       display:inline-block;
       padding:10px 14px;
@@ -54,11 +95,37 @@
       color:var(--ink);
       font-size:12px;
     }
-    .locate, .reset-view { width:40px; height:40px; color:var(--ink); background:var(--glass); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px #18283218; font-size:20px; cursor:pointer; backdrop-filter:blur(18px); display:grid; place-items:center; } .locate:hover, .reset-view:hover { color:var(--teal); }
-    .reset-view { background:var(--teal); color:#fff; border-color:var(--teal); } .reset-view:hover { background:#066a75; border-color:#066a75; color:#fff; }
-    .stop-dot { width:12px; height:12px; background:var(--yellow); border:3px solid #fff; border-radius:50%; box-shadow:0 1px 5px #18283255; } .stop-dot.route { background:var(--red); }
+
+    .locate, .reset-view {
+      width:40px; height:40px;
+      color:var(--ink);
+      background:var(--glass);
+      border:1px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 10px 30px #18283218;
+      font-size:20px;
+      cursor:pointer;
+      backdrop-filter:blur(18px);
+      display:grid;
+      place-items:center;
+    }
+    .locate:hover, .reset-view:hover { color:var(--teal); }
+    .reset-view { background:var(--teal); color:#fff; border-color:var(--teal); }
+    .reset-view:hover { background:#066a75; border-color:#066a75; color:#fff; }
+
+    .stop-dot { width:12px; height:12px; background:var(--yellow); border:3px solid #fff; border-radius:50%; box-shadow:0 1px 5px #18283255; }
+    .stop-dot.route { background:var(--red); }
     .popup-name { font-weight:700; } .popup-id { color:var(--muted); font-size:11px; }
-    @media (max-width:760px) { body { overflow:auto; } .app { display:block; height:auto; } .sidebar { min-height:420px; padding:20px; } .map-wrap { height:58vh; min-height:420px; } .eta { margin-top:0; } .map-top { top:14px; left:14px; right:14px; } }
+
+    @media (max-width:760px) {
+      body { overflow:auto; }
+      .app { display:block; height:auto; }
+      .sidebar { min-height:420px; padding:20px; }
+      .map-wrap { height:58vh; min-height:420px; }
+      .eta { margin-top:0; }
+      .map-top { top:14px; left:14px; right:14px; flex-wrap:wrap; gap:8px; }
+      .map-top>* { flex:1 0 auto; }
+    }
   </style>
 </head>
 <body>
@@ -78,7 +145,6 @@
           <b id="map-label">Surat transit</b>
           <span id="map-subtitle">OpenStreetMap</span>
         </div>
-        <!-- Clock moved outside map-pill to prevent removal on route updates -->
         <span id="ist-clock" class="map-clock" aria-label="Current IST time">--:--:-- -- IST</span>
         <div>
           <button class="locate" id="locate" title="Use my location" aria-label="Use my location">◎</button>
@@ -90,7 +156,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   <script>
-    /* --- Your existing JavaScript (unchanged) --- */
+    // ---- Your existing JavaScript (unchanged) ----
     const params = new URLSearchParams(location.search);
     const sameOriginApi = location.hostname && !location.hostname.endsWith('github.io') ? location.origin : '';
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
@@ -151,7 +217,7 @@
     updateTheme();
     setInterval(updateTheme, 60000);
 
-    // ---- Map and transit logic (unchanged) ----
+    // ---- Map and transit logic ----
     const map = L.map('map', { zoomControl:false }).setView(surat, 12);
     L.control.zoom({ position:'bottomright' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
