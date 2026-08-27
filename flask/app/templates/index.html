@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    /* ---- Base theme variables (Morning) ---- */
+    /* --- Base theme variables --- */
     :root {
       --ink: #17212b;
       --muted: #6b7785;
@@ -25,56 +25,54 @@
       --fog: #ffffff80;
       --card: #ffffff;
       --card-hover: #eef6f5;
-      --map-filter: none;
+      --sky-gradient: linear-gradient(180deg, #87CEEB 0%, #e0f0ff 100%);
+      --sun-color: #fdb813;
+      --sun-glow: rgba(253, 184, 19, 0.3);
     }
 
-    /* ---- Afternoon ---- */
+    /* --- Mode-specific overrides --- */
+
+    /* Morning (default) – already set above */
+
+    /* Afternoon – warmer, slightly golden */
     body.afternoon {
       --ink: #1a1a2e;
-      --muted: #6b7a8f;
-      --paper: #f0e6d3;
-      --line: #d4c5a9;
-      --glass: #f5e8d9e8;
-      --fog: #f5e8d9aa;
-      --card: #faf3e8;
-      --card-hover: #f0e6d6;
-      background: #f0e6d3;
+      --muted: #5a5a7a;
+      --paper: #fdf6e3;
+      --line: #e8d5b5;
+      --glass: #fff8e7d9;
+      --fog: #fff8e780;
+      --card: #fffdf5;
+      --card-hover: #f5ede0;
+      --sky-gradient: linear-gradient(180deg, #f9d976 0%, #f39c12 100%);
+      --sun-color: #f39c12;
+      --sun-glow: rgba(243, 156, 18, 0.4);
+      background: #fdf6e3;
     }
     body.afternoon #map {
-      filter: brightness(1.05) saturate(1.1) contrast(0.98);
-    }
-    body.afternoon .intro {
-      border-left-color: #d4a373;
-      background: linear-gradient(135deg, #f5e8d9d9, #efe0cd);
-    }
-    body.afternoon .brand-mark {
-      background: linear-gradient(135deg, #d4a373 0%, #cc8e5a 100%);
+      filter: brightness(1.05) saturate(1.1);
     }
 
-    /* ---- Evening ---- */
+    /* Evening – sunset colors */
     body.evening {
-      --ink: #2d1b0e;
-      --muted: #8a7a6a;
-      --paper: #f5e6d3;
-      --line: #d4b896;
-      --glass: #f5e6d3e8;
-      --fog: #f5e6d3aa;
-      --card: #fdf6ee;
-      --card-hover: #f5e6d6;
-      background: #f5e6d3;
+      --ink: #2c1a0e;
+      --muted: #8a6e5a;
+      --paper: #1e0f08;
+      --line: #5a3d2a;
+      --glass: #2a1a0ed9;
+      --fog: #2a1a0e80;
+      --card: #3a2518;
+      --card-hover: #4a3020;
+      --sky-gradient: linear-gradient(180deg, #e74c3c 0%, #c0392b 40%, #2c1a0e 100%);
+      --sun-color: #e74c3c;
+      --sun-glow: rgba(231, 76, 60, 0.5);
+      background: #1e0f08;
     }
     body.evening #map {
-      filter: brightness(0.9) saturate(1.15) sepia(0.15);
-    }
-    body.evening .intro {
-      border-left-color: #c7794a;
-      background: linear-gradient(135deg, #f5e6d3d9, #e8d5bf);
-    }
-    body.evening .brand-mark {
-      background: linear-gradient(135deg, #c7794a 0%, #b5653a 100%);
+      filter: brightness(0.85) saturate(1.2) sepia(0.15);
     }
 
-    /* ---- Night (unchanged) ---- */
+    /* Night – dark blue */
     body.night {
       --ink: #edf4f5;
       --muted: #a6b7bc;
@@ -84,13 +82,16 @@
       --fog: #213541aa;
       --card: #1b2d39;
       --card-hover: #223746;
+      --sky-gradient: linear-gradient(180deg, #0c1420 0%, #1a2a3a 100%);
+      --sun-color: #4a6a8a;
+      --sun-glow: rgba(74, 106, 138, 0.2);
       background: #101b25;
     }
     body.night #map {
-      filter: brightness(.72) saturate(.76);
+      filter: brightness(0.72) saturate(0.76);
     }
 
-    /* ---- Midnight (unchanged) ---- */
+    /* Midnight – deepest dark */
     body.midnight {
       --ink: #e9eef0;
       --muted: #aeb9bd;
@@ -100,6 +101,9 @@
       --fog: #293943b8;
       --card: #253540;
       --card-hover: #2d404c;
+      --sky-gradient: radial-gradient(ellipse at 50% 80%, #1a2a3a 0%, #0a0f14 100%);
+      --sun-color: #2a4a5a;
+      --sun-glow: rgba(42, 74, 90, 0.15);
       background: #17202a;
     }
     body.midnight .intro {
@@ -110,19 +114,152 @@
       background: linear-gradient(135deg, #e4573d 0%, #f0b85a 100%);
     }
     body.midnight #map {
-      filter: brightness(.82) saturate(.86);
+      filter: brightness(0.82) saturate(0.86);
     }
 
-    /* ---- Base styles ---- */
+    /* --- Sun animation container --- */
+    .sun-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      transition: opacity 1.5s ease;
+    }
+    .sun-container .sky {
+      position: absolute;
+      inset: 0;
+      background: var(--sky-gradient);
+      transition: background 2s ease;
+    }
+    .sun-container .sun {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff5c0, var(--sun-color));
+      box-shadow: 0 0 80px var(--sun-glow), 0 0 160px var(--sun-glow);
+      transform: translateX(-50%);
+      transition: all 2s ease;
+    }
+    /* Sun position variations */
+    body.morning .sun-container .sun {
+      bottom: 25%;
+      left: 15%;
+      width: 70px;
+      height: 70px;
+    }
+    body.afternoon .sun-container .sun {
+      bottom: 40%;
+      left: 70%;
+      width: 90px;
+      height: 90px;
+    }
+    body.evening .sun-container .sun {
+      bottom: 10%;
+      left: 85%;
+      width: 80px;
+      height: 80px;
+    }
+    body.night .sun-container .sun {
+      bottom: -20%;
+      left: 50%;
+      width: 50px;
+      height: 50px;
+      opacity: 0.2;
+      box-shadow: 0 0 40px rgba(74, 106, 138, 0.1);
+    }
+    body.midnight .sun-container .sun {
+      bottom: -30%;
+      left: 50%;
+      width: 30px;
+      height: 30px;
+      opacity: 0.05;
+      box-shadow: none;
+    }
+
+    /* --- Base layout (unchanged) --- */
     * { box-sizing:border-box; } html,body { height:100%; margin:0; }
-    body { color:var(--ink); background:var(--paper); font:14px "DM Sans",sans-serif; overflow:hidden; transition: background 0.8s ease, color 0.8s ease; }
-    .app { display:grid; grid-template-columns:350px 1fr; height:100%; }
-    .sidebar { z-index:2; display:flex; flex-direction:column; gap:24px; padding:28px 24px; background:var(--glass); border-right:1px solid var(--line); overflow-y:auto; backdrop-filter:blur(24px) saturate(130%); transition: background 0.8s ease, border-color 0.8s ease; }
-    .brand { display:flex; align-items:center; gap:12px; } .brand-mark { width:42px; height:42px; display:grid; place-items:center; color:#fff; background:var(--red); border-radius:12px 12px 12px 3px; font:700 20px "Space Grotesk",sans-serif; transition: background 0.8s ease; }
-    h1,h2,p { margin:0; } h1 { font:700 21px "Space Grotesk",sans-serif; } h2 { font:600 17px "Space Grotesk",sans-serif; }
-    .eyebrow { margin-top:3px; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; }
-    .intro { padding:18px; background:var(--fog); border-left:4px solid var(--teal); box-shadow:0 12px 30px #1828320c; transition: background 0.8s ease, border-color 0.8s ease; } .intro strong { display:block; margin-bottom:6px; font:600 15px "Space Grotesk",sans-serif; } .intro span { color:var(--muted); line-height:1.5; }
-    label { display:block; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
+    body {
+      color:var(--ink);
+      background:var(--paper);
+      font:14px "DM Sans",sans-serif;
+      overflow:hidden;
+      transition: background 1.5s ease, color 1.5s ease;
+    }
+    .app {
+      display:grid;
+      grid-template-columns:350px 1fr;
+      height:100%;
+      position:relative;
+      z-index:1;
+    }
+    .sidebar {
+      z-index:2;
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+      padding:28px 24px;
+      background:var(--glass);
+      border-right:1px solid var(--line);
+      overflow-y:auto;
+      backdrop-filter:blur(24px) saturate(130%);
+      transition: background 1.5s ease, border-color 1.5s ease;
+    }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .brand-mark {
+      width:42px; height:42px;
+      display:grid; place-items:center;
+      color:#fff;
+      background:var(--red);
+      border-radius:12px 12px 12px 3px;
+      font:700 20px "Space Grotesk",sans-serif;
+      transition: background 1.5s ease;
+    }
+    h1,h2,p { margin:0; }
+    h1 { font:700 21px "Space Grotesk",sans-serif; }
+    h2 { font:600 17px "Space Grotesk",sans-serif; }
+    .eyebrow {
+      margin-top:3px;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:1.1px;
+      text-transform:uppercase;
+      transition: color 1.5s ease;
+    }
+    .intro {
+      padding:18px;
+      background:var(--fog);
+      border-left:4px solid var(--teal);
+      box-shadow:0 12px 30px #1828320c;
+      transition: background 1.5s ease, border-color 1.5s ease;
+    }
+    .intro strong {
+      display:block;
+      margin-bottom:6px;
+      font:600 15px "Space Grotesk",sans-serif;
+    }
+    .intro span {
+      color:var(--muted);
+      line-height:1.5;
+      transition: color 1.5s ease;
+    }
+    label {
+      display:block;
+      margin-bottom:8px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.4px;
+      text-transform:uppercase;
+      transition: color 1.5s ease;
+    }
 
     /* ---- Transparent glass for dropdown & search ---- */
     select, input {
@@ -136,7 +273,7 @@
       backdrop-filter:blur(24px) saturate(180%);
       -webkit-backdrop-filter:blur(24px) saturate(180%);
       box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-      transition: all 0.3s ease, color 0.8s ease, background 0.8s ease, border-color 0.8s ease;
+      transition: all 0.3s ease, color 1.5s ease, background 1.5s ease;
       appearance: none;
       -webkit-appearance: none;
     }
@@ -149,7 +286,6 @@
       background: rgba(255,255,255,0.12);
       box-shadow: 0 0 0 3px rgba(8,127,140,0.12), 0 4px 12px rgba(0,0,0,0.02);
     }
-    /* Custom dropdown arrow */
     select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7785' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
@@ -176,17 +312,107 @@
       font-size:24px;
       pointer-events:none;
       line-height:1;
+      transition: color 1.5s ease;
     }
-    .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; }
-    .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:10px 12px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:14px; transition:all .2s, background 0.8s ease, border-color 0.8s ease; }
+    .search-results {
+      display:grid;
+      gap:5px;
+      max-height:210px;
+      margin-top:8px;
+      overflow-y:auto;
+    }
+    .search-result {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      width:100%;
+      padding:10px 12px;
+      color:var(--ink);
+      text-align:left;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:8px;
+      cursor:pointer;
+      font-size:14px;
+      transition:all .2s, background 1.5s ease, border-color 1.5s ease, color 1.5s ease;
+    }
     .search-result:hover { border-color:var(--teal); background:var(--card-hover); }
-    .search-result small { color:var(--muted); white-space:nowrap; font-size:12px; }
-    .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; } .stat { padding:13px; background:var(--fog); border:1px solid var(--line); border-radius:7px; transition: background 0.8s ease, border-color 0.8s ease; } .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; } .stat span { color:var(--muted); font-size:11px; }
-    .eta { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); transition: border-color 0.8s ease; } .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; } .eta-name { margin-top:5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .eta-list { display:grid; gap:8px; margin-top:14px; max-height:170px; overflow-y:auto; } .eta-row { display:grid; grid-template-columns:45px 1fr auto; gap:8px; align-items:center; padding:10px; background:#fff8e7; border:1px solid #f2dfab; border-radius:6px; } .eta-row b { font-size:12px; } .eta-row small { color:var(--muted); } .eta-time { color:#ae6a12; font-weight:700; } .empty { color:var(--muted); font-size:13px; line-height:1.5; }
+    .search-result small { color:var(--muted); white-space:nowrap; font-size:12px; transition: color 1.5s ease; }
+    .stats {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:9px;
+    }
+    .stat {
+      padding:13px;
+      background:var(--fog);
+      border:1px solid var(--line);
+      border-radius:7px;
+      transition: background 1.5s ease, border-color 1.5s ease;
+    }
+    .stat b {
+      display:block;
+      font:700 20px "Space Grotesk",sans-serif;
+      transition: color 1.5s ease;
+    }
+    .stat span {
+      color:var(--muted);
+      font-size:11px;
+      transition: color 1.5s ease;
+    }
+    .eta {
+      margin-top:auto;
+      padding-top:20px;
+      border-top:1px solid var(--line);
+      transition: border-color 1.5s ease;
+    }
+    .eta-title {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .eta-name {
+      margin-top:5px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      transition: color 1.5s ease;
+    }
+    .eta-list {
+      display:grid;
+      gap:8px;
+      margin-top:14px;
+      max-height:170px;
+      overflow-y:auto;
+    }
+    .eta-row {
+      display:grid;
+      grid-template-columns:45px 1fr auto;
+      gap:8px;
+      align-items:center;
+      padding:10px;
+      background:#fff8e7;
+      border:1px solid #f2dfab;
+      border-radius:6px;
+    }
+    .eta-row b { font-size:12px; }
+    .eta-row small { color:var(--muted); }
+    .eta-time { color:#ae6a12; font-weight:700; }
+    .empty { color:var(--muted); font-size:13px; line-height:1.5; }
 
-    .map-wrap { position:relative; min-width:0; }
-    #map { width:100%; height:100%; background:#dfe8e6; transition:filter .5s ease; }
+    .map-wrap {
+      position:relative;
+      min-width:0;
+    }
+    #map {
+      width:100%;
+      height:100%;
+      background:#dfe8e6;
+      transition: filter 1.5s ease;
+    }
 
     .map-top {
       position:absolute;
@@ -213,10 +439,18 @@
       border-radius:12px;
       box-shadow:0 10px 30px #18283218;
       backdrop-filter:blur(18px) saturate(130%);
-      transition: background 0.8s ease, border-color 0.8s ease;
+      transition: background 1.5s ease, border-color 1.5s ease;
     }
-    .map-pill b { font:600 14px "Space Grotesk",sans-serif; }
-    .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; }
+    .map-pill b {
+      font:600 14px "Space Grotesk",sans-serif;
+      transition: color 1.5s ease;
+    }
+    .map-pill span {
+      margin-left:8px;
+      color:var(--muted);
+      font-size:12px;
+      transition: color 1.5s ease;
+    }
 
     .map-clock {
       display:inline-block;
@@ -230,7 +464,7 @@
       font-variant-numeric:tabular-nums;
       color:var(--ink);
       font-size:12px;
-      transition: background 0.8s ease, border-color 0.8s ease, color 0.8s ease;
+      transition: background 1.5s ease, border-color 1.5s ease, color 1.5s ease;
     }
 
     .locate, .reset-view {
@@ -245,14 +479,24 @@
       backdrop-filter:blur(18px);
       display:grid;
       place-items:center;
-      transition: background 0.8s ease, border-color 0.8s ease, color 0.8s ease;
+      transition: background 1.5s ease, border-color 1.5s ease, color 1.5s ease;
     }
     .locate:hover, .reset-view:hover { color:var(--teal); }
     .reset-view { background:var(--teal); color:#fff; border-color:var(--teal); }
     .reset-view:hover { background:#066a75; border-color:#066a75; color:#fff; }
 
-    .stop-dot { width:12px; height:12px; background:var(--yellow); border:3px solid #fff; border-radius:50%; box-shadow:0 1px 5px #18283255; } .stop-dot.route { background:var(--red); }
-    .popup-name { font-weight:700; } .popup-id { color:var(--muted); font-size:11px; }
+    .stop-dot {
+      width:12px;
+      height:12px;
+      background:var(--yellow);
+      border:3px solid #fff;
+      border-radius:50%;
+      box-shadow:0 1px 5px #18283255;
+      transition: background 1.5s ease;
+    }
+    .stop-dot.route { background:var(--red); }
+    .popup-name { font-weight:700; }
+    .popup-id { color:var(--muted); font-size:11px; }
 
     @media (max-width:760px) {
       body { overflow:auto; }
@@ -268,6 +512,12 @@
   </style>
 </head>
 <body>
+  <!-- Sun animation overlay (behind everything) -->
+  <div class="sun-container" id="sunContainer">
+    <div class="sky" id="sky"></div>
+    <div class="sun" id="sun"></div>
+  </div>
+
   <main class="app">
     <aside class="sidebar">
       <header class="brand"><div class="brand-mark">S</div><div><h1>Surat BRTS</h1><p class="eyebrow">Live network map</p></div></header>
@@ -292,94 +542,116 @@
       </div>
     </section>
   </main>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   <script>
-    // ---- Official Surat coordinates (source: latlong.net) ----
-    const surat = [21.170240, 72.831062];
-    const fallbackSolarTimes = {
-      sunrise: new Date(new Date().setHours(6, 15, 0, 0)),
-      sunset: new Date(new Date().setHours(18, 45, 0, 0))
+    // ---- Configuration ----
+    const surat = [21.1702, 72.8311]; // Official coordinates[reference:0][reference:1]
+
+    const MODES = {
+      morning: {
+        label: 'Morning',
+        emoji: '🌅',
+        title: 'Good morning, Surat.',
+        copy: 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.',
+        subtitle: 'Morning mode · OpenStreetMap'
+      },
+      afternoon: {
+        label: 'Afternoon',
+        emoji: '☀️',
+        title: 'The sun is high over Surat.',
+        copy: 'Plan your afternoon trips with live route updates and real-time bus arrivals.',
+        subtitle: 'Afternoon mode · OpenStreetMap'
+      },
+      evening: {
+        label: 'Evening',
+        emoji: '🌇',
+        title: 'The city is winding down.',
+        copy: 'The map stays open after sunset. Live arrivals return with the morning service.',
+        subtitle: 'Evening mode · OpenStreetMap'
+      },
+      night: {
+        label: 'Night',
+        emoji: '🌙',
+        title: 'Night falls over Surat.',
+        copy: 'Most BRTS services have ended. Plan your morning commute using the network map.',
+        subtitle: 'Night mode · OpenStreetMap'
+      },
+      midnight: {
+        label: 'Midnight',
+        emoji: '🌃',
+        title: 'Deep night in Surat.',
+        copy: 'BRTS service is paused until sunrise. Browse the network to plan your morning journey.',
+        subtitle: 'Midnight mode · Network view'
+      }
     };
 
     // ---- DOM refs ----
     const modeTitle = document.getElementById('mode-title');
     const modeCopy = document.getElementById('mode-copy');
     const mapSubtitle = document.getElementById('map-subtitle');
-    const mapLabel = document.getElementById('map-label');
+    const istClock = document.getElementById('ist-clock');
+    const sunContainer = document.getElementById('sunContainer');
+    const sky = document.getElementById('sky');
+    const sun = document.getElementById('sun');
 
-    // ---- Theme updater with 5 modes ----
-    function updateTheme() {
-      const now = new Date();
-      const solarTimes = window.SunCalc
-        ? SunCalc.getTimes(now, surat[0], surat[1])
-        : fallbackSolarTimes;
-
-      const sunrise = solarTimes.sunrise;
-      const sunset = solarTimes.sunset;
-      
-      // Calculate mode based on time of day
-      // Morning: sunrise to 11:30 AM
-      // Afternoon: 11:30 AM to 4:00 PM
-      // Evening: 4:00 PM to sunset
-      // Night: sunset to midnight (00:00)
-      // Midnight: 00:00 to sunrise
-
-      const morningEnd = new Date(sunrise);
-      morningEnd.setHours(11, 30, 0, 0);
-      
-      const afternoonEnd = new Date(sunrise);
-      afternoonEnd.setHours(16, 0, 0, 0);
-      
-      const isMidnight = now < sunrise && now.getHours() < 6;
-      const isNight = now >= sunset || (now.getHours() >= 0 && now.getHours() < 4);
-      const isEvening = now >= afternoonEnd && now < sunset;
-      const isAfternoon = now >= morningEnd && now < afternoonEnd;
-      const isMorning = now >= sunrise && now < morningEnd;
-
-      // Apply CSS classes
-      document.body.classList.toggle('midnight', isMidnight);
-      document.body.classList.toggle('night', isNight && !isMidnight);
-      document.body.classList.toggle('evening', isEvening);
-      document.body.classList.toggle('afternoon', isAfternoon);
-      document.body.classList.toggle('morning', isMorning);
-
-      // Update intro and subtitle
-      let modeLabel = 'Morning mode · OpenStreetMap';
-      let titleText = 'Good morning, Surat.';
-      let copyText = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
-
-      if (isMidnight) {
-        modeLabel = 'Midnight mode · Network view';
-        titleText = 'Deep night in Surat.';
-        copyText = 'BRTS service is paused until sunrise. Browse the network to plan your morning journey.';
-      } else if (isNight) {
-        modeLabel = 'Night mode · OpenStreetMap';
-        titleText = 'The city is winding down.';
-        copyText = 'The map stays open after sunset. Live arrivals return with the morning service.';
-      } else if (isEvening) {
-        modeLabel = 'Evening mode · Golden hour';
-        titleText = 'Evening lights are glowing.';
-        copyText = 'The city settles into the evening. Plan your last trips or explore the network in warm tones.';
-      } else if (isAfternoon) {
-        modeLabel = 'Afternoon mode · Bright daylight';
-        titleText = 'The afternoon is bright and bustling.';
-        copyText = 'BRTS runs at full frequency. Check live arrivals and navigate the city in the midday light.';
-      } else {
-        // Morning
-        modeLabel = 'Morning mode · OpenStreetMap';
-        titleText = 'Good morning, Surat.';
-        copyText = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
+    // ---- Time calculations ----
+    function getSolarTimes(now) {
+      if (window.SunCalc) {
+        return SunCalc.getTimes(now, surat[0], surat[1]);
       }
-
-      modeTitle.textContent = titleText;
-      modeCopy.textContent = copyText;
-      mapSubtitle.textContent = modeLabel;
+      // Fallback
+      return {
+        sunrise: new Date(new Date().setHours(6, 15, 0, 0)),
+        sunset: new Date(new Date().setHours(18, 45, 0, 0))
+      };
     }
 
-    // ---- IST clock ----
-    const istClock = document.getElementById('ist-clock');
-    const updateISTClock = () => {
+    function getMode(now, solarTimes) {
+      const sunrise = solarTimes.sunrise;
+      const sunset = solarTimes.sunset;
+      const hour = now.getHours();
+
+      // Midnight: 00:00 – sunrise
+      if (now < sunrise && hour < 6) return 'midnight';
+      // Morning: sunrise – 11:59
+      if (now >= sunrise && hour < 12) return 'morning';
+      // Afternoon: 12:00 – 16:59
+      if (hour >= 12 && hour < 17) return 'afternoon';
+      // Evening: 17:00 – sunset
+      if (hour >= 17 && now < sunset) return 'evening';
+      // Night: sunset – 23:59
+      if (now >= sunset) return 'night';
+      // Fallback
+      return 'morning';
+    }
+
+    // ---- Theme updater ----
+    function updateTheme() {
+      const now = new Date();
+      const solarTimes = getSolarTimes(now);
+      const modeKey = getMode(now, solarTimes);
+      const mode = MODES[modeKey];
+
+      // Remove all mode classes
+      document.body.classList.remove('morning', 'afternoon', 'evening', 'night', 'midnight');
+      document.body.classList.add(modeKey);
+
+      // Update text
+      modeTitle.textContent = mode.title;
+      modeCopy.textContent = mode.copy;
+      mapSubtitle.textContent = mode.subtitle;
+
+      // Update clock
+      updateISTClock();
+
+      // Trigger sun animation (handled by CSS transitions)
+      // The sun position and sky gradient are controlled by CSS classes
+    }
+
+    // ---- IST Clock ----
+    function updateISTClock() {
       if (!istClock) return;
       istClock.textContent = new Intl.DateTimeFormat('en-IN', {
         timeZone: 'Asia/Kolkata',
@@ -388,13 +660,14 @@
         second: '2-digit',
         hour12: true
       }).format(new Date()) + ' IST';
-    };
+    }
 
     // ---- Initialise ----
     updateISTClock();
     setInterval(updateISTClock, 1000);
+
     updateTheme();
-    setInterval(updateTheme, 60000);
+    setInterval(updateTheme, 60000); // re-check every minute
 
     // ---- Map and transit logic (unchanged) ----
     const params = new URLSearchParams(location.search);
@@ -413,39 +686,39 @@
     const drawStops = (stops, routeMode=false) => { stopLayer.clearLayers(); stops.filter(stop => stop.lat != null && stop.lng != null).forEach(stop => { const marker=L.marker([stop.lat,stop.lng],{icon:stopIcon(routeMode)}).addTo(stopLayer); marker.bindPopup(`<div class="popup-name">${escapeHtml(stop.name)}</div><div class="popup-id">Stop ${escapeHtml(stop.id)}</div>`); marker.on('click', () => loadEta(stop)); }); };
     const renderSearchResults = (matches) => { searchResults.innerHTML = matches.length ? matches.slice(0, 30).map((stop, index) => `<button class="search-result" data-index="${index}"><span>${escapeHtml(stop.name)}</span><small>${stop.lat != null && stop.lng != null ? `Stop ${escapeHtml(stop.id)}` : 'No map location'}</small></button>`).join('') : '<p class="empty">No stations found.</p>'; [...searchResults.querySelectorAll('.search-result')].forEach(button => button.addEventListener('click', () => selectStop(matches[Number(button.dataset.index)]))); };
     const selectStop = stop => { if (stop.lat != null && stop.lng != null) { map.setView([stop.lat, stop.lng], 15); drawStops([stop], routeStops.length > 0); } loadEta(stop); };
-    const loadEta = async stop => { 
-      document.getElementById('eta-name').textContent=stop.name; 
-      document.getElementById('eta-status').textContent='Loading'; 
-      document.getElementById('eta-list').innerHTML='<p class="empty">Contacting live service...</p>'; 
-      if (!API_BASE) { 
-        document.getElementById('eta-status').textContent='Backend needed'; 
-        document.getElementById('eta-list').innerHTML='<p class="empty">Mapping works on GitHub Pages. Add your Flask API with <b>?api=https://your-api.example.com</b> to enable live timings.</p>'; 
-        return; 
-      } 
-      try { 
-        const response=await fetch(`${API_BASE}/api/eta/${encodeURIComponent(stop.id)}`); 
-        const data=await response.json().catch(() => ({})); 
-        if(!response.ok) throw new Error(data.details || data.error || 'Live API request failed'); 
-        const buses=(data.routes || []).flatMap(route => (route.buses || []).map(bus => ({...bus,route:route.route_name}))); 
-        document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`; 
-        document.getElementById('eta-list').innerHTML=buses.length ? buses.map(bus=>`<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">${document.body.classList.contains('midnight') ? 'It is midnight in Surat. BRTS service resumes after sunrise.' : document.body.classList.contains('night') ? 'BRTS service is winding down for the night. Service resumes after sunrise.' : 'No live arrivals reported for this stop right now.'}</p>`; 
-      } catch(error) { 
-        document.getElementById('eta-status').textContent='Unavailable'; 
-        document.getElementById('eta-list').innerHTML=`<p class="empty">${escapeHtml(error.message || 'Live timings are unavailable right now.')}</p>`; 
-      } 
+    const loadEta = async stop => {
+      document.getElementById('eta-name').textContent=stop.name;
+      document.getElementById('eta-status').textContent='Loading';
+      document.getElementById('eta-list').innerHTML='<p class="empty">Contacting live service...</p>';
+      if (!API_BASE) {
+        document.getElementById('eta-status').textContent='Backend needed';
+        document.getElementById('eta-list').innerHTML='<p class="empty">Mapping works on GitHub Pages. Add your Flask API with <b>?api=https://your-api.example.com</b> to enable live timings.</p>';
+        return;
+      }
+      try {
+        const response=await fetch(`${API_BASE}/api/eta/${encodeURIComponent(stop.id)}`);
+        const data=await response.json().catch(() => ({}));
+        if(!response.ok) throw new Error(data.details || data.error || 'Live API request failed');
+        const buses=(data.routes || []).flatMap(route => (route.buses || []).map(bus => ({...bus,route:route.route_name})));
+        document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`;
+        document.getElementById('eta-list').innerHTML=buses.length ? buses.map(bus=>`<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">${document.body.classList.contains('midnight') ? 'It is midnight in Surat. BRTS service resumes after sunrise.' : document.body.classList.contains('night') ? 'BRTS service is winding down for the night. Service resumes after sunrise.' : 'No live arrivals reported for this stop right now.'}</p>`;
+      } catch(error) {
+        document.getElementById('eta-status').textContent='Unavailable';
+        document.getElementById('eta-list').innerHTML=`<p class="empty">${escapeHtml(error.message || 'Live timings are unavailable right now.')}</p>`;
+      }
     };
     const showRoute = async id => { if(!network) return; if(routeLine){map.removeLayer(routeLine);routeLine=null;} if(!id){routeStops=[];drawStops(network.stops);searchResults.innerHTML='';search.placeholder='Search or scroll the list';map.setView(surat,12);mapLabel.textContent='Surat transit';mapSubtitle.textContent='OpenStreetMap';return;} const route=network.routes[id]; if(!route){return;} const points=route.stops.map(stop=>[stop.lat,stop.lng]); routeStops=route.stops; routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); drawStops(routeStops,true); if(points.length) map.fitBounds(routeLine.getBounds(),{padding:[45,45]}); mapLabel.textContent=`Route ${id} (${routeStops.length} stops)`;mapSubtitle.textContent=routeName(route.name);
       search.placeholder = `Type to filter ${routeStops.length} stops`;
       renderSearchResults(routeStops);
       search.value = '';
     };
-    const loadNetwork = async () => { 
-      const response = await fetch(DATA_URL); 
-      if (!response.ok) throw new Error('transit_data.json could not be loaded'); 
-      const data = await response.json(); 
-      const stops = Object.values(data.stops); 
-      const mappedStops = stops.filter(stop => stop.lat != null && stop.lng != null); 
-      const routes = {}; 
+    const loadNetwork = async () => {
+      const response = await fetch(DATA_URL);
+      if (!response.ok) throw new Error('transit_data.json could not be loaded');
+      const data = await response.json();
+      const stops = Object.values(data.stops);
+      const mappedStops = stops.filter(stop => stop.lat != null && stop.lng != null);
+      const routes = {};
       Object.entries(data.routes).forEach(([id, route]) => {
         const valid = route.stops.map(stop => ({ ...stop, id: String(stop.stopCode), name: stop.stopName, lat: Number(stop.stopLatitude), lng: Number(stop.stopLongitude), sequence: stop.sequenceNumber })).filter(stop => Number.isFinite(stop.lat) && Number.isFinite(stop.lng));
         routes[id] = { ...route, stops: valid };
@@ -463,6 +736,7 @@
     search.addEventListener('input',()=>{if(!network) return; const term=search.value.trim().toLowerCase(),source=routeStops.length?routeStops:network.stops,matches=term?source.filter(stop=>stop.name.toLowerCase().includes(term)||String(stop.id).toLowerCase().includes(term)):source;drawStops(matches,routeStops.length>0);renderSearchResults(matches);if(matches.length===1) selectStop(matches[0]);});
     document.getElementById('locate').addEventListener('click',()=>navigator.geolocation?.getCurrentPosition(position=>map.setView([position.coords.latitude,position.coords.longitude],15)));
     document.getElementById('reset-view').addEventListener('click',()=>map.setView(surat,12));
+    const mapLabel = document.getElementById('map-label');
     loadNetwork().catch(error=>{document.getElementById('eta-list').innerHTML=`<p class="empty">Could not load transit data: ${escapeHtml(error.message)}</p>`;});
   </script>
 </body>
