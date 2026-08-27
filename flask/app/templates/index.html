@@ -972,31 +972,22 @@
       }
     };
 
-    // ---- Mock ETA data cache ----
-    let mockEtaData = null;
-    const loadMockEtaData = async () => {
-      if (mockEtaData) return mockEtaData;
-      // Try multiple possible locations
-      const urls = [
-        './mock_eta_data.json',
-        './static/assets/mock_eta_data.json',
-        './assets/mock_eta_data.json'
-      ];
-      for (const url of urls) {
-        try {
-          const response = await fetch(url);
-          if (response.ok) {
-            mockEtaData = await response.json();
-            console.log(`[Mock] Loaded from ${url} (${Object.keys(mockEtaData).length} stops)`);
-            return mockEtaData;
-          }
-        } catch (e) {
-          // continue
-        }
+    // ---- Mock ETA generator ----
+    function generateMockEta(stop) {
+      const busNames = ['BRTS-01', 'BRTS-02', 'BRTS-03', 'BRTS-04', 'BRTS-05'];
+      const destinations = ['City Centre', 'Railway Station', 'Bus Terminal', 'Town Hall', 'Airport'];
+      const etaValues = ['2 min', '4 min', '7 min', '10 min', '12 min', '15 min', '20 min'];
+      const count = 1 + Math.floor(Math.random() * 3);
+      const buses = [];
+      for (let i = 0; i < count; i++) {
+        buses.push({
+          bus: busNames[Math.floor(Math.random() * busNames.length)],
+          destination: destinations[Math.floor(Math.random() * destinations.length)],
+          eta: etaValues[Math.floor(Math.random() * etaValues.length)]
+        });
       }
-      console.warn('[Mock] Could not load mock_eta_data.json from any known path.');
-      return null;
-    };
+      return { routes: [{ route_name: `Route ${Math.floor(Math.random() * 20) + 1}`, buses }] };
+    }
 
     // ---- loadEta with mock support and fallback ----
     const loadEta = async stop => {
@@ -1005,31 +996,13 @@
       document.getElementById('eta-list').innerHTML='<p class="empty">Contacting live service...</p>';
 
       if (isMock) {
-        // Use static mock_eta_data.json
-        const data = await loadMockEtaData();
-        if (!data) {
-          document.getElementById('eta-status').textContent='Error';
-          document.getElementById('eta-list').innerHTML='<p class="empty">Mock data file could not be loaded.</p>';
-          return;
-        }
-        const stopData = data[stop.id];
-        if (!stopData || !stopData.routes || stopData.routes.length === 0) {
-          document.getElementById('eta-status').textContent='No buses';
-          document.getElementById('eta-list').innerHTML='<p class="empty">No scheduled arrivals for this stop in mock data.</p>';
-          return;
-        }
-        // Flatten all buses from all routes
-        const buses = stopData.routes.flatMap(route => 
-          (route.buses || []).map(bus => ({ ...bus, route: route.route_name }))
-        );
-        document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`;
-        document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => 
-          `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`
-        ).join('') : `<p class="empty">No mock arrivals for this stop.</p>`;
+        document.getElementById('eta-status').textContent='🎭 Mock data';
+        const mockData = generateMockEta(stop);
+        const buses = mockData.routes.flatMap(route => (route.buses || []).map(bus => ({ ...bus, route: route.route_name })));
+        document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">No mock arrivals for this stop.</p>`;
         return;
       }
 
-      // Not mock mode – use real API if available
       if (!API_BASE) {
         document.getElementById('eta-status').textContent='Backend needed';
         document.getElementById('eta-list').innerHTML='<p class="empty">Mapping works on GitHub Pages. Add your Flask API with <b>?api=https://your-api.example.com</b> to enable live timings.</p>';
@@ -1046,19 +1019,9 @@
       } catch(error) {
         console.warn('Real API failed, falling back to mock data:', error.message);
         document.getElementById('eta-status').textContent='⚠️ Fallback (mock)';
-        // Try mock data as fallback
-        const data = await loadMockEtaData();
-        if (data && data[stop.id]) {
-          const stopData = data[stop.id];
-          const buses = stopData.routes.flatMap(route => 
-            (route.buses || []).map(bus => ({ ...bus, route: route.route_name }))
-          );
-          document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => 
-            `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`
-          ).join('') : `<p class="empty">No mock arrivals available. (API error: ${escapeHtml(error.message)})</p>`;
-        } else {
-          document.getElementById('eta-list').innerHTML=`<p class="empty">No mock arrivals available. (API error: ${escapeHtml(error.message)})</p>`;
-        }
+        const fallbackData = generateMockEta(stop);
+        const buses = fallbackData.routes.flatMap(route => (route.buses || []).map(bus => ({ ...bus, route: route.route_name })));
+        document.getElementById('eta-list').innerHTML = buses.length ? buses.map(bus => `<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">No mock arrivals available. (API error: ${escapeHtml(error.message)})</p>`;
       }
     };
 
@@ -1121,108 +1084,27 @@
       }
     };
 
-    // ---- loadNetwork: fetch both data files, filter in mock mode ----
     const loadNetwork = async () => {
-      // Fetch transit_data
-      const transitResponse = await fetch(DATA_URL);
-      if (!transitResponse.ok) throw new Error('transit_data.json could not be loaded');
-      const transitData = await transitResponse.json();
-
-      // If mock mode, try to load mock_eta_data to filter stops/routes
-      let validStopIds = null;
-      if (isMock) {
-        const mockData = await loadMockEtaData();
-        if (mockData) {
-          validStopIds = new Set(Object.keys(mockData));
-          console.log(`[Mock] Found ${validStopIds.size} stop IDs in mock data.`);
-        } else {
-          console.warn('[Mock] Mock data not loaded – falling back to full transit data.');
-        }
-      }
-
-      // Build stops
-      const allStops = Object.values(transitData.stops).map(s => ({ 
-        id: String(s.stopCode || s.id), 
-        name: s.stopName || s.name, 
-        lat: Number(s.stopLatitude || s.latitude), 
-        lng: Number(s.stopLongitude || s.longitude) 
-      })).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
-
-      // Filter stops if mock mode and we have valid IDs
-      let filteredStops = allStops;
-      if (isMock && validStopIds) {
-        filteredStops = allStops.filter(s => validStopIds.has(s.id));
-        console.log(`[Mock] After filtering: ${filteredStops.length} stops remain (out of ${allStops.length})`);
-        // If no stops match, fall back to all stops (so the map isn't empty)
-        if (filteredStops.length === 0) {
-          console.warn('[Mock] No stops matched mock IDs – falling back to all stops.');
-          filteredStops = allStops;
-        }
-      }
-
-      // Build routes
-      const allRoutes = transitData.routes || {};
-      const filteredRoutes = {};
-      const routeOptions = [];
-
-      for (const [id, route] of Object.entries(allRoutes)) {
-        // Build stops for this route (with coordinates)
-        const routeStops = route.stops.map(stop => ({
-          id: String(stop.stopCode || stop.liveStopId || stop.id),
-          name: stop.stopName || stop.name,
-          lat: Number(stop.stopLatitude || stop.latitude),
-          lng: Number(stop.stopLongitude || stop.longitude),
-          sequence: stop.sequenceNumber || stop.sequence
-        })).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
-
-        // If mock mode, filter stops to those in validStopIds
-        let filteredRouteStops = routeStops;
-        if (isMock && validStopIds) {
-          filteredRouteStops = routeStops.filter(s => validStopIds.has(s.id));
-        }
-
-        // Only keep route if it has at least one stop after filtering
-        if (filteredRouteStops.length > 0) {
-          filteredRoutes[id] = {
-            name: route.name,
-            stops: filteredRouteStops
-          };
-          routeOptions.push({ id, name: route.name, stopCount: filteredRouteStops.length });
-        }
-      }
-
-      // Build final network
-      network = {
-        stops: filteredStops,
-        routes: filteredRoutes
-      };
-
-      // Populate route dropdown
-      routeSelect.innerHTML = '<option value="">All routes</option>';
-      routeOptions.sort((a, b) => a.id.localeCompare(b.id));
-      for (const opt of routeOptions) {
+      const response = await fetch(DATA_URL);
+      if (!response.ok) throw new Error('transit_data.json could not be loaded');
+      const data = await response.json();
+      const stops = Object.values(data.stops);
+      const mappedStops = stops.filter(stop => stop.lat != null && stop.lng != null);
+      const routes = {};
+      Object.entries(data.routes).forEach(([id, route]) => {
+        const valid = route.stops.map(stop => ({ ...stop, id: String(stop.stopCode), name: stop.stopName, lat: Number(stop.stopLatitude), lng: Number(stop.stopLongitude), sequence: stop.sequenceNumber })).filter(stop => Number.isFinite(stop.lat) && Number.isFinite(stop.lng));
+        routes[id] = { ...route, stops: valid };
         const option = document.createElement('option');
-        option.value = opt.id;
-        option.textContent = `${opt.id} · ${routeName(opt.name)} (${opt.stopCount} stops)`;
+        option.value = id;
+        option.textContent = `${id} · ${routeName(route.name)}`;
         routeSelect.appendChild(option);
-      }
-
-      // Update stats
-      document.getElementById('stop-count').textContent = network.stops.length.toLocaleString();
-      document.getElementById('route-count').textContent = Object.keys(network.routes).length.toLocaleString();
-
-      // Draw initial stops
-      drawStops(network.stops);
-
-      // If in mock mode and we filtered, update intro
-      if (isMock && validStopIds) {
-        const totalTransitStops = allStops.length;
-        const filtered = network.stops.length;
-        modeCopy.textContent = `Mock demo: showing ${filtered} of ${totalTransitStops} stops that have ETA data.`;
-      }
+      });
+      network = { stops: mappedStops, routes };
+      document.getElementById('stop-count').textContent = data.catalog_stop_count.toLocaleString();
+      document.getElementById('route-count').textContent = Object.keys(routes).length.toLocaleString();
+      drawStops(mappedStops);
     };
 
-    // ---- Event listeners ----
     routeSelect.addEventListener('change',()=>showRoute(routeSelect.value));
     search.addEventListener('input',()=>{if(!network) return; const term=search.value.trim().toLowerCase(),source=routeStops.length?routeStops:network.stops,matches=term?source.filter(stop=>stop.name.toLowerCase().includes(term)||String(stop.id).toLowerCase().includes(term)):source;drawStops(matches,routeStops.length>0);renderSearchResults(matches);if(matches.length===1) selectStop(matches[0]);});
     document.getElementById('locate').addEventListener('click',()=>navigator.geolocation?.getCurrentPosition(position=>map.setView([position.coords.latitude,position.coords.longitude],15)));
@@ -1235,12 +1117,7 @@
       showRoute('');
       map.setView(surat,12);
     });
-
-    // ---- Start ----
-    loadNetwork().catch(error=>{
-      document.getElementById('eta-list').innerHTML=`<p class="empty">Could not load transit data: ${escapeHtml(error.message)}</p>`;
-      console.error('loadNetwork error:', error);
-    });
+    loadNetwork().catch(error=>{document.getElementById('eta-list').innerHTML=`<p class="empty">Could not load transit data: ${escapeHtml(error.message)}</p>`;});
   </script>
 </body>
 </html>
