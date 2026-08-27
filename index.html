@@ -42,7 +42,7 @@
       -webkit-backdrop-filter:blur(24px) saturate(180%);
       box-shadow: 0 4px 12px rgba(0,0,0,0.02);
       transition: all 0.3s ease;
-      appearance: none; /* better for custom styling */
+      appearance: none;
       -webkit-appearance: none;
     }
     select:hover, input:hover {
@@ -54,24 +54,22 @@
       background: rgba(255,255,255,0.12);
       box-shadow: 0 0 0 3px rgba(8,127,140,0.12), 0 4px 12px rgba(0,0,0,0.02);
     }
-    /* Dropdown arrow (select) – subtle custom arrow */
+    /* Custom dropdown arrow */
     select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7785' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 16px center;
       background-size: 12px;
-      padding-right: 40px; /* space for arrow */
+      padding-right: 40px;
     }
-    /* Improve option styling for mobile */
     select option {
       background: var(--card);
       color: var(--ink);
       padding: 8px 12px;
     }
-
     #route { height:44px; }
     .search { position:relative; }
-    .search input { padding-left:44px; } /* space for icon */
+    .search input { padding-left:48px; } /* space for larger icon */
     .search:before {
       content:"⌕";
       position:absolute;
@@ -80,7 +78,7 @@
       left:14px;
       transform:translateY(-50%);
       color:var(--muted);
-      font-size:20px;
+      font-size:24px;  /* larger icon */
       pointer-events:none;
       line-height:1;
     }
@@ -167,8 +165,7 @@
       .eta { margin-top:0; }
       .map-top { top:14px; left:14px; right:14px; flex-wrap:wrap; gap:8px; }
       .map-top>* { flex:1 0 auto; }
-      /* Improve dropdown on mobile – larger tap area */
-      select, input { height:48px; font-size:16px; } /* prevents iOS zoom */
+      select, input { height:48px; font-size:16px; }
       .search-result { padding:12px; font-size:15px; }
     }
   </style>
