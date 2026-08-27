@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    /* --- Base theme variables --- */
+    /* ---- Base theme variables (Morning) ---- */
     :root {
       --ink: #17212b;
       --muted: #6b7785;
@@ -25,52 +25,66 @@
       --fog: #ffffff80;
       --card: #ffffff;
       --card-hover: #eef6f5;
-      --sky-gradient: linear-gradient(180deg, #87CEEB 0%, #e0f0ff 100%);
-      --sun-color: #fdb813;
-      --sun-glow: rgba(253, 184, 19, 0.3);
+      --eta-bg: #fff8e7;
+      --eta-border: #f2dfab;
+      --eta-text: #ae6a12;
+      --map-filter: none;
+      --transition-duration: 1.2s;
     }
 
-    /* --- Mode-specific overrides --- */
-
-    /* Afternoon – warmer, slightly golden */
+    /* ---- Afternoon (11:30 AM – 4:00 PM) ---- */
     body.afternoon {
       --ink: #1a1a2e;
-      --muted: #5a5a7a;
-      --paper: #fdf6e3;
-      --line: #e8d5b5;
-      --glass: #fff8e7d9;
-      --fog: #fff8e780;
-      --card: #fffdf5;
-      --card-hover: #f5ede0;
-      --sky-gradient: linear-gradient(180deg, #f9d976 0%, #f39c12 100%);
-      --sun-color: #f39c12;
-      --sun-glow: rgba(243, 156, 18, 0.4);
-      background: #fdf6e3;
+      --muted: #6b7a8f;
+      --paper: #f0e6d3;
+      --line: #d4c5a9;
+      --glass: #f5e8d9e8;
+      --fog: #f5e8d9aa;
+      --card: #faf3e8;
+      --card-hover: #f0e6d6;
+      --eta-bg: #f5ede3;
+      --eta-border: #d4c5a9;
+      --eta-text: #8a6e3b;
+      background: #f0e6d3;
     }
     body.afternoon #map {
-      filter: brightness(1.05) saturate(1.1);
+      filter: brightness(1.05) saturate(1.1) contrast(0.98);
+    }
+    body.afternoon .intro {
+      border-left-color: #d4a373;
+      background: linear-gradient(135deg, #f5e8d9d9, #efe0cd);
+    }
+    body.afternoon .brand-mark {
+      background: linear-gradient(135deg, #d4a373 0%, #cc8e5a 100%);
     }
 
-    /* Evening – sunset colors */
+    /* ---- Evening (4:00 PM – sunset) ---- */
     body.evening {
-      --ink: #2c1a0e;
-      --muted: #8a6e5a;
-      --paper: #1e0f08;
-      --line: #5a3d2a;
-      --glass: #2a1a0ed9;
-      --fog: #2a1a0e80;
-      --card: #3a2518;
-      --card-hover: #4a3020;
-      --sky-gradient: linear-gradient(180deg, #e74c3c 0%, #c0392b 40%, #2c1a0e 100%);
-      --sun-color: #e74c3c;
-      --sun-glow: rgba(231, 76, 60, 0.5);
-      background: #1e0f08;
+      --ink: #2d1b0e;
+      --muted: #8a7a6a;
+      --paper: #f5e6d3;
+      --line: #d4b896;
+      --glass: #f5e6d3e8;
+      --fog: #f5e6d3aa;
+      --card: #fdf6ee;
+      --card-hover: #f5e6d6;
+      --eta-bg: #f5ede3;
+      --eta-border: #d4b896;
+      --eta-text: #8a6e3b;
+      background: #f5e6d3;
     }
     body.evening #map {
-      filter: brightness(0.85) saturate(1.2) sepia(0.15);
+      filter: brightness(0.9) saturate(1.15) sepia(0.15);
+    }
+    body.evening .intro {
+      border-left-color: #c7794a;
+      background: linear-gradient(135deg, #f5e6d3d9, #e8d5bf);
+    }
+    body.evening .brand-mark {
+      background: linear-gradient(135deg, #c7794a 0%, #b5653a 100%);
     }
 
-    /* Night – dark blue */
+    /* ---- Night (sunset – midnight) ---- */
     body.night {
       --ink: #edf4f5;
       --muted: #a6b7bc;
@@ -80,16 +94,32 @@
       --fog: #213541aa;
       --card: #1b2d39;
       --card-hover: #223746;
-      --sky-gradient: linear-gradient(180deg, #0c1420 0%, #1a2a3a 100%);
-      --sun-color: #4a6a8a;
-      --sun-glow: rgba(74, 106, 138, 0.2);
+      --eta-bg: #1b2d39;
+      --eta-border: #3a4a55;
+      --eta-text: #f0c27a;
       background: #101b25;
     }
     body.night #map {
-      filter: brightness(0.72) saturate(0.76);
+      filter: brightness(.72) saturate(.76);
+    }
+    /* Night fix: ETA rows now readable */
+    body.night .eta-row {
+      background: #1b2d39;
+      border-color: #3a4a55;
+    }
+    body.night .eta-row b,
+    body.night .eta-row small,
+    body.night .eta-row .eta-time {
+      color: #edf4f5;
+    }
+    body.night .eta-row .eta-time {
+      color: #f0c27a;
+    }
+    body.night .empty {
+      color: #a6b7bc;
     }
 
-    /* Midnight – deepest dark */
+    /* ---- Midnight (00:00 – sunrise) ---- */
     body.midnight {
       --ink: #e9eef0;
       --muted: #aeb9bd;
@@ -99,9 +129,9 @@
       --fog: #293943b8;
       --card: #253540;
       --card-hover: #2d404c;
-      --sky-gradient: radial-gradient(ellipse at 50% 80%, #1a2a3a 0%, #0a0f14 100%);
-      --sun-color: #2a4a5a;
-      --sun-glow: rgba(42, 74, 90, 0.15);
+      --eta-bg: #253540;
+      --eta-border: #3a4a55;
+      --eta-text: #f0c27a;
       background: #17202a;
     }
     body.midnight .intro {
@@ -112,91 +142,34 @@
       background: linear-gradient(135deg, #e4573d 0%, #f0b85a 100%);
     }
     body.midnight #map {
-      filter: brightness(0.82) saturate(0.86);
+      filter: brightness(.82) saturate(.86);
+    }
+    body.midnight .eta-row {
+      background: #253540;
+      border-color: #3a4a55;
+    }
+    body.midnight .eta-row b,
+    body.midnight .eta-row small,
+    body.midnight .eta-row .eta-time {
+      color: #e9eef0;
+    }
+    body.midnight .eta-row .eta-time {
+      color: #f0c27a;
+    }
+    body.midnight .empty {
+      color: #aeb9bd;
     }
 
-    /* --- Sun animation container --- */
-    .sun-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-      transition: opacity 1.5s ease;
-    }
-    .sun-container .sky {
-      position: absolute;
-      inset: 0;
-      background: var(--sky-gradient);
-      transition: background 2s ease;
-    }
-    .sun-container .sun {
-      position: absolute;
-      bottom: 10%;
-      left: 50%;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff5c0, var(--sun-color));
-      box-shadow: 0 0 80px var(--sun-glow), 0 0 160px var(--sun-glow);
-      transform: translateX(-50%);
-      transition: all 2s ease;
-    }
-    /* Sun position variations */
-    body.morning .sun-container .sun {
-      bottom: 25%;
-      left: 15%;
-      width: 70px;
-      height: 70px;
-    }
-    body.afternoon .sun-container .sun {
-      bottom: 40%;
-      left: 70%;
-      width: 90px;
-      height: 90px;
-    }
-    body.evening .sun-container .sun {
-      bottom: 10%;
-      left: 85%;
-      width: 80px;
-      height: 80px;
-    }
-    body.night .sun-container .sun {
-      bottom: -20%;
-      left: 50%;
-      width: 50px;
-      height: 50px;
-      opacity: 0.2;
-      box-shadow: 0 0 40px rgba(74, 106, 138, 0.1);
-    }
-    body.midnight .sun-container .sun {
-      bottom: -30%;
-      left: 50%;
-      width: 30px;
-      height: 30px;
-      opacity: 0.05;
-      box-shadow: none;
-    }
-
-    /* --- Base layout --- */
+    /* ---- Base styles ---- */
     * { box-sizing:border-box; } html,body { height:100%; margin:0; }
     body {
       color:var(--ink);
       background:var(--paper);
       font:14px "DM Sans",sans-serif;
       overflow:hidden;
-      transition: background 1.5s ease, color 1.5s ease;
+      transition: background var(--transition-duration) ease, color var(--transition-duration) ease;
     }
-    .app {
-      display:grid;
-      grid-template-columns:350px 1fr;
-      height:100%;
-      position:relative;
-      z-index:1;
-    }
+    .app { display:grid; grid-template-columns:350px 1fr; height:100%; }
     .sidebar {
       z-index:2;
       display:flex;
@@ -207,17 +180,16 @@
       border-right:1px solid var(--line);
       overflow-y:auto;
       backdrop-filter:blur(24px) saturate(130%);
-      transition: background 1.5s ease, border-color 1.5s ease;
+      transition: background var(--transition-duration) ease, border-color var(--transition-duration) ease;
     }
     .brand { display:flex; align-items:center; gap:12px; }
     .brand-mark {
-      width:42px; height:42px;
-      display:grid; place-items:center;
+      width:42px; height:42px; display:grid; place-items:center;
       color:#fff;
       background:var(--red);
       border-radius:12px 12px 12px 3px;
       font:700 20px "Space Grotesk",sans-serif;
-      transition: background 1.5s ease;
+      transition: background var(--transition-duration) ease;
     }
     h1,h2,p { margin:0; }
     h1 { font:700 21px "Space Grotesk",sans-serif; }
@@ -229,14 +201,13 @@
       font-weight:700;
       letter-spacing:1.1px;
       text-transform:uppercase;
-      transition: color 1.5s ease;
     }
     .intro {
       padding:18px;
       background:var(--fog);
       border-left:4px solid var(--teal);
       box-shadow:0 12px 30px #1828320c;
-      transition: background 1.5s ease, border-color 1.5s ease;
+      transition: background var(--transition-duration) ease, border-color var(--transition-duration) ease;
     }
     .intro strong {
       display:block;
@@ -246,7 +217,6 @@
     .intro span {
       color:var(--muted);
       line-height:1.5;
-      transition: color 1.5s ease;
     }
     label {
       display:block;
@@ -256,7 +226,6 @@
       font-weight:700;
       letter-spacing:.4px;
       text-transform:uppercase;
-      transition: color 1.5s ease;
     }
 
     /* ---- Transparent glass for dropdown & search ---- */
@@ -271,7 +240,7 @@
       backdrop-filter:blur(24px) saturate(180%);
       -webkit-backdrop-filter:blur(24px) saturate(180%);
       box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-      transition: all 0.3s ease, color 1.5s ease, background 1.5s ease;
+      transition: all 0.3s ease, color var(--transition-duration) ease, background var(--transition-duration) ease, border-color var(--transition-duration) ease;
       appearance: none;
       -webkit-appearance: none;
     }
@@ -310,22 +279,11 @@
       font-size:24px;
       pointer-events:none;
       line-height:1;
-      transition: color 1.5s ease;
     }
-    .search-results {
-      display:grid;
-      gap:5px;
-      max-height:210px;
-      margin-top:8px;
-      overflow-y:auto;
-    }
+    .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; }
     .search-result {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      width:100%;
-      padding:10px 12px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      width:100%; padding:10px 12px;
       color:var(--ink);
       text-align:left;
       background:var(--card);
@@ -333,83 +291,76 @@
       border-radius:8px;
       cursor:pointer;
       font-size:14px;
-      transition:all .2s, background 1.5s ease, border-color 1.5s ease, color 1.5s ease;
+      transition: all .2s, background var(--transition-duration) ease, border-color var(--transition-duration) ease;
     }
     .search-result:hover { border-color:var(--teal); background:var(--card-hover); }
-    .search-result small { color:var(--muted); white-space:nowrap; font-size:12px; transition: color 1.5s ease; }
-    .stats {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:9px;
-    }
+    .search-result small { color:var(--muted); white-space:nowrap; font-size:12px; }
+    .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
     .stat {
       padding:13px;
       background:var(--fog);
       border:1px solid var(--line);
       border-radius:7px;
-      transition: background 1.5s ease, border-color 1.5s ease;
+      transition: background var(--transition-duration) ease, border-color var(--transition-duration) ease;
     }
-    .stat b {
-      display:block;
-      font:700 20px "Space Grotesk",sans-serif;
-      transition: color 1.5s ease;
-    }
-    .stat span {
-      color:var(--muted);
-      font-size:11px;
-      transition: color 1.5s ease;
-    }
+    .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; }
+    .stat span { color:var(--muted); font-size:11px; }
     .eta {
       margin-top:auto;
       padding-top:20px;
       border-top:1px solid var(--line);
-      transition: border-color 1.5s ease;
+      transition: border-color var(--transition-duration) ease;
     }
-    .eta-title {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
+    .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .eta-name {
       margin-top:5px;
       color:var(--muted);
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      transition: color 1.5s ease;
     }
-    .eta-list {
-      display:grid;
-      gap:8px;
-      margin-top:14px;
-      max-height:170px;
-      overflow-y:auto;
-    }
+    .eta-list { display:grid; gap:8px; margin-top:14px; max-height:170px; overflow-y:auto; }
     .eta-row {
       display:grid;
       grid-template-columns:45px 1fr auto;
       gap:8px;
       align-items:center;
       padding:10px;
-      background:#fff8e7;
-      border:1px solid #f2dfab;
+      background:var(--eta-bg);
+      border:1px solid var(--eta-border);
       border-radius:6px;
+      transition: background var(--transition-duration) ease, border-color var(--transition-duration) ease;
     }
-    .eta-row b { font-size:12px; }
+    .eta-row b { font-size:12px; color:var(--ink); }
     .eta-row small { color:var(--muted); }
-    .eta-time { color:#ae6a12; font-weight:700; }
+    .eta-time { color:var(--eta-text); font-weight:700; }
     .empty { color:var(--muted); font-size:13px; line-height:1.5; }
 
-    .map-wrap {
-      position:relative;
-      min-width:0;
-    }
+    /* ---- Map & overlay ---- */
+    .map-wrap { position:relative; min-width:0; }
     #map {
-      width:100%;
-      height:100%;
+      width:100%; height:100%;
       background:#dfe8e6;
-      transition: filter 1.5s ease;
+      transition: filter 0.8s ease;
+    }
+
+    /* Sunset/Sunrise glow overlay */
+    .map-glow {
+      position:absolute;
+      top:0; left:0; right:0; bottom:0;
+      z-index:500;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 2s ease;
+      background: radial-gradient(ellipse at 50% 80%, rgba(255,160,60,0.25) 0%, rgba(255,120,40,0.10) 50%, transparent 70%);
+    }
+    body.sunrise-glow .map-glow {
+      opacity:1;
+      background: radial-gradient(ellipse at 50% 20%, rgba(255,200,100,0.30) 0%, rgba(255,160,60,0.15) 50%, transparent 70%);
+    }
+    body.sunset-glow .map-glow {
+      opacity:1;
+      background: radial-gradient(ellipse at 50% 80%, rgba(255,120,40,0.35) 0%, rgba(200,80,30,0.20) 50%, transparent 70%);
     }
 
     .map-top {
@@ -437,18 +388,10 @@
       border-radius:12px;
       box-shadow:0 10px 30px #18283218;
       backdrop-filter:blur(18px) saturate(130%);
-      transition: background 1.5s ease, border-color 1.5s ease;
+      transition: background var(--transition-duration) ease, border-color var(--transition-duration) ease;
     }
-    .map-pill b {
-      font:600 14px "Space Grotesk",sans-serif;
-      transition: color 1.5s ease;
-    }
-    .map-pill span {
-      margin-left:8px;
-      color:var(--muted);
-      font-size:12px;
-      transition: color 1.5s ease;
-    }
+    .map-pill b { font:600 14px "Space Grotesk",sans-serif; }
+    .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; }
 
     .map-clock {
       display:inline-block;
@@ -462,7 +405,7 @@
       font-variant-numeric:tabular-nums;
       color:var(--ink);
       font-size:12px;
-      transition: background 1.5s ease, border-color 1.5s ease, color 1.5s ease;
+      transition: background var(--transition-duration) ease, border-color var(--transition-duration) ease, color var(--transition-duration) ease;
     }
 
     .locate, .reset-view {
@@ -477,21 +420,13 @@
       backdrop-filter:blur(18px);
       display:grid;
       place-items:center;
-      transition: background 1.5s ease, border-color 1.5s ease, color 1.5s ease;
+      transition: background var(--transition-duration) ease, border-color var(--transition-duration) ease, color var(--transition-duration) ease;
     }
     .locate:hover, .reset-view:hover { color:var(--teal); }
     .reset-view { background:var(--teal); color:#fff; border-color:var(--teal); }
     .reset-view:hover { background:#066a75; border-color:#066a75; color:#fff; }
 
-    .stop-dot {
-      width:12px;
-      height:12px;
-      background:var(--yellow);
-      border:3px solid #fff;
-      border-radius:50%;
-      box-shadow:0 1px 5px #18283255;
-      transition: background 1.5s ease;
-    }
+    .stop-dot { width:12px; height:12px; background:var(--yellow); border:3px solid #fff; border-radius:50%; box-shadow:0 1px 5px #18283255; }
     .stop-dot.route { background:var(--red); }
     .popup-name { font-weight:700; }
     .popup-id { color:var(--muted); font-size:11px; }
@@ -510,12 +445,6 @@
   </style>
 </head>
 <body>
-  <!-- Sun animation overlay (behind everything) -->
-  <div class="sun-container" id="sunContainer">
-    <div class="sky" id="sky"></div>
-    <div class="sun" id="sun"></div>
-  </div>
-
   <main class="app">
     <aside class="sidebar">
       <header class="brand"><div class="brand-mark">S</div><div><h1>Surat BRTS</h1><p class="eyebrow">Live network map</p></div></header>
@@ -527,6 +456,7 @@
     </aside>
     <section class="map-wrap">
       <div id="map"></div>
+      <div class="map-glow" id="mapGlow"></div>
       <div class="map-top">
         <div class="map-pill">
           <b id="map-label">Surat transit</b>
@@ -540,115 +470,105 @@
       </div>
     </section>
   </main>
-
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   <script>
-    // ---- Configuration ----
-    const surat = [21.1702, 72.8311]; // Official coordinates
-
-    const MODES = {
-      morning: {
-        label: 'Morning',
-        emoji: '🌅',
-        title: 'Good morning, Surat.',
-        copy: 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.',
-        subtitle: 'Morning mode · OpenStreetMap'
-      },
-      afternoon: {
-        label: 'Afternoon',
-        emoji: '☀️',
-        title: 'The sun is high over Surat.',
-        copy: 'Plan your afternoon trips with live route updates and real-time bus arrivals.',
-        subtitle: 'Afternoon mode · OpenStreetMap'
-      },
-      evening: {
-        label: 'Evening',
-        emoji: '🌇',
-        title: 'The city is winding down.',
-        copy: 'The map stays open after sunset. Live arrivals return with the morning service.',
-        subtitle: 'Evening mode · OpenStreetMap'
-      },
-      night: {
-        label: 'Night',
-        emoji: '🌙',
-        title: 'Night falls over Surat.',
-        copy: 'Most BRTS services have ended. Plan your morning commute using the network map.',
-        subtitle: 'Night mode · OpenStreetMap'
-      },
-      midnight: {
-        label: 'Midnight',
-        emoji: '🌃',
-        title: 'Deep night in Surat.',
-        copy: 'BRTS service is paused until sunrise. Browse the network to plan your morning journey.',
-        subtitle: 'Midnight mode · Network view'
-      }
-    };
+    // ---- Official Surat coordinates (latlong.net) ----
+    const surat = [21.170240, 72.831062];
 
     // ---- DOM refs ----
     const modeTitle = document.getElementById('mode-title');
     const modeCopy = document.getElementById('mode-copy');
     const mapSubtitle = document.getElementById('map-subtitle');
-    const istClock = document.getElementById('ist-clock');
-    const sunContainer = document.getElementById('sunContainer');
-    const sky = document.getElementById('sky');
-    const sun = document.getElementById('sun');
+    const mapLabel = document.getElementById('map-label');
+    const mapGlow = document.getElementById('mapGlow');
 
-    // ---- Time calculations ----
-    function getSolarTimes(now) {
-      if (window.SunCalc) {
-        return SunCalc.getTimes(now, surat[0], surat[1]);
-      }
-      // Fallback
-      return {
-        sunrise: new Date(new Date().setHours(6, 15, 0, 0)),
-        sunset: new Date(new Date().setHours(18, 45, 0, 0))
-      };
-    }
-
-    function getMode(now, solarTimes) {
-      const sunrise = solarTimes.sunrise;
-      const sunset = solarTimes.sunset;
-      const hour = now.getHours();
-
-      // Midnight: 00:00 – sunrise
-      if (now < sunrise && hour < 6) return 'midnight';
-      // Morning: sunrise – 11:59
-      if (now >= sunrise && hour < 12) return 'morning';
-      // Afternoon: 12:00 – 16:59
-      if (hour >= 12 && hour < 17) return 'afternoon';
-      // Evening: 17:00 – sunset
-      if (hour >= 17 && now < sunset) return 'evening';
-      // Night: sunset – 23:59
-      if (now >= sunset) return 'night';
-      // Fallback
-      return 'morning';
-    }
-
-    // ---- Theme updater ----
+    // ---- Theme updater with 5 modes + glow animation ----
     function updateTheme() {
       const now = new Date();
-      const solarTimes = getSolarTimes(now);
-      const modeKey = getMode(now, solarTimes);
-      const mode = MODES[modeKey];
+      const solarTimes = window.SunCalc
+        ? SunCalc.getTimes(now, surat[0], surat[1])
+        : {
+            sunrise: new Date(new Date().setHours(6, 15, 0, 0)),
+            sunset: new Date(new Date().setHours(18, 45, 0, 0))
+          };
 
-      // Remove all mode classes
-      document.body.classList.remove('morning', 'afternoon', 'evening', 'night', 'midnight');
-      document.body.classList.add(modeKey);
+      const sunrise = solarTimes.sunrise;
+      const sunset = solarTimes.sunset;
 
-      // Update text
-      modeTitle.textContent = mode.title;
-      modeCopy.textContent = mode.copy;
-      mapSubtitle.textContent = mode.subtitle;
+      // Define time windows
+      const morningEnd = new Date(sunrise);
+      morningEnd.setHours(11, 30, 0, 0);
 
-      // Update clock
-      updateISTClock();
+      const afternoonEnd = new Date(sunrise);
+      afternoonEnd.setHours(16, 0, 0, 0);
 
-      // The sun position and sky gradient are automatically animated via CSS
+      const isMidnight = now < sunrise && now.getHours() < 6;
+      const isNight = now >= sunset || (now.getHours() >= 0 && now.getHours() < 4);
+      const isEvening = now >= afternoonEnd && now < sunset;
+      const isAfternoon = now >= morningEnd && now < afternoonEnd;
+      const isMorning = now >= sunrise && now < morningEnd;
+
+      // --- Glow animation (sunrise / sunset) ---
+      const sunriseStart = new Date(sunrise);
+      sunriseStart.setMinutes(sunrise.getMinutes() - 30);
+      const sunriseEnd = new Date(sunrise);
+      sunriseEnd.setMinutes(sunrise.getMinutes() + 30);
+
+      const sunsetStart = new Date(sunset);
+      sunsetStart.setMinutes(sunset.getMinutes() - 30);
+      const sunsetEnd = new Date(sunset);
+      sunsetEnd.setMinutes(sunset.getMinutes() + 30);
+
+      const isSunriseGlow = now >= sunriseStart && now <= sunriseEnd;
+      const isSunsetGlow = now >= sunsetStart && now <= sunsetEnd;
+
+      document.body.classList.toggle('sunrise-glow', isSunriseGlow);
+      document.body.classList.toggle('sunset-glow', isSunsetGlow);
+
+      // --- Apply mode classes ---
+      document.body.classList.toggle('midnight', isMidnight);
+      document.body.classList.toggle('night', isNight && !isMidnight);
+      document.body.classList.toggle('evening', isEvening);
+      document.body.classList.toggle('afternoon', isAfternoon);
+      document.body.classList.toggle('morning', isMorning);
+
+      // --- Update intro text ---
+      let modeLabel = 'Morning mode · OpenStreetMap';
+      let titleText = 'Good morning, Surat.';
+      let copyText = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
+
+      if (isMidnight) {
+        modeLabel = 'Midnight mode · Network view';
+        titleText = 'Deep night in Surat.';
+        copyText = 'BRTS service is paused until sunrise. Browse the network to plan your morning journey.';
+      } else if (isNight) {
+        modeLabel = 'Night mode · OpenStreetMap';
+        titleText = 'The city is winding down.';
+        copyText = 'The map stays open after sunset. Live arrivals return with the morning service.';
+      } else if (isEvening) {
+        modeLabel = 'Evening mode · Golden hour';
+        titleText = 'Evening lights are glowing.';
+        copyText = 'The city settles into the evening. Plan your last trips or explore the network in warm tones.';
+      } else if (isAfternoon) {
+        modeLabel = 'Afternoon mode · Bright daylight';
+        titleText = 'The afternoon is bright and bustling.';
+        copyText = 'BRTS runs at full frequency. Check live arrivals and navigate the city in the midday light.';
+      } else {
+        // Morning
+        modeLabel = 'Morning mode · OpenStreetMap';
+        titleText = 'Good morning, Surat.';
+        copyText = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
+      }
+
+      modeTitle.textContent = titleText;
+      modeCopy.textContent = copyText;
+      mapSubtitle.textContent = modeLabel;
     }
 
-    // ---- IST Clock ----
-    function updateISTClock() {
+    // ---- IST clock ----
+    const istClock = document.getElementById('ist-clock');
+    const updateISTClock = () => {
       if (!istClock) return;
       istClock.textContent = new Intl.DateTimeFormat('en-IN', {
         timeZone: 'Asia/Kolkata',
@@ -657,14 +577,13 @@
         second: '2-digit',
         hour12: true
       }).format(new Date()) + ' IST';
-    }
+    };
 
     // ---- Initialise ----
     updateISTClock();
     setInterval(updateISTClock, 1000);
-
     updateTheme();
-    setInterval(updateTheme, 60000); // re-check every minute
+    setInterval(updateTheme, 60000);
 
     // ---- Map and transit logic (unchanged) ----
     const params = new URLSearchParams(location.search);
@@ -733,7 +652,6 @@
     search.addEventListener('input',()=>{if(!network) return; const term=search.value.trim().toLowerCase(),source=routeStops.length?routeStops:network.stops,matches=term?source.filter(stop=>stop.name.toLowerCase().includes(term)||String(stop.id).toLowerCase().includes(term)):source;drawStops(matches,routeStops.length>0);renderSearchResults(matches);if(matches.length===1) selectStop(matches[0]);});
     document.getElementById('locate').addEventListener('click',()=>navigator.geolocation?.getCurrentPosition(position=>map.setView([position.coords.latitude,position.coords.longitude],15)));
     document.getElementById('reset-view').addEventListener('click',()=>map.setView(surat,12));
-    const mapLabel = document.getElementById('map-label');
     loadNetwork().catch(error=>{document.getElementById('eta-list').innerHTML=`<p class="empty">Could not load transit data: ${escapeHtml(error.message)}</p>`;});
   </script>
 </body>
