@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import sys
 from pathlib import Path
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
@@ -10,33 +11,39 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 APP_DIR = Path(__file__).resolve().parent
 REPO_DIR = APP_DIR.parent.parent
 
-TRANSIT_CANDIDATES = [
-    APP_DIR / "static" / "transit_data.json",
-    APP_DIR / "static" / "assets" / "transit_data.json",
-    REPO_DIR / "transit_data.json",
-]
-
-def _find_file(candidates):
+def load_json_file(candidates, file_desc):
+    """Try each candidate path and return loaded JSON, or None."""
     for path in candidates:
         if path.is_file():
-            return path.resolve()
-    raise FileNotFoundError(f"None of {candidates} found")
+            try:
+                with path.open(encoding="utf-8") as f:
+                    print(f"[LOAD] {file_desc} loaded from {path}", file=sys.stderr)
+                    return json.load(f)
+            except Exception as e:
+                print(f"[ERROR] Failed to parse {path}: {e}", file=sys.stderr)
+    print(f"[ERROR] {file_desc} not found in any candidate: {candidates}", file=sys.stderr)
+    return None
 
-TRANSIT_FILE = _find_file(TRANSIT_CANDIDATES)
-with TRANSIT_FILE.open(encoding="utf-8") as f:
-    TRANSIT = json.load(f)
+# Load transit_data.json
+TRANSIT_CANDIDATES = [
+    REPO_DIR / "transit_data.json",
+    APP_DIR / "static" / "transit_data.json",
+    APP_DIR / "static" / "assets" / "transit_data.json",
+]
+TRANSIT = load_json_file(TRANSIT_CANDIDATES, "transit_data.json")
+if TRANSIT is None:
+    TRANSIT = {"stops": {}, "routes": {}}
 
-MOCK_ETA_CANDIDATES = [
+# Load mock_eta_data.json
+MOCK_CANDIDATES = [
     REPO_DIR / "mock_eta_data.json",
     APP_DIR / "mock_eta_data.json",
 ]
-MOCK_ETA_FILE = _find_file(MOCK_ETA_CANDIDATES)
-with MOCK_ETA_FILE.open(encoding="utf-8") as f:
-    MOCK_ETA = json.load(f)
+MOCK_ETA = load_json_file(MOCK_CANDIDATES, "mock_eta_data.json")
+if MOCK_ETA is None:
+    MOCK_ETA = {}
 
-print(f"[DATA] Loaded {len(TRANSIT.get('stops', {}))} stops, {len(TRANSIT.get('routes', {}))} routes")
-print(f"[MOCK ETA] Loaded {len(MOCK_ETA)} stops with mock arrivals")
-
+# Helper
 def get_local_route_stops(route_id):
     route = TRANSIT.get("routes", {}).get(str(route_id))
     if not route:
@@ -68,7 +75,19 @@ def api_health():
     return jsonify({
         "status": "ok",
         "transit_data": {"stops": len(TRANSIT.get("stops", {})), "routes": len(TRANSIT.get("routes", {}))},
+        "mock_eta": {"stops": len(MOCK_ETA)},
         "eta_source": "mock",
+    })
+
+@app.get("/api/debug/files")
+def debug_files():
+    """Return which files are present (debugging helper)."""
+    return jsonify({
+        "transit_file": str(TRANSIT_CANDIDATES[0]) if TRANSIT_CANDIDATES[0].is_file() else "not found",
+        "mock_file": str(MOCK_CANDIDATES[0]) if MOCK_CANDIDATES[0].is_file() else "not found",
+        "cwd": str(Path.cwd()),
+        "app_dir": str(APP_DIR),
+        "repo_dir": str(REPO_DIR),
     })
 
 @app.get("/api/stops")
