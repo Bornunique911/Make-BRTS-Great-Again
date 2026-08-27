@@ -1,13 +1,5 @@
 Flask
 Flask-Cors
-fastapi
-uvicorn[standard]
-requests
-beautifulsoup4
-urllib3
 gunicorn
-fastapi-cors
-pdfplumber
-pymupdf
 pdfplumber>=0.11,<1
 pypdfium2>=4.30,<5
