@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <!-- Leaflet.MarkerMotion for smooth bus animation -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.marker-motion@0.8.2/dist/leaflet.marker-motion.min.css">
   <style>
     /* ---- Base theme variables (Morning) ---- */
     :root {
@@ -30,6 +32,8 @@
       --eta-text: #ae6a12;
       --map-filter: none;
       --transition-duration: 1.2s;
+      --bus-color: #e4573d;
+      --bus-window: #87CEEB;
     }
 
     /* ---- Afternoon (11:30 AM – 4:00 PM) ---- */
@@ -45,6 +49,8 @@
       --eta-bg: #f5ede3;
       --eta-border: #d4c5a9;
       --eta-text: #8a6e3b;
+      --bus-color: #d4a373;
+      --bus-window: #f5e8d9;
       background: #f0e6d3;
     }
     body.afternoon #map {
@@ -71,6 +77,8 @@
       --eta-bg: #f5ede3;
       --eta-border: #d4b896;
       --eta-text: #8a6e3b;
+      --bus-color: #c7794a;
+      --bus-window: #f5e6d3;
       background: #f5e6d3;
     }
     body.evening #map {
@@ -97,6 +105,8 @@
       --eta-bg: #1b2d39;
       --eta-border: #3a4a55;
       --eta-text: #f0c27a;
+      --bus-color: #4a7a9a;
+      --bus-window: #1a2a3a;
       background: #101b25;
     }
     body.night #map {
@@ -131,6 +141,8 @@
       --eta-bg: #253540;
       --eta-border: #3a4a55;
       --eta-text: #f0c27a;
+      --bus-color: #2a5a6a;
+      --bus-window: #1a2a3a;
       background: #17202a;
     }
     body.midnight .intro {
@@ -452,6 +464,134 @@
     .popup-name { font-weight:700; }
     .popup-id { color:var(--muted); font-size:11px; }
 
+    /* ---- 3D Bus CSS (pure CSS, no images) ---- */
+    .bus-3d-icon {
+      display: block;
+      width: 32px;
+      height: 24px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(10deg) rotateY(0deg);
+      transition: transform 0.3s ease;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+    .bus-3d-icon:hover {
+      transform: rotateX(10deg) rotateY(15deg) scale(1.3);
+    }
+    .bus-body {
+      position: absolute;
+      width: 32px;
+      height: 16px;
+      background: var(--bus-color);
+      border-radius: 4px 8px 2px 2px;
+      bottom: 0;
+      left: 0;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);
+    }
+    .bus-body::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 4px;
+      width: 24px;
+      height: 6px;
+      background: var(--bus-window);
+      border-radius: 2px 2px 0 0;
+      box-shadow: 
+        inset 0 -1px 0 rgba(0,0,0,0.1),
+        0 0 0 1px rgba(255,255,255,0.1);
+    }
+    .bus-body::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      right: 2px;
+      width: 6px;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 1px;
+    }
+    .bus-window {
+      position: absolute;
+      top: -2px;
+      width: 5px;
+      height: 4px;
+      background: var(--bus-window);
+      border-radius: 1px;
+      box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+    }
+    .bus-window.w1 { left: 6px; }
+    .bus-window.w2 { left: 12px; }
+    .bus-window.w3 { left: 18px; }
+    .bus-window.w4 { left: 24px; }
+    .bus-wheel {
+      position: absolute;
+      bottom: -3px;
+      width: 4px;
+      height: 4px;
+      background: #222;
+      border-radius: 50%;
+      border: 1px solid #444;
+    }
+    .bus-wheel.wheel1 { left: 4px; }
+    .bus-wheel.wheel2 { right: 4px; }
+    .bus-headlight {
+      position: absolute;
+      bottom: 1px;
+      width: 2px;
+      height: 3px;
+      background: #ffdd44;
+      border-radius: 1px;
+      box-shadow: 0 0 6px #ffdd44aa;
+    }
+    .bus-headlight.hl1 { left: 1px; }
+    .bus-headlight.hl2 { right: 1px; }
+    .bus-taillight {
+      position: absolute;
+      top: 1px;
+      width: 2px;
+      height: 3px;
+      background: #ff3333;
+      border-radius: 1px;
+    }
+    .bus-taillight.tl1 { left: 1px; }
+    .bus-taillight.tl2 { right: 1px; }
+
+    /* Bus stop name label that appears on hover */
+    .bus-stop-label {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.8);
+      background: var(--glass);
+      color: var(--ink);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 600;
+      white-space: nowrap;
+      border: 1px solid var(--line);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      font-family: "DM Sans", sans-serif;
+    }
+    .bus-3d-icon:hover .bus-stop-label {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    /* Bus animation - subtle float/bob */
+    @keyframes busFloat {
+      0%, 100% { transform: rotateX(10deg) translateY(0px); }
+      50% { transform: rotateX(10deg) translateY(-1px); }
+    }
+    .bus-3d-icon.animating {
+      animation: busFloat 1.5s ease-in-out infinite;
+    }
+
     @media (max-width:760px) {
       body { overflow:auto; }
       .app { display:block; height:auto; }
@@ -501,8 +641,11 @@
       </div>
     </section>
   </main>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+  <!-- Leaflet.MarkerMotion for smooth bus animation -->
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.marker-motion@0.8.2/dist/leaflet.marker-motion.min.js"></script>
   <script>
     // ---- Official Surat coordinates (latlong.net) ----
     const surat = [21.170240, 72.831062];
@@ -616,7 +759,7 @@
     updateTheme();
     setInterval(updateTheme, 60000);
 
-    // ---- Map and transit logic (unchanged) ----
+    // ---- Map and transit logic with 3D Bus Animation ----
     const params = new URLSearchParams(location.search);
     const sameOriginApi = location.hostname && !location.hostname.endsWith('github.io') ? location.origin : '';
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
@@ -627,12 +770,122 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
     const routeSelect = document.getElementById('route'), search = document.getElementById('stop-search'), searchResults = document.getElementById('search-results'), stopLayer = L.layerGroup().addTo(map);
     let network, routeStops = [], routeLine;
+    let busMarker = null; // reference to the animated bus marker
+
+    // ---- Create a pure CSS 3D bus icon ----
+    function createBusIcon(stopName = '') {
+      const container = document.createElement('div');
+      container.className = 'bus-3d-icon animating';
+      container.innerHTML = `
+        <div class="bus-body">
+          <div class="bus-window w1"></div>
+          <div class="bus-window w2"></div>
+          <div class="bus-window w3"></div>
+          <div class="bus-window w4"></div>
+          <div class="bus-headlight hl1"></div>
+          <div class="bus-headlight hl2"></div>
+          <div class="bus-taillight tl1"></div>
+          <div class="bus-taillight tl2"></div>
+          <div class="bus-wheel wheel1"></div>
+          <div class="bus-wheel wheel2"></div>
+          <div class="bus-stop-label">${stopName || 'Bus'}</div>
+        </div>
+      `;
+      return L.divIcon({
+        html: container.outerHTML,
+        className: '',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
+    }
+
+    // ---- Animate bus along a route ----
+    function animateBusAlongRoute(routeStopsData, routeId) {
+      // Remove existing bus marker if any
+      if (busMarker) {
+        map.removeLayer(busMarker);
+        busMarker = null;
+      }
+
+      if (!routeStopsData || routeStopsData.length < 2) {
+        console.warn('Not enough stops to animate bus');
+        return;
+      }
+
+      // Get the route name for the label
+      const route = network?.routes[routeId];
+      const routeName = route ? routeName(route.name) : 'Bus';
+
+      // Create path points from route stops (lat, lng)
+      const pathPoints = routeStopsData.map(stop => [stop.lat, stop.lng]);
+
+      // Create the bus icon with route name as label
+      const icon = createBusIcon(routeName);
+
+      // Calculate a reasonable speed (km/h) based on route length
+      // Average BRTS speed ~20-30 km/h, we'll use 25 km/h
+      const speedKmH = 25;
+
+      try {
+        // Use Leaflet.MarkerMotion to animate the bus
+        busMarker = L.markerMotion(pathPoints, speedKmH, {
+          icon: icon,
+          rotation: true,
+          autoplay: true,
+          loop: true,
+          // Marker options
+          riseOnHover: true,
+          title: `Bus on ${routeName}`
+        }).addTo(map);
+
+        // Fit the map to show the full route
+        const bounds = L.latLngBounds(pathPoints);
+        map.fitBounds(bounds, { padding: [50, 50] });
+
+        // Update map label to show bus is running
+        mapLabel.textContent = `🚍 ${routeName} (bus running)`;
+        mapSubtitle.textContent = '3D bus animation · Live tracking';
+
+      } catch (e) {
+        console.warn('MarkerMotion error, falling back to static marker:', e);
+        // Fallback: just show a static marker at the first stop
+        const fallbackIcon = createBusIcon(routeName);
+        busMarker = L.marker(pathPoints[0], {
+          icon: fallbackIcon,
+          title: `Bus on ${routeName}`
+        }).addTo(map);
+        map.fitBounds(L.latLngBounds(pathPoints), { padding: [50, 50] });
+        mapLabel.textContent = `🚍 ${routeName} (static)`;
+      }
+    }
+
     const stopIcon = route => L.divIcon({ className:'', html:`<div class="stop-dot ${route ? 'route' : ''}"></div>`, iconSize:[12,12], iconAnchor:[6,6] });
     const routeName = name => String(name || '').replace(/^\([^)]*\)\s*/, '');
     const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-    const drawStops = (stops, routeMode=false) => { stopLayer.clearLayers(); stops.filter(stop => stop.lat != null && stop.lng != null).forEach(stop => { const marker=L.marker([stop.lat,stop.lng],{icon:stopIcon(routeMode)}).addTo(stopLayer); marker.bindPopup(`<div class="popup-name">${escapeHtml(stop.name)}</div><div class="popup-id">Stop ${escapeHtml(stop.id)}</div>`); marker.on('click', () => loadEta(stop)); }); };
-    const renderSearchResults = (matches) => { searchResults.innerHTML = matches.length ? matches.slice(0, 30).map((stop, index) => `<button class="search-result" data-index="${index}"><span>${escapeHtml(stop.name)}</span><small>${stop.lat != null && stop.lng != null ? `Stop ${escapeHtml(stop.id)}` : 'No map location'}</small></button>`).join('') : '<p class="empty">No stations found.</p>'; [...searchResults.querySelectorAll('.search-result')].forEach(button => button.addEventListener('click', () => selectStop(matches[Number(button.dataset.index)]))); };
-    const selectStop = stop => { if (stop.lat != null && stop.lng != null) { map.setView([stop.lat, stop.lng], 15); drawStops([stop], routeStops.length > 0); } loadEta(stop); };
+
+    const drawStops = (stops, routeMode=false) => { 
+      stopLayer.clearLayers(); 
+      stops.filter(stop => stop.lat != null && stop.lng != null).forEach(stop => { 
+        const marker=L.marker([stop.lat,stop.lng],{icon:stopIcon(routeMode)}).addTo(stopLayer); 
+        marker.bindPopup(`<div class="popup-name">${escapeHtml(stop.name)}</div><div class="popup-id">Stop ${escapeHtml(stop.id)}</div>`); 
+        marker.on('click', () => loadEta(stop)); 
+      }); 
+    };
+
+    const renderSearchResults = (matches) => { 
+      searchResults.innerHTML = matches.length ? matches.slice(0, 30).map((stop, index) => `<button class="search-result" data-index="${index}"><span>${escapeHtml(stop.name)}</span><small>${stop.lat != null && stop.lng != null ? `Stop ${escapeHtml(stop.id)}` : 'No map location'}</small></button>`).join('') : '<p class="empty">No stations found.</p>'; 
+      [...searchResults.querySelectorAll('.search-result')].forEach(button => button.addEventListener('click', () => selectStop(matches[Number(button.dataset.index)]))); 
+    };
+
+    const selectStop = stop => { 
+      if (stop.lat != null && stop.lng != null) { 
+        map.setView([stop.lat, stop.lng], 15); 
+        drawStops([stop], routeStops.length > 0); 
+      } 
+      loadEta(stop); 
+    };
+
     const loadEta = async stop => {
       document.getElementById('eta-name').textContent=stop.name;
       document.getElementById('eta-status').textContent='Loading';
@@ -654,11 +907,48 @@
         document.getElementById('eta-list').innerHTML=`<p class="empty">${escapeHtml(error.message || 'Live timings are unavailable right now.')}</p>`;
       }
     };
-    const showRoute = async id => { if(!network) return; if(routeLine){map.removeLayer(routeLine);routeLine=null;} if(!id){routeStops=[];drawStops(network.stops);searchResults.innerHTML='';search.placeholder='Search or scroll the list';map.setView(surat,12);mapLabel.textContent='Surat transit';mapSubtitle.textContent='OpenStreetMap';return;} const route=network.routes[id]; if(!route){return;} const points=route.stops.map(stop=>[stop.lat,stop.lng]); routeStops=route.stops; routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); drawStops(routeStops,true); if(points.length) map.fitBounds(routeLine.getBounds(),{padding:[45,45]}); mapLabel.textContent=`Route ${id} (${routeStops.length} stops)`;mapSubtitle.textContent=routeName(route.name);
+
+    const showRoute = async id => { 
+      if(!network) return; 
+      if(routeLine){map.removeLayer(routeLine);routeLine=null;} 
+      
+      // Remove any existing bus animation
+      if(busMarker) {
+        map.removeLayer(busMarker);
+        busMarker = null;
+      }
+      
+      if(!id){
+        routeStops=[];
+        drawStops(network.stops);
+        searchResults.innerHTML='';
+        search.placeholder='Search or scroll the list';
+        map.setView(surat,12);
+        mapLabel.textContent='Surat transit';
+        mapSubtitle.textContent='OpenStreetMap';
+        return;
+      } 
+      
+      const route=network.routes[id]; 
+      if(!route){return;} 
+      const points=route.stops.map(stop=>[stop.lat,stop.lng]); 
+      routeStops=route.stops; 
+      routeLine=L.polyline(points,{color:'#e4573d',weight:5,opacity:.85}).addTo(map); 
+      drawStops(routeStops,true); 
+      if(points.length) {
+        map.fitBounds(routeLine.getBounds(),{padding:[45,45]});
+      }
+      
+      // Start the 3D bus animation along the route
+      animateBusAlongRoute(routeStops, id);
+      
+      mapLabel.textContent=`Route ${id} (${routeStops.length} stops)`; 
+      mapSubtitle.textContent=routeName(route.name);
       search.placeholder = `Type to filter ${routeStops.length} stops`;
       renderSearchResults(routeStops);
       search.value = '';
     };
+
     const loadNetwork = async () => {
       const response = await fetch(DATA_URL);
       if (!response.ok) throw new Error('transit_data.json could not be loaded');
@@ -679,10 +969,20 @@
       document.getElementById('route-count').textContent = Object.keys(routes).length.toLocaleString();
       drawStops(mappedStops);
     };
+
     routeSelect.addEventListener('change',()=>showRoute(routeSelect.value));
     search.addEventListener('input',()=>{if(!network) return; const term=search.value.trim().toLowerCase(),source=routeStops.length?routeStops:network.stops,matches=term?source.filter(stop=>stop.name.toLowerCase().includes(term)||String(stop.id).toLowerCase().includes(term)):source;drawStops(matches,routeStops.length>0);renderSearchResults(matches);if(matches.length===1) selectStop(matches[0]);});
     document.getElementById('locate').addEventListener('click',()=>navigator.geolocation?.getCurrentPosition(position=>map.setView([position.coords.latitude,position.coords.longitude],15)));
-    document.getElementById('reset-view').addEventListener('click',()=>map.setView(surat,12));
+    document.getElementById('reset-view').addEventListener('click',()=>{
+      // Reset view and remove bus animation
+      if(busMarker) {
+        map.removeLayer(busMarker);
+        busMarker = null;
+      }
+      routeSelect.value = '';
+      showRoute('');
+      map.setView(surat,12);
+    });
     loadNetwork().catch(error=>{document.getElementById('eta-list').innerHTML=`<p class="empty">Could not load transit data: ${escapeHtml(error.message)}</p>`;});
   </script>
 </body>
