@@ -976,15 +976,26 @@
     let mockEtaData = null;
     const loadMockEtaData = async () => {
       if (mockEtaData) return mockEtaData;
-      try {
-        const response = await fetch('./static/assets/mock_eta_data.json');
-        if (!response.ok) throw new Error('Failed to load mock_eta_data.json');
-        mockEtaData = await response.json();
-        return mockEtaData;
-      } catch (e) {
-        console.warn('Could not load mock_eta_data.json:', e);
-        return null;
+      // Try multiple possible locations
+      const urls = [
+        './mock_eta_data.json',
+        './static/assets/mock_eta_data.json',
+        './assets/mock_eta_data.json'
+      ];
+      for (const url of urls) {
+        try {
+          const response = await fetch(url);
+          if (response.ok) {
+            mockEtaData = await response.json();
+            console.log(`[Mock] Loaded from ${url} (${Object.keys(mockEtaData).length} stops)`);
+            return mockEtaData;
+          }
+        } catch (e) {
+          // continue
+        }
       }
+      console.warn('[Mock] Could not load mock_eta_data.json from any known path.');
+      return null;
     };
 
     // ---- loadEta with mock support and fallback ----
@@ -1117,14 +1128,15 @@
       if (!transitResponse.ok) throw new Error('transit_data.json could not be loaded');
       const transitData = await transitResponse.json();
 
-      // If mock mode, also load mock_eta_data to filter stops/routes
+      // If mock mode, try to load mock_eta_data to filter stops/routes
       let validStopIds = null;
       if (isMock) {
         const mockData = await loadMockEtaData();
         if (mockData) {
           validStopIds = new Set(Object.keys(mockData));
+          console.log(`[Mock] Found ${validStopIds.size} stop IDs in mock data.`);
         } else {
-          console.warn('Mock data not loaded – falling back to full transit data');
+          console.warn('[Mock] Mock data not loaded – falling back to full transit data.');
         }
       }
 
@@ -1140,6 +1152,12 @@
       let filteredStops = allStops;
       if (isMock && validStopIds) {
         filteredStops = allStops.filter(s => validStopIds.has(s.id));
+        console.log(`[Mock] After filtering: ${filteredStops.length} stops remain (out of ${allStops.length})`);
+        // If no stops match, fall back to all stops (so the map isn't empty)
+        if (filteredStops.length === 0) {
+          console.warn('[Mock] No stops matched mock IDs – falling back to all stops.');
+          filteredStops = allStops;
+        }
       }
 
       // Build routes
@@ -1221,6 +1239,7 @@
     // ---- Start ----
     loadNetwork().catch(error=>{
       document.getElementById('eta-list').innerHTML=`<p class="empty">Could not load transit data: ${escapeHtml(error.message)}</p>`;
+      console.error('loadNetwork error:', error);
     });
   </script>
 </body>
