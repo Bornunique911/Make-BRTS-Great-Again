@@ -12,36 +12,194 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    :root { --ink:#17212b; --muted:#6b7785; --paper:#f5f7f8; --line:#dce3e8; --red:#e4573d; --teal:#087f8c; --yellow:#f6c85f; --glass:#ffffffd9; --fog:#ffffff80; --card:#ffffff; --card-hover:#eef6f5; }
-    body.night { --ink:#edf4f5; --muted:#a6b7bc; --paper:#101b25; --line:#30404b; --glass:#172733e8; --fog:#213541aa; --card:#1b2d39; --card-hover:#223746; background:#101b25; }
-    body.midnight { --ink:#e9eef0; --muted:#aeb9bd; --paper:#17202a; --line:#3a4650; --glass:#202d38e8; --fog:#293943b8; --card:#253540; --card-hover:#2d404c; background:#17202a; }
-    body.midnight .intro { border-left-color:#f0b85a; background:linear-gradient(135deg,#293943d9,#23313be8); }
-    body.midnight .brand-mark { background:linear-gradient(135deg,#e4573d 0%,#f0b85a 100%); }
-    body.midnight #map { filter:brightness(.82) saturate(.86); }
+    /* ── Base variables ── */
+    :root {
+      --ink:#17212b;
+      --muted:#6b7785;
+      --paper:#f5f7f8;
+      --line:#dce3e8;
+      --red:#e4573d;
+      --teal:#087f8c;
+      --yellow:#f6c85f;
+      --glass:#ffffffd9;
+      --fog:#ffffff80;
+      --card:#ffffff;
+      --card-hover:#eef6f5;
+      --mode-bg-start: #f5f7f8;
+      --mode-bg-end: #ffffff;
+      --mode-intro-bg: #ffffff80;
+      --mode-brand-gradient: #e4573d;
+      --mode-map-filter: none;
+    }
 
+    /* ── Morning (default) ── */
+    body.morning {
+      --ink:#17212b;
+      --muted:#6b7785;
+      --paper:#f5f7f8;
+      --line:#dce3e8;
+      --glass:#ffffffd9;
+      --fog:#ffffff80;
+      --card:#ffffff;
+      --card-hover:#eef6f5;
+      --mode-bg-start: #f5f7f8;
+      --mode-bg-end: #ffffff;
+      --mode-intro-bg: #ffffff80;
+      --mode-brand-gradient: #e4573d;
+      --mode-map-filter: none;
+      background: var(--paper);
+    }
+    body.morning .intro {
+      border-left-color: var(--teal);
+      background: var(--mode-intro-bg);
+    }
+    body.morning .brand-mark {
+      background: var(--red);
+    }
+    body.morning #map {
+      filter: var(--mode-map-filter);
+    }
+
+    /* ── Afternoon ── */
+    body.afternoon {
+      --ink:#1a2a1f;
+      --muted:#5a7a5a;
+      --paper:#e8f0e8;
+      --line:#b8d0b8;
+      --glass:#e8f5e8d9;
+      --fog:#d8ecd880;
+      --card:#f0f8f0;
+      --card-hover:#dcecdc;
+      --mode-bg-start: #e8f0e8;
+      --mode-bg-end: #d4e8d4;
+      --mode-intro-bg: #d8ecd880;
+      --mode-brand-gradient: #2d8a4e;
+      --mode-map-filter: saturate(1.1) brightness(1.05);
+      background: var(--paper);
+    }
+    body.afternoon .intro {
+      border-left-color: #2d8a4e;
+      background: var(--mode-intro-bg);
+    }
+    body.afternoon .brand-mark {
+      background: linear-gradient(135deg, #2d8a4e 0%, #4caf78 100%);
+    }
+    body.afternoon #map {
+      filter: var(--mode-map-filter);
+    }
+
+    /* ── Evening ── */
+    body.evening {
+      --ink:#2a1a0f;
+      --muted:#8a6a4a;
+      --paper:#f0e0c8;
+      --line:#d4b898;
+      --glass:#f5e8d4d9;
+      --fog:#ecdcc080;
+      --card:#f8efe0;
+      --card-hover:#ece0cc;
+      --mode-bg-start: #f0e0c8;
+      --mode-bg-end: #e8d0b0;
+      --mode-intro-bg: #ecdcc080;
+      --mode-brand-gradient: #c07030;
+      --mode-map-filter: saturate(0.9) brightness(0.98) sepia(0.1);
+      background: var(--paper);
+    }
+    body.evening .intro {
+      border-left-color: #c07030;
+      background: var(--mode-intro-bg);
+    }
+    body.evening .brand-mark {
+      background: linear-gradient(135deg, #c07030 0%, #e09050 100%);
+    }
+    body.evening #map {
+      filter: var(--mode-map-filter);
+    }
+
+    /* ── Night ── */
+    body.night {
+      --ink:#edf4f5;
+      --muted:#a6b7bc;
+      --paper:#101b25;
+      --line:#30404b;
+      --glass:#172733e8;
+      --fog:#213541aa;
+      --card:#1b2d39;
+      --card-hover:#223746;
+      --mode-bg-start: #101b25;
+      --mode-bg-end: #1a2a35;
+      --mode-intro-bg: #213541aa;
+      --mode-brand-gradient: #e4573d;
+      --mode-map-filter: brightness(.72) saturate(.76);
+      background: var(--paper);
+    }
+    body.night .intro {
+      border-left-color: var(--teal);
+      background: var(--mode-intro-bg);
+    }
+    body.night .brand-mark {
+      background: var(--red);
+    }
+    body.night #map {
+      filter: var(--mode-map-filter);
+    }
+
+    /* ── Midnight ── */
+    body.midnight {
+      --ink:#e9eef0;
+      --muted:#aeb9bd;
+      --paper:#17202a;
+      --line:#3a4650;
+      --glass:#202d38e8;
+      --fog:#293943b8;
+      --card:#253540;
+      --card-hover:#2d404c;
+      --mode-bg-start: #17202a;
+      --mode-bg-end: #0f1620;
+      --mode-intro-bg: #293943b8;
+      --mode-brand-gradient: linear-gradient(135deg, #e4573d 0%, #f0b85a 100%);
+      --mode-map-filter: brightness(.82) saturate(.86);
+      background: var(--paper);
+    }
+    body.midnight .intro {
+      border-left-color: #f0b85a;
+      background: var(--mode-intro-bg);
+    }
+    body.midnight .brand-mark {
+      background: var(--mode-brand-gradient);
+    }
+    body.midnight #map {
+      filter: var(--mode-map-filter);
+    }
+
+    /* ── Shared styles ── */
     * { box-sizing:border-box; } html,body { height:100%; margin:0; }
-    body { color:var(--ink); background:var(--paper); font:14px "DM Sans",sans-serif; overflow:hidden; }
+    body { color:var(--ink); background:var(--paper); font:14px "DM Sans",sans-serif; overflow:hidden; transition: background 0.8s ease, color 0.8s ease; }
     .app { display:grid; grid-template-columns:350px 1fr; height:100%; }
-    .sidebar { z-index:2; display:flex; flex-direction:column; gap:24px; padding:28px 24px; background:var(--glass); border-right:1px solid var(--line); overflow-y:auto; backdrop-filter:blur(24px) saturate(130%); }
-    .brand { display:flex; align-items:center; gap:12px; } .brand-mark { width:42px; height:42px; display:grid; place-items:center; color:#fff; background:var(--red); border-radius:12px 12px 12px 3px; font:700 20px "Space Grotesk",sans-serif; }
+    .sidebar { z-index:2; display:flex; flex-direction:column; gap:24px; padding:28px 24px; background:var(--glass); border-right:1px solid var(--line); overflow-y:auto; backdrop-filter:blur(24px) saturate(130%); transition: background 0.8s ease, border-color 0.8s ease; }
+    .brand { display:flex; align-items:center; gap:12px; } .brand-mark { width:42px; height:42px; display:grid; place-items:center; color:#fff; border-radius:12px 12px 12px 3px; font:700 20px "Space Grotesk",sans-serif; transition: background 0.8s ease; }
     h1,h2,p { margin:0; } h1 { font:700 21px "Space Grotesk",sans-serif; } h2 { font:600 17px "Space Grotesk",sans-serif; }
-    .eyebrow { margin-top:3px; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; }
-    .intro { padding:18px; background:var(--fog); border-left:4px solid var(--teal); box-shadow:0 12px 30px #1828320c; } .intro strong { display:block; margin-bottom:6px; font:600 15px "Space Grotesk",sans-serif; } .intro span { color:var(--muted); line-height:1.5; }
-    label { display:block; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
+    .eyebrow { margin-top:3px; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; transition: color 0.8s ease; }
+    .intro { padding:18px; border-left:4px solid var(--teal); box-shadow:0 12px 30px #1828320c; transition: background 0.8s ease, border-color 0.8s ease; }
+    .intro strong { display:block; margin-bottom:6px; font:600 15px "Space Grotesk",sans-serif; }
+    .intro span { color:var(--muted); line-height:1.5; transition: color 0.8s ease; }
+    label { display:block; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; transition: color 0.8s ease; }
 
-    /* ---- Transparent glass theme for dropdown & search ---- */
+    /* ── Transparent glass for dropdown & search ── */
     select, input {
       width:100%; height:44px; padding:0 16px;
       color:var(--ink);
-      background: rgba(255,255,255,0.08);  /* very transparent */
+      background: rgba(255,255,255,0.08);
       border:1px solid rgba(255,255,255,0.15);
       border-radius:12px;
       font:inherit;
       outline:0;
       backdrop-filter:blur(24px) saturate(180%);
       -webkit-backdrop-filter:blur(24px) saturate(180%);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02); /* minimal shadow */
-      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      transition: all 0.3s ease, color 0.8s ease, background 0.8s ease;
+      appearance: none;
+      -webkit-appearance: none;
     }
     select:hover, input:hover {
       background: rgba(255,255,255,0.15);
@@ -52,15 +210,46 @@
       background: rgba(255,255,255,0.12);
       box-shadow: 0 0 0 3px rgba(8,127,140,0.12), 0 4px 12px rgba(0,0,0,0.02);
     }
+    /* Custom dropdown arrow */
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7785' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 12px;
+      padding-right: 40px;
+    }
+    select option {
+      background: var(--card);
+      color: var(--ink);
+      padding: 8px 12px;
+      transition: background 0.8s ease, color 0.8s ease;
+    }
     #route { height:44px; }
-    .search { position:relative; } .search input { padding-left:38px; } .search:before { content:"⌕"; position:absolute; z-index:1; top:8px; left:13px; color:var(--muted); font-size:23px; } .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; } .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:9px 10px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:6px; cursor:pointer; } .search-result:hover { border-color:var(--teal); background:var(--card-hover); } .search-result small { color:var(--muted); white-space:nowrap; }
-    .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; } .stat { padding:13px; background:var(--fog); border:1px solid var(--line); border-radius:7px; } .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; } .stat span { color:var(--muted); font-size:11px; }
-    .eta { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); } .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; } .eta-name { margin-top:5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .eta-list { display:grid; gap:8px; margin-top:14px; max-height:170px; overflow-y:auto; } .eta-row { display:grid; grid-template-columns:45px 1fr auto; gap:8px; align-items:center; padding:10px; background:#fff8e7; border:1px solid #f2dfab; border-radius:6px; } .eta-row b { font-size:12px; } .eta-row small { color:var(--muted); } .eta-time { color:#ae6a12; font-weight:700; } .empty { color:var(--muted); font-size:13px; line-height:1.5; }
+    .search { position:relative; }
+    .search input { padding-left:48px; }
+    .search:before {
+      content:"⌕";
+      position:absolute;
+      z-index:1;
+      top:50%;
+      left:14px;
+      transform:translateY(-50%);
+      color:var(--muted);
+      font-size:24px;
+      pointer-events:none;
+      line-height:1;
+      transition: color 0.8s ease;
+    }
+    .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; }
+    .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:10px 12px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:14px; transition:all .2s, background 0.8s ease, border-color 0.8s ease, color 0.8s ease; }
+    .search-result:hover { border-color:var(--teal); background:var(--card-hover); }
+    .search-result small { color:var(--muted); white-space:nowrap; font-size:12px; transition: color 0.8s ease; }
+    .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; } .stat { padding:13px; background:var(--fog); border:1px solid var(--line); border-radius:7px; transition: background 0.8s ease, border-color 0.8s ease; } .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; transition: color 0.8s ease; } .stat span { color:var(--muted); font-size:11px; transition: color 0.8s ease; }
+    .eta { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); transition: border-color 0.8s ease; } .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; } .eta-name { margin-top:5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition: color 0.8s ease; }
+    .eta-list { display:grid; gap:8px; margin-top:14px; max-height:170px; overflow-y:auto; } .eta-row { display:grid; grid-template-columns:45px 1fr auto; gap:8px; align-items:center; padding:10px; background:#fff8e7; border:1px solid #f2dfab; border-radius:6px; transition: background 0.8s ease, border-color 0.8s ease; } .eta-row b { font-size:12px; transition: color 0.8s ease; } .eta-row small { color:var(--muted); transition: color 0.8s ease; } .eta-time { color:#ae6a12; font-weight:700; } .empty { color:var(--muted); font-size:13px; line-height:1.5; transition: color 0.8s ease; }
 
     .map-wrap { position:relative; min-width:0; }
-    #map { width:100%; height:100%; background:#dfe8e6; transition:filter .5s ease; }
-    body.night #map { filter:brightness(.72) saturate(.76); }
+    #map { width:100%; height:100%; background:#dfe8e6; transition: filter .8s ease; }
 
     .map-top {
       position:absolute;
@@ -87,9 +276,10 @@
       border-radius:12px;
       box-shadow:0 10px 30px #18283218;
       backdrop-filter:blur(18px) saturate(130%);
+      transition: background 0.8s ease, border-color 0.8s ease;
     }
-    .map-pill b { font:600 14px "Space Grotesk",sans-serif; }
-    .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; }
+    .map-pill b { font:600 14px "Space Grotesk",sans-serif; transition: color 0.8s ease; }
+    .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; transition: color 0.8s ease; }
 
     .map-clock {
       display:inline-block;
@@ -103,6 +293,7 @@
       font-variant-numeric:tabular-nums;
       color:var(--ink);
       font-size:12px;
+      transition: background 0.8s ease, border-color 0.8s ease, color 0.8s ease;
     }
 
     .locate, .reset-view {
@@ -117,6 +308,7 @@
       backdrop-filter:blur(18px);
       display:grid;
       place-items:center;
+      transition: background 0.8s ease, border-color 0.8s ease, color 0.8s ease;
     }
     .locate:hover, .reset-view:hover { color:var(--teal); }
     .reset-view { background:var(--teal); color:#fff; border-color:var(--teal); }
@@ -133,6 +325,8 @@
       .eta { margin-top:0; }
       .map-top { top:14px; left:14px; right:14px; flex-wrap:wrap; gap:8px; }
       .map-top>* { flex:1 0 auto; }
+      select, input { height:48px; font-size:16px; }
+      .search-result { padding:12px; font-size:15px; }
     }
   </style>
 </head>
@@ -164,7 +358,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   <script>
-    // ---- All JavaScript unchanged ----
     const params = new URLSearchParams(location.search);
     const sameOriginApi = location.hostname && !location.hostname.endsWith('github.io') ? location.origin : '';
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
@@ -175,40 +368,91 @@
       sunset: new Date(new Date().setHours(18, 45, 0, 0))
     };
 
-    let isMidnight = false;
-    let isNight = false;
-
+    // DOM refs
     const modeTitle = document.getElementById('mode-title');
     const modeCopy = document.getElementById('mode-copy');
     const mapSubtitle = document.getElementById('map-subtitle');
     const mapLabel = document.getElementById('map-label');
 
+    function getTimeMode(now, solarTimes) {
+      const sunrise = solarTimes.sunrise;
+      const sunset = solarTimes.sunset;
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const totalMinutes = hours * 60 + minutes;
+
+      const sunriseMinutes = sunrise.getHours() * 60 + sunrise.getMinutes();
+      const sunsetMinutes = sunset.getHours() * 60 + sunset.getMinutes();
+
+      // Midnight: 00:00 to sunrise
+      if (totalMinutes < sunriseMinutes) {
+        return 'midnight';
+      }
+      // Morning: sunrise to 12:00
+      if (totalMinutes >= sunriseMinutes && totalMinutes < 12 * 60) {
+        return 'morning';
+      }
+      // Afternoon: 12:00 to sunset
+      if (totalMinutes >= 12 * 60 && totalMinutes < sunsetMinutes) {
+        return 'afternoon';
+      }
+      // Evening: sunset to 21:00 (9 PM)
+      if (totalMinutes >= sunsetMinutes && totalMinutes < 21 * 60) {
+        return 'evening';
+      }
+      // Night: 21:00 to 00:00
+      return 'night';
+    }
+
+    // Theme updater – recalculates solar times and applies classes + text
     function updateTheme() {
       const now = new Date();
       const solarTimes = window.SunCalc
         ? SunCalc.getTimes(now, surat[0], surat[1])
         : fallbackSolarTimes;
-      const isMidnightNow = now < solarTimes.sunrise && now.getHours() < 6;
-      const isNightNow = now >= solarTimes.sunset;
-      isMidnight = isMidnightNow;
-      isNight = isNightNow;
-      document.body.classList.toggle('midnight', isMidnight);
-      document.body.classList.toggle('night', isNight && !isMidnight);
-      if (isMidnight) {
-        modeTitle.textContent = 'Deep night in Surat.';
-        modeCopy.textContent = 'BRTS service is paused until sunrise. Browse the network to plan your morning journey.';
-        mapSubtitle.textContent = 'Midnight mode · Network view';
-      } else if (isNight) {
-        modeTitle.textContent = 'The city is winding down.';
-        modeCopy.textContent = 'The map stays open after sunset. Live arrivals return with the morning service.';
-        mapSubtitle.textContent = 'Night mode · OpenStreetMap';
-      } else {
-        modeTitle.textContent = 'Good morning, Surat.';
-        modeCopy.textContent = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
-        mapSubtitle.textContent = 'Morning mode · OpenStreetMap';
-      }
+
+      const mode = getTimeMode(now, solarTimes);
+
+      // Apply CSS class
+      document.body.classList.remove('morning', 'afternoon', 'evening', 'night', 'midnight');
+      document.body.classList.add(mode);
+
+      // Update intro text based on mode
+      const modeData = {
+        morning: {
+          title: 'Good morning, Surat.',
+          copy: 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.',
+          subtitle: 'Morning mode · OpenStreetMap'
+        },
+        afternoon: {
+          title: 'Bright afternoon in Surat.',
+          copy: 'The city is buzzing. Plan your route and check live arrivals for a smooth journey.',
+          subtitle: 'Afternoon mode · OpenStreetMap'
+        },
+        evening: {
+          title: 'Evening glow over Surat.',
+          copy: 'As the sun sets, BRTS service continues. Check arrivals for your evening commute.',
+          subtitle: 'Evening mode · OpenStreetMap'
+        },
+        night: {
+          title: 'The city is winding down.',
+          copy: 'The map stays open after sunset. Live arrivals return with the morning service.',
+          subtitle: 'Night mode · OpenStreetMap'
+        },
+        midnight: {
+          title: 'Deep night in Surat.',
+          copy: 'BRTS service is paused until sunrise. Browse the network to plan your morning journey.',
+          subtitle: 'Midnight mode · Network view'
+        }
+      };
+
+      const data = modeData[mode] || modeData.morning;
+      modeTitle.textContent = data.title;
+      modeCopy.textContent = data.copy;
+      mapSubtitle.textContent = data.subtitle;
     }
 
+    // IST clock
     const istClock = document.getElementById('ist-clock');
     const updateISTClock = () => {
       if (!istClock) return;
@@ -222,9 +466,13 @@
     };
     updateISTClock();
     setInterval(updateISTClock, 1000);
+
+    // Initial theme application
     updateTheme();
+    // Live theme switching every minute
     setInterval(updateTheme, 60000);
 
+    // ---- Map and transit logic ----
     const map = L.map('map', { zoomControl:false }).setView(surat, 12);
     L.control.zoom({ position:'bottomright' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
@@ -251,7 +499,7 @@
         if(!response.ok) throw new Error(data.details || data.error || 'Live API request failed'); 
         const buses=(data.routes || []).flatMap(route => (route.buses || []).map(bus => ({...bus,route:route.route_name}))); 
         document.getElementById('eta-status').textContent=`${buses.length} bus${buses.length===1?'':'es'}`; 
-        document.getElementById('eta-list').innerHTML=buses.length ? buses.map(bus=>`<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">${isMidnight ? 'It is midnight in Surat. BRTS service resumes after sunrise.' : isNight ? 'BRTS service is winding down for the night. Service resumes after sunrise.' : 'No live arrivals reported for this stop right now.'}</p>`; 
+        document.getElementById('eta-list').innerHTML=buses.length ? buses.map(bus=>`<div class="eta-row"><b>${escapeHtml(bus.bus)}</b><small>${escapeHtml(bus.destination || bus.route)}</small><span class="eta-time">${escapeHtml(bus.eta)}</span></div>`).join('') : `<p class="empty">${mode === 'midnight' ? 'It is midnight in Surat. BRTS service resumes after sunrise.' : mode === 'night' ? 'BRTS service is winding down for the night. Service resumes after sunrise.' : 'No live arrivals reported for this stop right now.'}</p>`; 
       } catch(error) { 
         document.getElementById('eta-status').textContent='Unavailable'; 
         document.getElementById('eta-list').innerHTML=`<p class="empty">${escapeHtml(error.message || 'Live timings are unavailable right now.')}</p>`; 
