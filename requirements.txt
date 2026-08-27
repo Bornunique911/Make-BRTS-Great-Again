@@ -1,5 +1,6 @@
 Flask
 Flask-Cors
 gunicorn
-pdfplumber>=0.11,<1
-pypdfium2>=4.30,<5
+# For pdf parsing, uncomment the following lines and install the dependencies
+# pdfplumber>=0.11,<1
+# pypdfium2>=4.30,<5
