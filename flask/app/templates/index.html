@@ -32,8 +32,6 @@
 
     /* --- Mode-specific overrides --- */
 
-    /* Morning (default) – already set above */
-
     /* Afternoon – warmer, slightly golden */
     body.afternoon {
       --ink: #1a1a2e;
@@ -183,7 +181,7 @@
       box-shadow: none;
     }
 
-    /* --- Base layout (unchanged) --- */
+    /* --- Base layout --- */
     * { box-sizing:border-box; } html,body { height:100%; margin:0; }
     body {
       color:var(--ink);
@@ -547,7 +545,7 @@
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   <script>
     // ---- Configuration ----
-    const surat = [21.1702, 72.8311]; // Official coordinates[reference:0][reference:1]
+    const surat = [21.1702, 72.8311]; // Official coordinates
 
     const MODES = {
       morning: {
@@ -646,8 +644,7 @@
       // Update clock
       updateISTClock();
 
-      // Trigger sun animation (handled by CSS transitions)
-      // The sun position and sky gradient are controlled by CSS classes
+      // The sun position and sky gradient are automatically animated via CSS
     }
 
     // ---- IST Clock ----
