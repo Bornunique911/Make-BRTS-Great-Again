@@ -28,18 +28,29 @@
     .eyebrow { margin-top:3px; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; }
     .intro { padding:18px; background:var(--fog); border-left:4px solid var(--teal); box-shadow:0 12px 30px #1828320c; } .intro strong { display:block; margin-bottom:6px; font:600 15px "Space Grotesk",sans-serif; } .intro span { color:var(--muted); line-height:1.5; }
     label { display:block; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
+
+    /* ---- Liquid glass theme for dropdown & search ---- */
     select, input {
-      width:100%; height:44px; padding:0 12px;
+      width:100%; height:44px; padding:0 16px;
       color:var(--ink);
-      background:var(--fog);
-      border:1px solid var(--line);
-      border-radius:7px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+      border:1px solid rgba(255,255,255,0.25);
+      border-radius:12px;
       font:inherit;
       outline:0;
-      backdrop-filter:blur(18px) saturate(130%);
-      -webkit-backdrop-filter:blur(18px) saturate(130%);
+      backdrop-filter:blur(20px) saturate(180%);
+      -webkit-backdrop-filter:blur(20px) saturate(180%);
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
     }
-    select:focus, input:focus { border-color:var(--teal); box-shadow:0 0 0 3px #087f8c1c; }
+    select:hover, input:hover {
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.15) 100%);
+      border-color: rgba(255,255,255,0.4);
+    }
+    select:focus, input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(8,127,140,0.2), inset 0 2px 4px rgba(255,255,255,0.2);
+    }
     #route { height:44px; }
     .search { position:relative; } .search input { padding-left:38px; } .search:before { content:"⌕"; position:absolute; z-index:1; top:8px; left:13px; color:var(--muted); font-size:23px; } .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; } .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:9px 10px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:6px; cursor:pointer; } .search-result:hover { border-color:var(--teal); background:var(--card-hover); } .search-result small { color:var(--muted); white-space:nowrap; }
     .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; } .stat { padding:13px; background:var(--fog); border:1px solid var(--line); border-radius:7px; } .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; } .stat span { color:var(--muted); font-size:11px; }
@@ -50,26 +61,24 @@
     #map { width:100%; height:100%; background:#dfe8e6; transition:filter .5s ease; }
     body.night #map { filter:brightness(.72) saturate(.76); }
 
-    /* --- Map top bar: always on top --- */
     .map-top {
       position:absolute;
-      z-index:1000;   /* high enough to stay above map tiles */
+      z-index:1000;
       top:22px;
       left:22px;
       right:22px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      pointer-events:none;  /* allow clicks to pass through container */
+      pointer-events:none;
       gap:12px;
     }
     .map-top>* {
-      pointer-events:auto;  /* but children can be clicked */
+      pointer-events:auto;
       display:flex;
       align-items:center;
       gap:8px;
     }
-
     .map-pill {
       padding:10px 14px;
       background:var(--glass);
@@ -81,7 +90,6 @@
     .map-pill b { font:600 14px "Space Grotesk",sans-serif; }
     .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; }
 
-    /* Independent clock – same glass style */
     .map-clock {
       display:inline-block;
       padding:10px 14px;
@@ -113,8 +121,7 @@
     .reset-view { background:var(--teal); color:#fff; border-color:var(--teal); }
     .reset-view:hover { background:#066a75; border-color:#066a75; color:#fff; }
 
-    .stop-dot { width:12px; height:12px; background:var(--yellow); border:3px solid #fff; border-radius:50%; box-shadow:0 1px 5px #18283255; }
-    .stop-dot.route { background:var(--red); }
+    .stop-dot { width:12px; height:12px; background:var(--yellow); border:3px solid #fff; border-radius:50%; box-shadow:0 1px 5px #18283255; } .stop-dot.route { background:var(--red); }
     .popup-name { font-weight:700; } .popup-id { color:var(--muted); font-size:11px; }
 
     @media (max-width:760px) {
@@ -156,7 +163,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   <script>
-    // ---- Your existing JavaScript (unchanged) ----
+    // ---- All JavaScript remains exactly the same ----
     const params = new URLSearchParams(location.search);
     const sameOriginApi = location.hostname && !location.hostname.endsWith('github.io') ? location.origin : '';
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
@@ -217,7 +224,6 @@
     updateTheme();
     setInterval(updateTheme, 60000);
 
-    // ---- Map and transit logic ----
     const map = L.map('map', { zoomControl:false }).setView(surat, 12);
     L.control.zoom({ position:'bottomright' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap contributors' }).addTo(map);

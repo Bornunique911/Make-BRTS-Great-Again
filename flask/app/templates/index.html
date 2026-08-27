@@ -28,19 +28,111 @@
     .eyebrow { margin-top:3px; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; }
     .intro { padding:18px; background:var(--fog); border-left:4px solid var(--teal); box-shadow:0 12px 30px #1828320c; } .intro strong { display:block; margin-bottom:6px; font:600 15px "Space Grotesk",sans-serif; } .intro span { color:var(--muted); line-height:1.5; }
     label { display:block; margin-bottom:8px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; }
-    select,input { width:100%; height:44px; padding:0 12px; color:var(--ink); background:var(--fog); border:1px solid var(--line); border-radius:7px; font:inherit; outline:0; } select:focus,input:focus { border-color:var(--teal); box-shadow:0 0 0 3px #087f8c1c; }
+
+    /* ---- Liquid glass theme for dropdown & search ---- */
+    select, input {
+      width:100%; height:44px; padding:0 16px;
+      color:var(--ink);
+      background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+      border:1px solid rgba(255,255,255,0.25);
+      border-radius:12px;
+      font:inherit;
+      outline:0;
+      backdrop-filter:blur(20px) saturate(180%);
+      -webkit-backdrop-filter:blur(20px) saturate(180%);
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+    select:hover, input:hover {
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.15) 100%);
+      border-color: rgba(255,255,255,0.4);
+    }
+    select:focus, input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(8,127,140,0.2), inset 0 2px 4px rgba(255,255,255,0.2);
+    }
     #route { height:44px; }
     .search { position:relative; } .search input { padding-left:38px; } .search:before { content:"⌕"; position:absolute; z-index:1; top:8px; left:13px; color:var(--muted); font-size:23px; } .search-results { display:grid; gap:5px; max-height:210px; margin-top:8px; overflow-y:auto; } .search-result { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:9px 10px; color:var(--ink); text-align:left; background:var(--card); border:1px solid var(--line); border-radius:6px; cursor:pointer; } .search-result:hover { border-color:var(--teal); background:var(--card-hover); } .search-result small { color:var(--muted); white-space:nowrap; }
     .stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; } .stat { padding:13px; background:var(--fog); border:1px solid var(--line); border-radius:7px; } .stat b { display:block; font:700 20px "Space Grotesk",sans-serif; } .stat span { color:var(--muted); font-size:11px; }
     .eta { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); } .eta-title { display:flex; align-items:center; justify-content:space-between; gap:12px; } .eta-name { margin-top:5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .eta-list { display:grid; gap:8px; margin-top:14px; max-height:170px; overflow-y:auto; } .eta-row { display:grid; grid-template-columns:45px 1fr auto; gap:8px; align-items:center; padding:10px; background:#fff8e7; border:1px solid #f2dfab; border-radius:6px; } .eta-row b { font-size:12px; } .eta-row small { color:var(--muted); } .eta-time { color:#ae6a12; font-weight:700; } .empty { color:var(--muted); font-size:13px; line-height:1.5; }
-    .map-wrap { position:relative; min-width:0; } #map { width:100%; height:100%; background:#dfe8e6; transition:filter .5s ease; } body.night #map { filter:brightness(.72) saturate(.76); } .map-top { position:absolute; z-index:1; top:22px; left:22px; right:22px; display:flex; align-items:center; justify-content:space-between; pointer-events:none; } .map-top>* { pointer-events:auto; display:flex; gap:8px; }
-    .map-pill { padding:10px 14px; background:var(--glass); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px #18283218; backdrop-filter:blur(18px) saturate(130%); } .map-pill b { font:600 14px "Space Grotesk",sans-serif; } .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; } .map-pill #ist-clock { font-variant-numeric:tabular-nums; font-weight:700; }
-    .locate, .reset-view { width:40px; height:40px; color:var(--ink); background:var(--glass); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 30px #18283218; font-size:20px; cursor:pointer; backdrop-filter:blur(18px); display:grid; place-items:center; } .locate:hover, .reset-view:hover { color:var(--teal); }
-    .reset-view { background:var(--teal); color:#fff; border-color:var(--teal); } .reset-view:hover { background:#066a75; border-color:#066a75; color:#fff; }
+
+    .map-wrap { position:relative; min-width:0; }
+    #map { width:100%; height:100%; background:#dfe8e6; transition:filter .5s ease; }
+    body.night #map { filter:brightness(.72) saturate(.76); }
+
+    .map-top {
+      position:absolute;
+      z-index:1000;
+      top:22px;
+      left:22px;
+      right:22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      pointer-events:none;
+      gap:12px;
+    }
+    .map-top>* {
+      pointer-events:auto;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .map-pill {
+      padding:10px 14px;
+      background:var(--glass);
+      border:1px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 10px 30px #18283218;
+      backdrop-filter:blur(18px) saturate(130%);
+    }
+    .map-pill b { font:600 14px "Space Grotesk",sans-serif; }
+    .map-pill span { margin-left:8px; color:var(--muted); font-size:12px; }
+
+    .map-clock {
+      display:inline-block;
+      padding:10px 14px;
+      background:var(--glass);
+      border:1px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 10px 30px #18283218;
+      backdrop-filter:blur(18px) saturate(130%);
+      font-weight:700;
+      font-variant-numeric:tabular-nums;
+      color:var(--ink);
+      font-size:12px;
+    }
+
+    .locate, .reset-view {
+      width:40px; height:40px;
+      color:var(--ink);
+      background:var(--glass);
+      border:1px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 10px 30px #18283218;
+      font-size:20px;
+      cursor:pointer;
+      backdrop-filter:blur(18px);
+      display:grid;
+      place-items:center;
+    }
+    .locate:hover, .reset-view:hover { color:var(--teal); }
+    .reset-view { background:var(--teal); color:#fff; border-color:var(--teal); }
+    .reset-view:hover { background:#066a75; border-color:#066a75; color:#fff; }
+
     .stop-dot { width:12px; height:12px; background:var(--yellow); border:3px solid #fff; border-radius:50%; box-shadow:0 1px 5px #18283255; } .stop-dot.route { background:var(--red); }
     .popup-name { font-weight:700; } .popup-id { color:var(--muted); font-size:11px; }
-    @media (max-width:760px) { body { overflow:auto; } .app { display:block; height:auto; } .sidebar { min-height:420px; padding:20px; } .map-wrap { height:58vh; min-height:420px; } .eta { margin-top:0; } .map-top { top:14px; left:14px; right:14px; } }
+
+    @media (max-width:760px) {
+      body { overflow:auto; }
+      .app { display:block; height:auto; }
+      .sidebar { min-height:420px; padding:20px; }
+      .map-wrap { height:58vh; min-height:420px; }
+      .eta { margin-top:0; }
+      .map-top { top:14px; left:14px; right:14px; flex-wrap:wrap; gap:8px; }
+      .map-top>* { flex:1 0 auto; }
+    }
   </style>
 </head>
 <body>
@@ -53,11 +145,25 @@
       <div class="stats"><div class="stat"><b id="route-count">--</b><span>routes mapped</span></div><div class="stat"><b id="stop-count">--</b><span>official stations</span></div></div>
       <section class="eta"><div class="eta-title"><h2>Next arrivals</h2><span id="eta-status" class="eyebrow">Select a stop</span></div><p id="eta-name" class="eta-name">Click any stop on the map</p><div id="eta-list" class="eta-list"><p class="empty">Live timings appear here when you choose a stop.</p></div></section>
     </aside>
-    <section class="map-wrap"><div id="map"></div><div class="map-top"><div class="map-pill"><b id="map-label">Surat transit</b><span id="map-subtitle">OpenStreetMap</span><span id="ist-clock" aria-label="Current IST time">--:--:-- -- IST</span></div><div><button class="locate" id="locate" title="Use my location" aria-label="Use my location">◎</button><button class="reset-view" id="reset-view" title="Reset view" aria-label="Reset view">⌂</button></div></div></section>
+    <section class="map-wrap">
+      <div id="map"></div>
+      <div class="map-top">
+        <div class="map-pill">
+          <b id="map-label">Surat transit</b>
+          <span id="map-subtitle">OpenStreetMap</span>
+        </div>
+        <span id="ist-clock" class="map-clock" aria-label="Current IST time">--:--:-- -- IST</span>
+        <div>
+          <button class="locate" id="locate" title="Use my location" aria-label="Use my location">◎</button>
+          <button class="reset-view" id="reset-view" title="Reset view" aria-label="Reset view">⌂</button>
+        </div>
+      </div>
+    </section>
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   <script>
+    // ---- All JavaScript remains exactly the same ----
     const params = new URLSearchParams(location.search);
     const sameOriginApi = location.hostname && !location.hostname.endsWith('github.io') ? location.origin : '';
     const API_BASE = (params.get('api') || sameOriginApi).replace(/\/$/, '');
@@ -68,39 +174,25 @@
       sunset: new Date(new Date().setHours(18, 45, 0, 0))
     };
 
-    // Global theme state (updated live)
     let isMidnight = false;
     let isNight = false;
 
-    // DOM refs
     const modeTitle = document.getElementById('mode-title');
     const modeCopy = document.getElementById('mode-copy');
     const mapSubtitle = document.getElementById('map-subtitle');
     const mapLabel = document.getElementById('map-label');
 
-    // Theme updater – recalculates solar times and applies classes + text
     function updateTheme() {
       const now = new Date();
-      // Use SunCalc if available, otherwise fallback
       const solarTimes = window.SunCalc
         ? SunCalc.getTimes(now, surat[0], surat[1])
         : fallbackSolarTimes;
-
-      // Midnight: after midnight (00:00) until sunrise
-      // We define midnight as: now < sunrise AND hour is before 6 (to avoid false positive just before sunrise)
-      // More robust: if now is between 00:00 and sunrise
       const isMidnightNow = now < solarTimes.sunrise && now.getHours() < 6;
       const isNightNow = now >= solarTimes.sunset;
-
-      // Update global variables (used by loadEta)
       isMidnight = isMidnightNow;
       isNight = isNightNow;
-
-      // Apply CSS classes
       document.body.classList.toggle('midnight', isMidnight);
       document.body.classList.toggle('night', isNight && !isMidnight);
-
-      // Update intro and subtitle
       if (isMidnight) {
         modeTitle.textContent = 'Deep night in Surat.';
         modeCopy.textContent = 'BRTS service is paused until sunrise. Browse the network to plan your morning journey.';
@@ -114,13 +206,8 @@
         modeCopy.textContent = 'Start your journey with live BRTS routes, nearby stations, and the next arrivals across the city.';
         mapSubtitle.textContent = 'Morning mode · OpenStreetMap';
       }
-
-      // Optionally update the map label if no route selected – but we keep it in route logic
-      // Only set if we haven't selected a route (we'll keep that logic elsewhere)
-      // We'll rely on showRoute to manage mapLabel when a route is chosen.
     }
 
-    // IST clock
     const istClock = document.getElementById('ist-clock');
     const updateISTClock = () => {
       if (!istClock) return;
@@ -134,13 +221,9 @@
     };
     updateISTClock();
     setInterval(updateISTClock, 1000);
-
-    // Initial theme application
     updateTheme();
-    // Live theme switching every minute
     setInterval(updateTheme, 60000);
 
-    // ---- Map and transit logic ----
     const map = L.map('map', { zoomControl:false }).setView(surat, 12);
     L.control.zoom({ position:'bottomright' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
@@ -179,26 +262,25 @@
       search.value = '';
     };
     const loadNetwork = async () => { 
-    const response = await fetch(DATA_URL); 
-    if (!response.ok) throw new Error('transit_data.json could not be loaded'); 
-    const data = await response.json(); 
-    const stops = Object.values(data.stops); 
-    const mappedStops = stops.filter(stop => stop.lat != null && stop.lng != null); 
-    const routes = {}; 
-    Object.entries(data.routes).forEach(([id, route]) => {
-      const valid = route.stops.map(stop => ({ ...stop, id: String(stop.stopCode), name: stop.stopName, lat: Number(stop.stopLatitude), lng: Number(stop.stopLongitude), sequence: stop.sequenceNumber })).filter(stop => Number.isFinite(stop.lat) && Number.isFinite(stop.lng));
-      routes[id] = { ...route, stops: valid };
-      const option = document.createElement('option');
-      option.value = id;
-      option.textContent = `${id} · ${routeName(route.name)}`;
-      routeSelect.appendChild(option);
-    });
-    network = { stops: mappedStops, routes };
-    // ✅ Use catalog_stop_count for the official station count
-    document.getElementById('stop-count').textContent = data.catalog_stop_count.toLocaleString();
-    document.getElementById('route-count').textContent = Object.keys(routes).length.toLocaleString();
-    drawStops(mappedStops);
-  };
+      const response = await fetch(DATA_URL); 
+      if (!response.ok) throw new Error('transit_data.json could not be loaded'); 
+      const data = await response.json(); 
+      const stops = Object.values(data.stops); 
+      const mappedStops = stops.filter(stop => stop.lat != null && stop.lng != null); 
+      const routes = {}; 
+      Object.entries(data.routes).forEach(([id, route]) => {
+        const valid = route.stops.map(stop => ({ ...stop, id: String(stop.stopCode), name: stop.stopName, lat: Number(stop.stopLatitude), lng: Number(stop.stopLongitude), sequence: stop.sequenceNumber })).filter(stop => Number.isFinite(stop.lat) && Number.isFinite(stop.lng));
+        routes[id] = { ...route, stops: valid };
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = `${id} · ${routeName(route.name)}`;
+        routeSelect.appendChild(option);
+      });
+      network = { stops: mappedStops, routes };
+      document.getElementById('stop-count').textContent = data.catalog_stop_count.toLocaleString();
+      document.getElementById('route-count').textContent = Object.keys(routes).length.toLocaleString();
+      drawStops(mappedStops);
+    };
     routeSelect.addEventListener('change',()=>showRoute(routeSelect.value));
     search.addEventListener('input',()=>{if(!network) return; const term=search.value.trim().toLowerCase(),source=routeStops.length?routeStops:network.stops,matches=term?source.filter(stop=>stop.name.toLowerCase().includes(term)||String(stop.id).toLowerCase().includes(term)):source;drawStops(matches,routeStops.length>0);renderSearchResults(matches);if(matches.length===1) selectStop(matches[0]);});
     document.getElementById('locate').addEventListener('click',()=>navigator.geolocation?.getCurrentPosition(position=>map.setView([position.coords.latitude,position.coords.longitude],15)));
