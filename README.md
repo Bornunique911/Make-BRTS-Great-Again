@@ -20,13 +20,6 @@ https://YOUR-USER.github.io/Make-BRTS-Great-Again/?api=https://YOUR-API.example.
 The API host must allow CORS. Without `?api=...`, the map and all static route
 features still work and the ETA panel explains how to connect a backend.
 
-## Run
-
-```bash
-python3 -m pip install requests beautifulsoup4 flask flask-cors urllib3
-python3 "Surat Realtime API.py"
-```
-
 The server listens on `http://127.0.0.1:5000`.
 
 Endpoints:
